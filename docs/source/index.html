@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>116 學測醫學系簡章統整</title>
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-tc/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-tc/500.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-tc/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-tc/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-tc/900.css">
+<style>
+  :root {
+    --ink: #17212B;
+    --ink-soft: #4A5762;
+    --muted: #7B8790;
+    --line: #D8E0E5;
+    --paper: #FFFFFF;
+    --card: #F3F6F8;
+    --teal: #0E5C63;
+    --teal-deep: #0A3F45;
+    --teal-tint: #E3F0F1;
+    --amber: #C9781A;
+    --amber-tint: #FBF0DF;
+    --slate: #5B6B7A;
+    --slate-tint: #E9EEF2;
+    --rose: #B4452F;
+    --rose-tint: #F8E6E1;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Noto Sans TC", "WenQuanYi Zen Hei", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    font-size: 10.2pt;
+    line-height: 1.62;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  h1, h2, h3, .serif { font-family: "Noto Serif TC", "Noto Sans TC", serif; }
+  p { margin: 0 0 7pt; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- page structure ---------- */
+  .page { break-after: page; page-break-after: always; }
+  .page:last-child { break-after: auto; page-break-after: auto; }
+  .section-head {
+    display: flex; align-items: baseline; gap: 10pt;
+    border-bottom: 2px solid var(--teal); padding-bottom: 6pt; margin: 0 0 12pt;
+  }
+  .section-head .num {
+    font-family: "Noto Serif TC", serif; font-weight: 900; font-size: 22pt; color: var(--teal); line-height: 1;
+  }
+  .section-head h2 { margin: 0; font-size: 17pt; font-weight: 700; color: var(--teal-deep); letter-spacing: 0.02em; }
+  .section-head .sub { margin-left: auto; color: var(--muted); font-size: 8.5pt; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 6pt; color: var(--teal-deep); }
+  h3:first-child { margin-top: 0; }
+  .lead { font-size: 10.6pt; color: var(--ink-soft); margin-bottom: 10pt; }
+  .small { font-size: 8.6pt; color: var(--muted); }
+  .note { font-size: 8.8pt; color: var(--ink-soft); margin-top: 5pt; }
+  .note b { color: var(--ink); }
+
+  /* ---------- badges ---------- */
+  .badge {
+    display: inline-block; font-size: 7.6pt; font-weight: 700; letter-spacing: 0.06em;
+    padding: 1pt 6pt; border-radius: 3pt; line-height: 1.5; vertical-align: middle; white-space: nowrap;
+  }
+  .b-fixed { background: var(--teal-tint); color: var(--teal); }
+  .b-tent  { background: var(--amber-tint); color: var(--amber); }
+  .b-ref   { background: var(--slate-tint); color: var(--slate); }
+  .b-todo  { background: var(--rose-tint); color: var(--rose); }
+
+  /* ---------- callouts ---------- */
+  .callout {
+    border-left: 4px solid var(--teal); background: var(--card);
+    padding: 8pt 11pt; margin: 8pt 0 10pt; border-radius: 0 4pt 4pt 0;
+  }
+  .callout.amber { border-left-color: var(--amber); background: var(--amber-tint); }
+  .callout.rose  { border-left-color: var(--rose);  background: var(--rose-tint); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .t { font-weight: 700; color: var(--teal-deep); margin-bottom: 2pt; }
+  .callout.amber .t { color: var(--amber); }
+  .callout.rose .t { color: var(--rose); }
+
+  /* ---------- tables ---------- */
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 9.2pt; }
+  thead { display: table-header-group; }
+  th, td { padding: 5pt 6pt; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  th { background: var(--teal-deep); color: #fff; font-weight: 500; font-size: 8.6pt; letter-spacing: 0.04em; border-bottom: none; }
+  tbody tr:nth-child(even) td { background: #F7F9FA; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.c, th.c { text-align: center; }
+  .dash { color: var(--muted); }
+  table.schools { font-size: 8.7pt; }
+  table.schools th, table.schools td { padding: 3.6pt 5pt; }
+  table.schools .school small { font-size: 7.5pt; }
+  table.schools .badge { font-size: 7.2pt; padding: 0.5pt 5pt; }
+  .school { font-weight: 700; color: var(--ink); }
+  .school small { display: block; font-weight: 400; color: var(--muted); font-size: 8pt; }
+
+  /* ---------- key stat tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8pt; margin: 8pt 0 12pt; }
+  .tile { background: var(--card); border-radius: 5pt; padding: 9pt 10pt; border: 1px solid var(--line); }
+  .tile .k { font-size: 8.2pt; color: var(--muted); letter-spacing: 0.04em; }
+  .tile .v { font-family: "Noto Serif TC", serif; font-size: 19pt; font-weight: 900; color: var(--teal-deep); line-height: 1.15; margin: 2pt 0; }
+  .tile .d { font-size: 8.4pt; color: var(--ink-soft); }
+  .tiles.three { grid-template-columns: repeat(3, 1fr); }
+
+  /* ---------- timeline ---------- */
+  .timeline { position: relative; margin: 4pt 0 6pt 0; padding-left: 0; list-style: none; }
+  .timeline::before { content: ""; position: absolute; left: 112pt; top: 4pt; bottom: 4pt; width: 2px; background: var(--line); }
+  .timeline li { position: relative; display: grid; grid-template-columns: 104pt 1fr; gap: 16pt; padding: 2.6pt 0; break-inside: avoid; }
+  .timeline li::before {
+    content: ""; position: absolute; left: 108.5pt; top: 8.5pt; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--teal); border: 2px solid #fff; box-shadow: 0 0 0 1.5px var(--teal);
+  }
+  .timeline li.tent::before { background: var(--amber); box-shadow: 0 0 0 1.5px var(--amber); }
+  .timeline li.milestone::before { width: 12px; height: 12px; left: 107pt; top: 7pt; }
+  .timeline .when { text-align: right; font-weight: 700; color: var(--teal-deep); font-variant-numeric: tabular-nums; line-height: 1.3; white-space: nowrap; }
+  .timeline .when small { display: block; font-weight: 400; color: var(--muted); font-size: 7.6pt; }
+  .timeline .what { line-height: 1.38; }
+  .timeline .what b { color: var(--ink); }
+  .timeline .what .badge { margin-left: 4pt; }
+  .timeline .what .small { display: block; margin-top: 1pt; }
+
+  /* ---------- pathway cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9pt; margin: 6pt 0 10pt; }
+  .card { border: 1px solid var(--line); border-radius: 5pt; padding: 9pt 10pt; background: #fff; break-inside: avoid; }
+  .card h4 { margin: 0 0 4pt; font-size: 10.6pt; color: var(--teal-deep); }
+  .card ul { margin: 0; padding-left: 13pt; font-size: 8.9pt; }
+  .card li { margin-bottom: 2pt; }
+  .card .tag { font-size: 7.8pt; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* ---------- checklist ---------- */
+  .check { list-style: none; padding: 0; margin: 4pt 0 8pt; }
+  .check li { position: relative; padding-left: 17pt; margin-bottom: 3pt; break-inside: avoid; }
+  .check li::before { content: ""; position: absolute; left: 0; top: 3pt; width: 10pt; height: 10pt; border: 1.5px solid var(--teal); border-radius: 2pt; }
+
+  /* ---------- two-column helper ---------- */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14pt; }
+
+  /* ---------- sources ---------- */
+  .sources { font-size: 7.8pt; color: var(--ink-soft); columns: 2; column-gap: 16pt; line-height: 1.45; }
+  .sources li { break-inside: avoid; margin-bottom: 2.5pt; }
+  .sources ol { padding-left: 13pt; margin: 0; }
+  .sources .u { color: var(--muted); font-size: 7pt; word-break: break-all; display: block; }
+
+  /* ---------- cover ---------- */
+  .cover {
+    height: 100%; min-height: 257mm; background: var(--teal-deep); color: #fff; margin: -18mm -16mm -18mm -16mm; padding: 26mm 20mm 20mm;
+    display: flex; flex-direction: column; position: relative; overflow: hidden;
+  }
+  .cover::after {
+    content: ""; position: absolute; right: -60mm; top: -40mm; width: 170mm; height: 170mm; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), rgba(255,255,255,0.02) 60%, transparent 70%);
+  }
+  .cover .kicker { font-size: 10pt; letter-spacing: 0.28em; color: #BFD9DB; text-transform: uppercase; margin-bottom: 10mm; }
+  .cover h1 { font-size: 34pt; font-weight: 900; line-height: 1.22; margin: 0 0 6mm; letter-spacing: 0.02em; }
+  .cover h1 span { display: block; font-size: 15pt; font-weight: 700; color: #BFD9DB; margin-top: 4mm; letter-spacing: 0.06em; }
+  .cover .desc { font-size: 10.5pt; color: #D7E7E8; max-width: 125mm; line-height: 1.7; margin-bottom: 14mm; }
+  .cover .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5mm; max-width: 150mm; }
+  .cover .g { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 5pt; padding: 8pt 11pt; }
+  .cover .g .k { font-size: 8pt; color: #BFD9DB; letter-spacing: 0.06em; }
+  .cover .g .v { font-family: "Noto Serif TC", serif; font-size: 18pt; font-weight: 900; line-height: 1.2; margin: 2pt 0; }
+  .cover .g .d { font-size: 8.4pt; color: #D7E7E8; }
+  .cover .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-size: 8.6pt; color: #BFD9DB; }
+  .cover .legend { display: flex; gap: 6pt; flex-wrap: wrap; margin-top: 6pt; }
+  .cover .legend .badge { background: rgba(255,255,255,0.14); color: #fff; }
+  .cover .legend .badge.b-tent { background: rgba(201,120,26,0.35); }
+  .cover .legend .badge.b-ref { background: rgba(255,255,255,0.10); color: #D7E7E8; }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="page">
+  <div class="cover">
+    <div class="kicker">116 學年度 ・ 學科能力測驗 ・ 醫學系</div>
+    <h1>116 學測<br>醫學系簡章統整
+      <span>考試時程、繁星推薦與申請入學規則，以及 115 學年度各校對照</span>
+    </h1>
+    <p class="desc">
+      彙整大考中心 116 學年度考試簡章、大學甄選入學委員會公布的 116 學年度繁星推薦與申請入學暫定日程，
+      以及 115 學年度醫學系各校名額、篩選與錄取結果，供 116 學測考生規劃醫學系升學使用。
+      116 學年度各校系分則（名額、檢定、篩選倍率、二階配分）預定於 115 年 11 月 3 日隨簡章公告，屆時請以簡章為準。
+    </p>
+    <div class="grid">
+      <div class="g"><div class="k">116 學測考試日</div><div class="v">116/1/22 – 1/24</div><div class="d">週五至週日，三天六科自由選考</div></div>
+      <div class="g"><div class="k">繁星、申請入學簡章公告</div><div class="v">115/11/3（二）</div><div class="d">各校醫學系 116 校系分則同日揭曉</div></div>
+      <div class="g"><div class="k">申請入學一階篩選結果</div><div class="v">116/3/30</div><div class="d">上午 9 時公告（暫定）</div></div>
+      <div class="g"><div class="k">申請入學二階甄試</div><div class="v">116/5/13 – 5/30</div><div class="d">各校自訂日期（暫定）</div></div>
+    </div>
+    <div class="foot">
+      <div>
+        <div>資料彙整日期：2026 年 9 月 25 日（民國 115 年）</div>
+        <div class="legend">
+          <span class="badge b-fixed">已公告</span>
+          <span class="badge b-tent">暫定</span>
+          <span class="badge b-ref">115 學年度參考值</span>
+          <span class="badge b-todo">待 11/3 簡章</span>
+        </div>
+      </div>
+      <div style="text-align:right">資料來源：大考中心、甄選會、教育部、衛福部<br>及各升學資訊網站之公開資訊（見末頁）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. 閱讀說明 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">01</span><h2>先看這裡：本文件的資料狀態</h2><span class="sub">116 學年度 = 2026 年 8 月至 2027 年 7 月入學年度</span></div>
+
+  <p class="lead">116 學年度的招生分成兩個時間點公布。考試端（大考中心）的簡章已於 115 年 8 月 4 日公告；招生端（甄選會）的繁星推薦與申請入學簡章要到 115 年 11 月 3 日才公告。因此本文件把資料分成三類：</p>
+
+  <table>
+    <thead><tr><th style="width:22%">類別</th><th style="width:38%">內容</th><th>目前狀態</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge b-fixed">已公告</span></td><td>116 學測、英聽、分科測驗的報名與考試日期；116 試場規則新制；醫學系總量政策</td><td>大考中心 116 學年度考試簡章（115/8/4）、教育部與衛福部聲明</td></tr>
+      <tr><td><span class="badge b-tent">暫定</span></td><td>116 繁星推薦、申請入學的重要日期</td><td>甄選會公布之「116 學年度重要日期（暫定）」，正式日期以 11/3 簡章為準</td></tr>
+      <tr><td><span class="badge b-ref">115 參考值</span></td><td>各校醫學系名額、採計科目、篩選結果、二階日期、五標</td><td>115 學年度（2026 年入學）實際資料，供推估 116 之用</td></tr>
+      <tr><td><span class="badge b-todo">待 11/3 簡章</span></td><td>116 各校醫學系名額、學測檢定標準、篩選倍率、二階項目與配分、面試日期</td><td>尚未公告；本文件於對應欄位標示，第 07 節附核對清單</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="t">116 對 115 最重要的三個延續</div>
+    <p>1. 醫學系招生總量維持 1,300 名不變（教育部與衛福部 114 年 6 月共識），各校名額大幅變動的機率低。<br>
+       2. 116 繁星推薦與申請入學仍以「數學 A」為主流採計科目；台大醫學系持續參採數 A（分發參採數甲）。<br>
+       3. 申請入學二階「書審加面試」在醫學系普遍佔五成以上，陽明交大、成大更達九成，學測只是門票。</p>
+  </div>
+
+  <div class="callout amber">
+    <div class="t">使用提醒</div>
+    <p>本文件所列 115 學年度數值取自甄選會統計與各升學資訊網站的公開摘要，部分校系的檢定標準、篩選倍率與二階配分未能取得完整表格，以「—」標示。任何報名決策請以甄選會「校系分則查詢系統」與各校招生簡章為唯一依據。</p>
+  </div>
+
+  <h3>116 學測考生的年度節奏</h3>
+  <div class="tiles">
+    <div class="tile"><div class="k">115 年 10 至 11 月</div><div class="v">報名</div><div class="d">學測報名 10/27–11/10；繁星、申請簡章 11/3 公告</div></div>
+    <div class="tile"><div class="k">116 年 1 月</div><div class="v">應試</div><div class="d">1/5 公布試場，1/22–1/24 考學測</div></div>
+    <div class="tile"><div class="k">116 年 2 至 3 月</div><div class="v">篩選</div><div class="d">2/25 成績公布，3 月繁星放榜、申請入學報名與一階篩選</div></div>
+    <div class="tile"><div class="k">116 年 5 至 7 月</div><div class="v">甄試</div><div class="d">5/13–5/30 二階，6/3–6/4 志願序登記，7/10–7/11 分科測驗</div></div>
+  </div>
+</section>
+
+<!-- ================= 2. 時程 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">02</span><h2>116 學年度考試與招生時程</h2><span class="sub">民國年份；括號內為星期</span></div>
+
+  <h3>考試端：大考中心 116 學年度考試簡章 <span class="badge b-fixed">已公告</span></h3>
+  <ul class="timeline">
+    <li><div class="when">115/8/4<small>2026-08-04</small></div><div class="what"><b>116 學年度考試簡章公告與發售</b><span class="small">涵蓋高中英語聽力測驗、學科能力測驗、分科測驗三項考試；紙本每本 60 元，發售至 116/7/11。</span></div></li>
+    <li><div class="when">115/9/3 – 9/10<small>2026-09</small></div><div class="what"><b>英聽第一次考試報名</b><span class="small">考試日 115/10/17（六）。</span></div></li>
+    <li><div class="when">115/10/27 – 11/10<small>2026-10/11</small></div><div class="what"><b>116 學測報名</b><span class="small">國文、英文、數學 A、數學 B、社會、自然六科自由選考；醫學系普遍需國、英、數 A、自然，台大醫另採社會。</span></div></li>
+    <li><div class="when">115/11/4 – 11/10<small>2026-11</small></div><div class="what"><b>英聽第二次考試報名</b><span class="small">考試日 115/12/12（六）。</span></div></li>
+    <li><div class="when">116/1/5<small>2027-01-05</small></div><div class="what"><b>學測試場公布</b></div></li>
+    <li class="milestone"><div class="when">116/1/22 – 1/24<small>2027-01-22（五）至 24（日）</small></div><div class="what"><b>116 學科能力測驗</b><span class="small">連續三天。116 起攜帶智慧眼鏡入座視同舞弊，該節不予計分；其他電子穿戴裝置一律加重扣分（詳第 03 節）。</span></div></li>
+    <li class="milestone"><div class="when">116/2/25<small>2027-02-25</small></div><div class="what"><b>學測成績公布</b><span class="small">同日公布各科五標；醫學系檢定標準多為頂標或前標。</span></div></li>
+    <li><div class="when">116/6/3 – 6/15<small>2027-06</small></div><div class="what"><b>分科測驗報名</b></div></li>
+    <li><div class="when">116/7/10 – 7/11<small>2027-07-10（六）至 11（日）</small></div><div class="what"><b>分科測驗</b><span class="small">申請入學未錄取醫學系者的最後管道；115 年分發入學台大醫預估門檻約 230 級分（四科）、自費醫牙約 267 級分。</span></div></li>
+  </ul>
+
+  <h3>招生端：甄選會 116 學年度重要日期 <span class="badge b-tent">暫定</span></h3>
+  <ul class="timeline">
+    <li class="tent milestone"><div class="when">115/11/3（二）<small>2026-11-03</small></div><div class="what"><b>116 繁星推薦、申請入學招生簡章網路公告</b><span class="badge b-tent">暫定</span><span class="small">各校醫學系 116 校系分則（名額、檢定、篩選倍率、二階配分）同日揭曉；11/13（五）開放高中集體訂購紙本。</span></div></li>
+    <li class="tent"><div class="when">116/3 月中<small>115 年為 3/18 放榜</small></div><div class="what"><b>繁星推薦第一階段篩選結果公告</b><span class="small">第八類學群（醫、牙）考生可於 3/19 中午 12 時前申請複查；通過者仍須參加各校第二階段面試。</span></div></li>
+    <li class="tent"><div class="when">116/3/23 – 3/24<small>2027-03-23 至 24</small></div><div class="what"><b>申請入學第一階段報名</b><span class="badge b-tent">暫定</span><span class="small">最多六個校系；繁星第八類通過篩選者不得再申請同校醫學系。</span></div></li>
+    <li class="tent milestone"><div class="when">116/3/30<small>2027-03-30 上午 9 時</small></div><div class="what"><b>申請入學第一階段篩選結果公告</b><span class="badge b-tent">暫定</span></div></li>
+    <li class="tent"><div class="when">116/4 月<small>依各校規定</small></div><div class="what"><b>第二階段報名、學習歷程與審查資料上傳</b><span class="small">115 年多數校系上傳截止在 4/30 至 5/6 之間；中國醫醫學系另需於 4 月初選填面試梯次。</span></div></li>
+    <li class="tent milestone"><div class="when">116/5/13 – 5/30<small>2027-05</small></div><div class="what"><b>申請入學第二階段指定項目甄試</b><span class="badge b-tent">暫定</span><span class="small">各校自訂；115 年除北醫外，各醫學系皆在 5/16（六）辦理二階，撞期是常態，選填志願時務必預留。</span></div></li>
+    <li class="tent"><div class="when">116/5/14<small>2027-05-14</small></div><div class="what"><b>第六學期修課紀錄更正截止</b><span class="small">116 學年度新訂，避免與二階審查作業重疊。</span></div></li>
+    <li class="tent"><div class="when">116/5/31 前<small>各校公告</small></div><div class="what"><b>各校公告申請入學正、備取名單</b><span class="small">繁星第八類各校錄取名單則於 6/2 前公告。</span></div></li>
+    <li class="tent milestone"><div class="when">116/6/3 – 6/4<small>每日 9 時至 21 時</small></div><div class="what"><b>申請入學就讀志願序登記</b><span class="badge b-tent">暫定</span><span class="small">6/4 晚上 9 時截止。</span></div></li>
+    <li class="tent"><div class="when">116/6 月中<small>115 年為 6/11</small></div><div class="what"><b>申請入學統一分發放榜</b></div></li>
+  </ul>
+  <p class="note" style="margin-top:2pt"><b>暫定日期來源：</b>甄選會「116 學年度大學繁星推薦／申請入學招生重要日期（暫定）」，經各高中轉知；實際日期以 11/3 公告之簡章為準。</p>
+</section>
+
+<!-- ================= 3. 新制與政策 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">03</span><h2>116 學年度新制與醫學系政策環境</h2><span class="sub">影響醫學系考生的制度面變動</span></div>
+
+  <h3>試場規則：電子穿戴裝置加重罰則 <span class="badge b-fixed">已公告</span></h3>
+  <table>
+    <thead><tr><th style="width:30%">情形</th><th>116 學年度處理方式</th></tr></thead>
+    <tbody>
+      <tr><td>攜帶智慧眼鏡（含 AI 眼鏡）入座</td><td>無論是否使用，一律視同舞弊，該節不予計分；拒絕交出或拒絕配合查驗者取消考試資格。</td></tr>
+      <tr><td>攜帶行動電話或其他電子穿戴裝置入座或置於座位周邊</td><td>智慧手錶、手環、藍牙耳機、翻譯筆、微攝影裝置等具傳輸或 AI 生成功能之設備，無論是否關機，一律加重扣分。</td></tr>
+      <tr><td>防弊檢查</td><td>考生報名即同意試務單位視需要以電子與金屬探測設備或其他方式檢查隨身物品。</td></tr>
+    </tbody>
+  </table>
+  <p class="note">醫學系考生通常會同時報考英聽、學測與分科測驗，三項考試適用相同規則；請在 10 月英聽第一次考試前就養成不帶穿戴裝置的習慣。</p>
+
+  <h3>學測參採：116 繁星與申請入學以數學 A 為主 <span class="badge b-fixed">已公告</span></h3>
+  <div class="cols">
+    <div>
+      <p>招聯會統計，116 學年度繁星推薦有 811 個系組、申請入學有 979 個系組參採數學 A；使用數 A 的校系超過三成，採數 B 者約一成三，近半數校系不參採數學。醫學系全數屬於採數 A 的一群，數 B 對醫學系申請沒有幫助。</p>
+      <p>台大醫學系自 115 學年度起，繁星推薦與申請入學的採計科目改為國文、數學 A、自然、社會四科，不再採計英文；116 學年度延續此做法（分發入學參採數甲）。其他醫學系 115 年多採國文、英文、數學 A、自然。</p>
+    </div>
+    <div class="callout" style="margin:0">
+      <div class="t">對 116 考生的意義</div>
+      <p>國、英、數 A、自然四科是所有醫學系的共同底線，社會科則是台大醫的額外變數。若目標包含台大醫，社會科不能放掉；若不含，社會科只影響繁星比序與少數校系。</p>
+    </div>
+  </div>
+
+  <h3>醫學系招生總量：維持 1,300 名 <span class="badge b-fixed">已公告</span></h3>
+  <table>
+    <thead><tr><th style="width:26%">項目</th><th>內容</th></tr></thead>
+    <tbody>
+      <tr><td>總量管制</td><td>教育部與衛福部於 114 年 6 月 30 日達成共識，醫學系招生總名額維持 1,300 名不變（含教育部與國防部權責核定名額）。醫學系名額調整需經醫學教育會與全國醫學院校院校長會議討論取得共識。</td></tr>
+      <tr><td>公費醫師計畫終止</td><td>衛福部「重點科別培育公費醫師制度計畫」僅辦理至 114 學年度。清華、中興、中山三校學士後醫學系自 115 學年度起改招自費生，每校 35 名（原各 23 名公費），共 105 名，納入 1,300 名總量計算。</td></tr>
+      <tr><td>對學士班醫學系的影響</td><td>學士後醫名額增加、公費計畫結束，意味 116 學年度各校學士班醫學系的公費生名額與自費生名額配置可能再調整；115 年申請入學公費生僅錄取 42 名，分發入學公費醫名額亦由 30 名減為 12 名。116 各校公費名額須待 11/3 簡章確認。</td></tr>
+      <tr><td>學士後醫課程調整</td><td>清華、中山學士後醫學系自 115 學年度起取消原「智慧資訊組」「智慧醫療組」分組，改為不分組招生。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout amber">
+    <div class="t">116 尚未公告、需持續追蹤的事項</div>
+    <p>各校學士班醫學系公費生名額是否延續、國防醫學院軍費與自費生名額、陽明交大三組（醫師組、醫師科學家組、醫師工程師組）名額分配，以及是否有校系調整第一階段篩選科目。這些都只會出現在 11/3 的校系分則中。</p>
+  </div>
+</section>
+
+<!-- ================= 4. 入學管道 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">04</span><h2>醫學系三大入學管道與 116 規則</h2><span class="sub">學測成績在各管道扮演的角色</span></div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="tag">管道一</div>
+      <h4>繁星推薦（第八類學群）</h4>
+      <ul>
+        <li>由高中依在校成績排名推薦，比序以學測級分與校排為主。</li>
+        <li>第八類（醫學系、牙醫系）與其他學群不同，通過第一階段篩選後<b>必須參加各校第二階段面試</b>。</li>
+        <li>通過醫學系篩選者，不得再以申請入學報名同一所大學的醫學系。</li>
+        <li>116 各校錄取名單 6/2 前公告；116 第六學期修課紀錄更正截止 5/14。</li>
+        <li>115 年：11 校 196 名額，439 人報名，306 人通過篩選。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="tag">管道二</div>
+      <h4>申請入學（個人申請）</h4>
+      <ul>
+        <li>醫學系最大宗管道，115 年 11 校共 597 名額（另有公費生名額）。</li>
+        <li>第一階段：學測檢定（多為頂標或前標）＋倍率篩選，同分時常見超額篩選。</li>
+        <li>第二階段：學習歷程審查、面試（MMI、多對一、PBL 等形式），部分校系另有筆試或英文口試。</li>
+        <li>116 暫定：3/23–3/24 報名、3/30 一階結果、5/13–5/30 二階、6/3–6/4 志願序登記。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="tag">管道三</div>
+      <h4>分發入學（考試分發）</h4>
+      <ul>
+        <li>以分科測驗為主，學測科目作為檢定或部分採計（台大醫參採數甲）。</li>
+        <li>名額最少，多為前兩管道的回流缺額；115 年申請入學醫學系留下 137 個缺額，回流後對分科考生有利。</li>
+        <li>116 分科測驗 7/10–7/11，報名 6/3–6/15。</li>
+        <li>115 年預估門檻：台大醫約 230 級分（四科）、自費醫牙約 267 級分、公費醫約 265 級分。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>申請入學第二階段：醫學系的共同特徵</h3>
+  <table>
+    <thead><tr><th style="width:24%">面向</th><th>115 學年度觀察</th><th style="width:26%">116 準備建議</th></tr></thead>
+    <tbody>
+      <tr><td>配分結構</td><td>二階「審查資料＋面試」普遍佔甄選總成績五至八成；陽明交大醫學系三組面試佔比達九成，成大醫學系書審加面試逾九成。學測成績通過一階後，在總成績的權重多在一至三成。</td><td>把二階視為主戰場，學習歷程從高一開始累積醫學相關探究與服務紀錄。</td></tr>
+      <tr><td>面試形式</td><td>MMI 跑關、多對一、PBL 小組討論皆有；多校包含英文問答。</td><td>準備中英文自我介紹、醫學倫理與時事題、動機與挫折經驗。</td></tr>
+      <tr><td>日期撞期</td><td>115 年除北醫外各醫學系皆在 5/16 辦理二階；中國醫 5/15–5/17、高醫 5/16–5/17、義守 5/15–5/16。</td><td>六個志願中，醫學系最多同時押兩至三校，並確認 11/3 簡章的面試日期。</td></tr>
+      <tr><td>審查資料</td><td>115 年多數校系上傳截止在 4/30 至 5/6；一階放榜到二階約一個月是黃金備戰期。</td><td>3 月底前完成自傳、讀書計畫與課程學習成果的定稿。</td></tr>
+      <tr><td>一階超額篩選</td><td>115 年自費生 573 名額、預計甄試 1,647 人，實際 1,996 人通過，10 校超篩共 349 人：長庚 110、高醫 80、台大 61。</td><td>同分超篩代表競爭者級分相近，二階差距才是關鍵。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 5. 各校一覽 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">05</span><h2>各校醫學系申請入學一覽</h2><span class="sub">115 學年度參考值；116 欄位待 11/3 簡章</span></div>
+
+  <p class="lead" style="margin-bottom:6pt">下表以 115 學年度（2026 年入學）申請入學實際資料為基準。116 學年度名額、檢定、倍率與配分一律為 <span class="badge b-todo">待 11/3 簡章</span>；「—」表示本次彙整未取得該項公開數值。</p>
+
+  <table class="schools">
+    <thead>
+      <tr>
+        <th style="width:23%">校系</th>
+        <th class="num" style="width:9%; white-space:nowrap">115 名額</th>
+        <th style="width:16%">115 篩選採計科目</th>
+        <th style="width:29%">115 結果與特徵</th>
+        <th style="width:13%; white-space:nowrap">115 二階日期</th>
+        <th style="width:10%">116</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="school">國立臺灣大學 醫學系<small>公立・自費</small></td><td class="num">51</td><td>國文、數學 A、自然、社會（不採英文）</td><td>滿招；錄取率 22.87% 為全國最高；一階超篩 61 人</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">國立陽明交通大學 醫學系 醫師組<small>公立・自費</small></td><td class="num">42</td><td>國文、英文、數學 A、自然</td><td>缺額 10；二階面試佔比達九成；一階限擇一組報名</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">陽明交大 醫學系 醫師科學家組<small>公立・自費</small></td><td class="num">12</td><td>國文、英文、數學 A、自然</td><td>滿招；二階面試佔比達九成</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">陽明交大 醫學系 醫師工程師組<small>公立・自費</small></td><td class="num dash">—</td><td class="dash">—</td><td>滿招；二階面試佔比達九成</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">國立成功大學 醫學系<small>公立・自費（另有公費生）</small></td><td class="num dash">—</td><td class="dash">—</td><td>滿招；書審加面試佔甄選總成績逾九成</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">長庚大學 醫學系<small>私立</small></td><td class="num dash">—</td><td class="dash">—</td><td>缺額 22；一階超篩 110 人為全國最多</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">高雄醫學大學 醫學系<small>私立・自費（另有公費生）</small></td><td class="num">78</td><td>國文、英文、數學 A、自然</td><td>一階超篩 80 人；繁星檢定 115 年提高</td><td>5/16–5/17</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">中國醫藥大學 醫學系<small>私立</small></td><td class="num dash">—</td><td class="dash">—</td><td>缺額 28；錄取率高於平均；4 月初選填面試梯次，審查資料 4/30–5/6 上傳</td><td>5/15–5/17</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">中山醫學大學 醫學系<small>私立</small></td><td class="num dash">—</td><td class="dash">—</td><td>缺額 31 為最多；報名 793 人為全國最多</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">臺北醫學大學 醫學系<small>私立</small></td><td class="num">84</td><td>國文、英文、數學 A、自然</td><td>缺額 29；錄取率高於平均；二階未與各校同在 5/16</td><td>非 5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">輔仁大學 醫學系<small>私立</small></td><td class="num">15</td><td class="dash">—</td><td>名額由 114 年 13 名增為 15 名</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">馬偕醫學大學 醫學系<small>私立</small></td><td class="num dash">—</td><td class="dash">—</td><td class="dash">—</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">慈濟大學 醫學系<small>私立・自費（另有公費生）</small></td><td class="num">30</td><td>國文、英文、數學 A、自然</td><td>名額與 114 年相同；審查資料上傳截止 5/6 21:00</td><td>5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">義守大學 醫學系（公費生）<small>私立・公費</small></td><td class="num">27</td><td>國文、英文、數學 A、自然</td><td>預計甄試 81 人；同分參酌以面試優先</td><td>5/15–5/16</td><td><span class="badge b-todo">待簡章</span></td></tr>
+      <tr><td class="school">國防醫學院 醫學系<small>軍費生／自費生</small></td><td class="num dash">—</td><td class="dash">—</td><td>一階學測篩選後另有智力測驗與體檢；軍費生畢業後服役 14 年，自費生學費約每學期 5.3 萬元</td><td class="dash">—</td><td><span class="badge b-todo">待簡章</span></td></tr>
+    </tbody>
+  </table>
+  <p class="note" style="margin-top:0"><b>二階日期說明：</b>「5/16」依 TKB 彙整「115 年除北醫醫學系外，其他醫學系皆在 5/16 舉辦二階甄試」推得，各校實際天數可能不只一天。<b>錄取率高於平均</b>（9.35%）的五個校系組為臺大、陽明交大、成大、中國醫、北醫。</p>
+</section>
+
+<!-- ================= 6. 統計 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">06</span><h2>115 學年度醫學系招生統計與學測五標</h2><span class="sub">推估 116 競爭態勢的基準</span></div>
+
+  <h3>申請入學（自費生）</h3>
+  <div class="tiles">
+    <div class="tile"><div class="k">11 校招生名額</div><div class="v">597</div><div class="d">報名 4,918 人</div></div>
+    <div class="tile"><div class="k">通過一階篩選</div><div class="v">2,070</div><div class="d">10 校超篩共 349 人</div></div>
+    <div class="tile"><div class="k">統一分發錄取</div><div class="v">460</div><div class="d">錄取率 9.35%（114 年 10.5%）</div></div>
+    <div class="tile"><div class="k">缺額</div><div class="v">137</div><div class="d">五年新高，回流至分發入學</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <table>
+        <thead><tr><th>115 申請入學缺額分布</th><th class="num">缺額</th></tr></thead>
+        <tbody>
+          <tr><td>中山醫學大學 醫學系</td><td class="num">31</td></tr>
+          <tr><td>臺北醫學大學 醫學系</td><td class="num">29</td></tr>
+          <tr><td>中國醫藥大學 醫學系</td><td class="num">28</td></tr>
+          <tr><td>長庚大學 醫學系</td><td class="num">22</td></tr>
+          <tr><td>陽明交大 醫學系 醫師組</td><td class="num">10</td></tr>
+          <tr><td>臺大、成大、陽明交大醫師科學家組與醫師工程師組</td><td class="num">滿招</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>115 申請入學公費生</th><th class="num">數值</th></tr></thead>
+        <tbody>
+          <tr><td>報名人數</td><td class="num">698</td></tr>
+          <tr><td>錄取人數</td><td class="num">42</td></tr>
+          <tr><td>錄取率</td><td class="num">6.02%（114 年 4.94%）</td></tr>
+          <tr><td>缺額</td><td class="num">6</td></tr>
+        </tbody>
+      </table>
+      <p class="note">甄選會分析，缺額主因是考生重複錄取多個學系，或同時錄取繁星第八類醫牙校系後放棄。</p>
+    </div>
+  </div>
+
+  <h3>繁星推薦第八類學群（醫學系）</h3>
+  <div class="tiles">
+    <div class="tile"><div class="k">11 校醫學系名額</div><div class="v">196</div><div class="d">醫牙合計報名 542 人，較 114 年減 176 人</div></div>
+    <div class="tile"><div class="k">醫學系報名</div><div class="v">439</div><div class="d">預計甄試 313 人</div></div>
+    <div class="tile"><div class="k">通過篩選</div><div class="v">306</div><div class="d">僅高醫（38 人）低於預計甄試數（45 人）</div></div>
+    <div class="tile"><div class="k">頂大缺額</div><div class="v">17 / 13 / 3</div><div class="d">臺大 / 陽明交大 / 成大</div></div>
+  </div>
+  <p class="note">115 年高醫醫、牙學系提高繁星檢定標準，是第八類報名人數驟減的主因；116 各校檢定是否再調整，請於 11/3 核對。</p>
+
+  <h3>115 學測五標（116/2/25 公布之 116 五標可依此對照）</h3>
+  <table>
+    <thead><tr><th>科目</th><th class="c">頂標</th><th class="c">前標</th><th class="c">均標</th><th class="c">後標</th><th class="c">底標</th><th>相對 114 年</th></tr></thead>
+    <tbody>
+      <tr><td>國文</td><td class="c">13</td><td class="c">12</td><td class="c">10</td><td class="c">9</td><td class="c">7</td><td>持平</td></tr>
+      <tr><td>英文</td><td class="c">13</td><td class="c">11</td><td class="c">8</td><td class="c">5</td><td class="c">3</td><td>後標升 1 級分，其餘持平</td></tr>
+      <tr><td>數學 A</td><td class="c">12</td><td class="c">10</td><td class="c">8</td><td class="c">5</td><td class="c">4</td><td>均標升 2 級分，其餘升 1 級分</td></tr>
+      <tr><td>數學 B</td><td class="c">11</td><td class="c">9</td><td class="c">5</td><td class="c">3</td><td class="c">2</td><td>五標皆降 1 級分，頂標為五年最低</td></tr>
+      <tr><td>社會</td><td class="c">13</td><td class="c">12</td><td class="c">10</td><td class="c">8</td><td class="c">7</td><td>持平</td></tr>
+      <tr><td>自然</td><td class="c">13</td><td class="c">12</td><td class="c">9</td><td class="c">7</td><td class="c">5</td><td>持平</td></tr>
+    </tbody>
+  </table>
+  <p class="note">醫學系一階檢定多要求國、英、數 A、自然達頂標或前標；以 115 五標計，四科頂標合計 51 級分、四科滿級分 60 級分。台大醫改採社會後，四科（國、數 A、自、社）頂標合計亦為 51 級分。</p>
+</section>
+
+<!-- ================= 7. 清單 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">07</span><h2>11/3 簡章公告後的核對清單與資料來源</h2><span class="sub">把本文件更新成 116 正式版</span></div>
+
+  <div class="cols">
+    <div>
+      <h3>校系分則逐項核對（每一所目標醫學系）</h3>
+      <ul class="check">
+        <li><b>招生名額</b>：自費、公費、各組（陽明交大三組、國防醫軍費與自費）分別確認，並與第 05 節 115 名額比較。</li>
+        <li><b>學測檢定標準</b>：各科要求頂標、前標或級分數；台大醫是否仍不採英文而採社會。</li>
+        <li><b>篩選倍率與科目組合</b>：倍率順序、是否有總級分或英聽門檻、同分參酌順序。</li>
+        <li><b>第二階段項目與配分</b>：學測、審查資料、面試、筆試各佔比；是否有英文口試或 MMI。</li>
+        <li><b>審查資料項目</b>：課程學習成果、多元表現、學習歷程自述的指定件數與準備指引。</li>
+        <li><b>面試日期與梯次</b>：與其他志願是否撞期；二階報名與資料上傳截止日。</li>
+        <li><b>公費生服務條件</b>：服務年數、分發區域、違約規定。</li>
+      </ul>
+      <h3>制度面核對</h3>
+      <ul class="check">
+        <li>116 繁星推薦報名、放榜、第八類面試與 6/2 錄取公告的正式日期。</li>
+        <li>116 申請入學 3/23–3/24 報名、3/30 一階、5/13–5/30 二階、6/3–6/4 志願序登記是否維持。</li>
+        <li>學習歷程檔案 116 學年度提交規範與 5/14 修課紀錄更正截止。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>官方查詢入口</h3>
+      <table>
+        <thead><tr><th style="width:36%">單位</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>大學入學考試中心<br><span class="small">ceec.edu.tw</span></td><td>116 考試簡章、學測與分科日程、成績與五標</td></tr>
+          <tr><td>大學甄選入學委員會<br><span class="small">cac.edu.tw</span></td><td>116 繁星推薦與申請入學簡章、校系分則查詢、篩選標準一覽表、放榜</td></tr>
+          <tr><td>大學招生委員會聯合會<br><span class="small">jbcrc.edu.tw</span></td><td>各校系參採學測考科、學習準備建議方向</td></tr>
+          <tr><td>大學考試入學分發委員會<br><span class="small">uac.edu.tw</span></td><td>116 分發入學參採科目與登記分發</td></tr>
+          <tr><td>各校醫學系或教務處招生網</td><td>二階甄試注意事項、審查資料準備指引、面試梯次</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <div class="t">建議的更新節奏</div>
+        <p>11/3 簡章公告當週完成第 05 節表格的 116 欄位；116/2/25 成績公布後，用當年五標重算各校檢定通過與否；3/30 一階放榜後記錄各校實際篩選級分，作為 117 屆的參考。</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>資料來源（彙整時間 2026 年 9 月 25 日）</h3>
+  <div class="sources">
+    <ol>
+      <li>大考中心《116 學年度考試簡章》及 115.08.03 新聞稿<span class="u">ceec.edu.tw/files/file_pool/1/0q215601929252011195/116學年度簡章.pdf</span></li>
+      <li>大學問〈116 學測六大重要日程〉<span class="u">unews.com.tw/News/Info/11379</span></li>
+      <li>遠見〈116 學測時程公布！新制「這」戴入場零分〉<span class="u">gvm.com.tw/article/132537</span></li>
+      <li>中央社〈116 學年大學考試簡章將公告 攜帶電子穿戴式裝置最重取消資格〉<span class="u">cna.com.tw/news/ahel/202608030239.aspx</span></li>
+      <li>各高中轉知甄選會「116 學年度繁星推薦／申請入學招生重要日期（暫定）」<span class="u">hzsh.tc.edu.tw、ccsh.tp.edu.tw、mksh.phc.edu.tw</span></li>
+      <li>TKB〈116 個申一階放榜 3/30：個人申請時程、二階放榜與志願選填〉<span class="u">tkbgo.com.tw/schoolZone/university/news/toDetail?news_id=4481</span></li>
+      <li>Yahoo 新聞〈116 學年大學 3 管道招生 繁星、申請入學近半不參採數學〉<span class="u">tw.news.yahoo.com</span></li>
+      <li>衛福部〈教育部與衛福部維持醫學系招生名額 1,300 名之現況不變〉<span class="u">mohw.gov.tw/cp-16-82882-1.html</span></li>
+      <li>教育部〈醫學系招生總量未變 配合衛福部政策依法調整學士後醫學系〉<span class="u">edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&amp;s=4936BEEBB4C41E28</span></li>
+      <li>大學問〈115 申請入學：醫學系錄取率 9.35%，缺額 137〉<span class="u">unews.com.tw/News/Info/11001</span></li>
+      <li>中央社、聯合報〈申請入學 11 校醫學系 137 缺額創 5 年新高〉<span class="u">cna.com.tw/news/ahel/202606110059.aspx</span></li>
+      <li>遠見〈115 大學申請一階放榜：超篩系所整理〉<span class="u">gvm.com.tw/article/129132</span></li>
+      <li>TKB〈115 學測醫學系申請：招生名額、繁星、個人申請簡章與面試時間〉、〈醫學系面試大撞期！115 年醫學系二階面試筆試時間〉<span class="u">tkblearning.com.tw、reallygood.com.tw</span></li>
+      <li>遠見、今周刊〈115 大學繁星放榜〉及 TKB〈115 醫學系／牙醫系繁星必看〉<span class="u">gvm.com.tw/article/128778</span></li>
+      <li>台大醫學系〈115 學年度考科採計說明〉、中央社〈台大醫學系 115 學年申請採計移除英文改納社會科〉<span class="u">mc.ntu.edu.tw/med</span></li>
+      <li>中央社〈學測數 A 五標升〉、公視〈115 學測各科五標〉<span class="u">cna.com.tw/news/ahel/202602250051.aspx</span></li>
+      <li>聯合報〈115 分科／熱門科系預估錄取門檻出爐〉<span class="u">udn.com/news/story/124910/9627826</span></li>
+      <li>University TW 115 年各校醫學系個人申請頁、中國醫藥大學醫學系與義守大學招生公告、國防醫學大學招生專區<span class="u">university-tw.ldkrsi.men/caac/medicine、wwwndmc.ndmctsgh.edu.tw</span></li>
+    </ol>
+  </div>
+</section>
+
+</body>
+</html>
