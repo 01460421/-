@@ -1,0 +1,4 @@
+files/
+out/
+.venv/
+__pycache__/
