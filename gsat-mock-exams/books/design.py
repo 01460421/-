@@ -170,7 +170,7 @@ def toc(subject: str, rnd_: int, entries: list[dict], appendix_page: int | None 
           <span style="display:inline-block;width:9mm;height:9mm;background:{pal[e['i'] % 4]};color:#fff;text-align:center;line-height:9mm;font-weight:800;margin-right:4mm">{e['i'] + 1}</span>
           <span style="font-weight:700">{html.escape(e['title'])}</span>
           <span style="color:#6b7280;font-size:9.5pt;margin-left:2mm">{html.escape(e['sub'])}</span></td>
-          <td style="text-align:right;border-bottom:.3mm solid #d8dce3;color:#374151;font-size:10pt;white-space:nowrap">{('試題＋詳解 p.' + str(e['q_page'])) if e.get('combined') and not e['a_page'] else ('試題 p.' + str(e['q_page'] or '—') + '　詳解 p.' + str(e['a_page'] or '—'))}</td></tr>""")
+          <td style="text-align:right;border-bottom:.3mm solid #d8dce3;color:#374151;font-size:10pt;white-space:nowrap">{('試題＋詳解 p.' + str(e['q_page'])) if e.get('combined') and not e['a_page'] else ('試題 p.' + str(e['q_page'] or '—'))}{('　答案卡 p.' + str(e['sheet_page'])) if e.get('sheet_page') else ''}{('　詳解 p.' + str(e['a_page'])) if e.get('a_page') else ''}</td></tr>""")
     if appendix_page:
         rows.append(f"""<tr><td style="padding:3.2mm 0 2.6mm;border-bottom:.3mm solid #d8dce3">
           <span style="display:inline-block;width:9mm;height:9mm;border:.6mm solid {pal[0]};color:{pal[0]};text-align:center;line-height:8mm;font-weight:800;margin-right:4mm">附</span>
