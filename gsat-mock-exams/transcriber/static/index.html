@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模考轉錄台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 版面：左側操作欄（投檔、選項），右側工作佇列與結果；窄螢幕上下堆疊 */
+:root {
+  --paper: #f3f5f8; --panel: #ffffff; --ink: #14213d; --muted: #5b6475; --line: #d9dee7;
+  --accent: #2a9d8f; --accent-ink: #ffffff; --warm: #f4a261; --bad: #c2410c; --good: #15803d;
+  --chip: #e8f3f1; --code-bg: #0f1a2e; --code-fg: #d6e2f5;
+  --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0d1424; --panel: #141d31; --ink: #e6ebf5; --muted: #9aa5b8; --line: #263250;
+  --accent: #3cc2b2; --accent-ink: #062320; --warm: #f6b27a; --bad: #fb923c; --good: #4ade80;
+  --chip: #12332f; --code-bg: #0a1120; --code-fg: #cfe0f7; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #0d1424; --panel: #141d31; --ink: #e6ebf5; --muted: #9aa5b8; --line: #263250;
+  --accent: #3cc2b2; --accent-ink: #062320; --warm: #f6b27a; --bad: #fb923c; --good: #4ade80;
+  --chip: #12332f; --code-bg: #0a1120; --code-fg: #cfe0f7; color-scheme: dark }
+* { box-sizing: border-box }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 var(--sans) }
+header { background: var(--ink); color: var(--paper); padding-block: 18px; padding-left: max(16px, 4vw); padding-right: max(16px, 4vw);
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap }
+.mark { display: grid; grid-template-columns: repeat(3, 10px); gap: 3px }
+.mark i { width: 10px; height: 10px; background: var(--accent) }
+.mark i:nth-child(2), .mark i:nth-child(6) { background: var(--warm); border-radius: 50% }
+.mark i:nth-child(4), .mark i:nth-child(8) { background: transparent; border: 2px solid var(--paper) }
+header h1 { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: .08em }
+header p { margin: 0; color: color-mix(in srgb, var(--paper) 70%, transparent); font-size: 13px }
+.status { margin-left: auto; font-size: 12px; padding: 3px 10px; border: 1px solid currentColor; border-radius: 999px }
+main { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 24px;
+  padding-block: 24px; padding-left: max(16px, 4vw); padding-right: max(16px, 4vw); max-width: 1400px; margin: 0 auto }
+@media (max-width: 860px) { main { grid-template-columns: minmax(0, 1fr) } }
+section h2 { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; font-weight: 700 }
+.drop { border: 2px dashed var(--line); background: var(--panel); padding: 28px 18px; text-align: center; cursor: pointer;
+  transition: border-color .15s, background .15s }
+.drop.over, .drop:focus-visible { border-color: var(--accent); background: var(--chip); outline: none }
+.drop strong { display: block; font-size: 16px; margin-bottom: 4px }
+.drop small { color: var(--muted) }
+.picked { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; max-height: 180px; overflow: auto; font-size: 13px }
+.picked li { display: flex; justify-content: space-between; gap: 8px; background: var(--panel); padding: 4px 8px; border-left: 3px solid var(--accent) }
+.picked li span:last-child { color: var(--muted); font-family: var(--mono); white-space: nowrap }
+.field { display: grid; gap: 4px; margin-top: 14px }
+.field label, .opt { font-size: 13px; color: var(--muted) }
+input[type=text], select { font: inherit; padding: 8px 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); width: 100% }
+.opts { display: grid; gap: 6px; margin-top: 14px; background: var(--panel); padding: 12px; border: 1px solid var(--line) }
+.opt { display: flex; gap: 8px; align-items: flex-start; color: var(--ink) }
+.opt small { display: block; color: var(--muted) }
+button { font: inherit; font-weight: 700; padding: 10px 16px; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer }
+button:disabled { opacity: .45; cursor: not-allowed }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+.go { width: 100%; margin-top: 14px; font-size: 16px; padding: 12px }
+.err { color: var(--bad); font-size: 13px; margin-top: 8px; min-height: 1em }
+.job { background: var(--panel); border: 1px solid var(--line); margin-bottom: 16px }
+.job-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line) }
+.job-head b { font-family: var(--mono) }
+.job-head .dl { margin-left: auto; text-decoration: none; background: var(--accent); color: var(--accent-ink); padding: 6px 12px; font-weight: 700; font-size: 13px }
+.pill { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--ink) }
+.pill.bad { background: color-mix(in srgb, var(--bad) 18%, transparent) }
+.files { display: grid; gap: 0 }
+.file { padding: 10px 14px; border-top: 1px solid var(--line); display: grid; gap: 6px }
+.file:first-child { border-top: 0 }
+.file-top { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline }
+.file-top .name { font-weight: 700; overflow-wrap: anywhere; min-width: 0 }
+.bar { height: 6px; background: var(--line) }
+.bar i { display: block; height: 100%; background: var(--accent); transition: width .3s }
+.wrap { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { color: var(--muted); font-weight: 500; white-space: nowrap }
+td.num, th.num { text-align: right }
+td .warn { color: var(--bad); display: block; font-size: 12px }
+.link { background: none; color: var(--accent); padding: 0; font-weight: 700; text-decoration: underline; text-underline-offset: 3px }
+.preview { margin-top: 16px; background: var(--panel); border: 1px solid var(--line) }
+.preview-head { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; align-items: center }
+.preview-head h3 { margin: 0; font-size: 15px; min-width: 0; overflow-wrap: anywhere }
+.qview { padding: 14px; display: grid; gap: 14px; max-height: 70vh; overflow: auto }
+.sec h4 { margin: 0 0 6px; font-size: 14px; display: flex; gap: 8px; align-items: center }
+.grp { border-left: 3px solid var(--warm); padding-left: 10px; margin: 6px 0 10px }
+.grp p { margin: 0 0 6px; color: var(--muted); font-size: 13px }
+.q { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px; padding: 4px 0; font-size: 14px }
+.q .no { font-family: var(--mono); font-weight: 600; color: var(--muted) }
+.q ol { list-style: none; padding: 0; margin: 2px 0 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px }
+.q ol li.ok { color: var(--good); font-weight: 700 }
+.q img, .grp img { max-width: 260px; border: 1px solid var(--line); margin-top: 4px }
+pre { margin: 0; background: var(--code-bg); color: var(--code-fg); padding: 14px; font: 12px/1.5 var(--mono); max-height: 70vh; overflow: auto }
+.empty { color: var(--muted); background: var(--panel); border: 1px dashed var(--line); padding: 24px; font-size: 14px }
+.empty ol { margin: 8px 0 0; padding-left: 20px }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+</style>
+</head>
+<body>
+<header>
+  <div class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div>
+    <h1>模考轉錄台</h1>
+    <p>PDF → 題目 JSON ＋ 附圖，打包成 zip。檔案只在這台電腦上處理。</p>
+  </div>
+  <span class="status" id="ocr-status">檢查 OCR…</span>
+</header>
+<main>
+  <section aria-labelledby="in-h">
+    <h2 id="in-h">放入檔案</h2>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="drop-hint">
+      <strong>拖進 PDF，或點這裡選檔</strong>
+      <small id="drop-hint">可一次放多份；有書籤的總集會自動切成每一回</small>
+    </div>
+    <input type="file" id="picker" accept="application/pdf,.pdf" multiple hidden>
+    <ul class="picked" id="picked"></ul>
+    <div class="field">
+      <label for="folder">或輸入這台電腦上的資料夾路徑（會遞迴找所有 PDF，大量檔案不用上傳）</label>
+      <input type="text" id="folder" placeholder="例如 /Users/me/模考/英文">
+    </div>
+    <div class="opts" role="group" aria-label="轉錄選項">
+      <label class="opt"><input type="checkbox" id="opt-split" checked><span>依書籤切成多回<small>總集大檔用；沒有書籤就整份當一回</small></span></label>
+      <label class="opt"><input type="checkbox" id="opt-ocr" checked><span>掃描頁自動 OCR<small>文字太少的頁才做，需安裝 Tesseract</small></span></label>
+      <label class="opt"><input type="checkbox" id="opt-force"><span>每頁都 OCR<small>文字層是亂碼時用，比較慢</small></span></label>
+      <div class="field" style="margin-top:4px">
+        <label for="opt-lang">OCR 語言</label>
+        <select id="opt-lang">
+          <option value="eng+chi_tra">英文＋繁體中文</option>
+          <option value="eng">只有英文</option>
+        </select>
+      </div>
+      <div class="field" style="margin-top:4px">
+        <label for="opt-pages">整頁圖</label>
+        <select id="opt-pages">
+          <option value="scanned">只附掃描頁</option>
+          <option value="all">每頁都附</option>
+          <option value="none">不附</option>
+        </select>
+      </div>
+    </div>
+    <button class="go" id="go" disabled>開始轉錄</button>
+    <div class="err" id="err" role="alert"></div>
+  </section>
+
+  <section aria-labelledby="out-h">
+    <h2 id="out-h">工作與結果</h2>
+    <div id="jobs">
+      <div class="empty" id="empty">
+        還沒有工作。每份 PDF 會輸出：
+        <ol>
+          <li><code>exam.json</code>：大題（詞彙、綜合測驗、文意選填、篇章結構、閱讀、混合題、翻譯、作文）→ 題組（文章、選項）→ 題目（題幹、選項、答案、解說、附圖）</li>
+          <li><code>images/</code>：題目裡的圖片與圖表，依位置掛到對應的題目或題組</li>
+          <li><code>pages/</code>：掃描頁的整頁圖，方便對照 OCR 結果</li>
+        </ol>
+      </div>
+    </div>
+    <div id="preview"></div>
+  </section>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const picked = [];
+const TYPE = { vocabulary: "詞彙題", cloze: "綜合測驗", fill_in: "文意選填", structure: "篇章結構", reading: "閱讀測驗",
+  mixed: "混合題", translation: "中譯英", composition: "英文作文", non_choice: "非選擇題", unknown: "未分類" };
+
+fetch("/api/info").then(r => r.json()).then(i => {
+  $("#ocr-status").textContent = i.ocr ? "OCR 可用" : "OCR 未安裝：掃描頁只附整頁圖";
+}).catch(() => { $("#ocr-status").textContent = "後端未連線"; });
+
+function mb(n) { return (n / 1048576).toFixed(n > 1048576 * 10 ? 0 : 1) + " MB"; }
+function refreshPicked() {
+  $("#picked").innerHTML = picked.map(f => `<li><span>${esc(f.name)}</span><span>${mb(f.size)}</span></li>`).join("");
+  $("#go").disabled = !picked.length && !$("#folder").value.trim();
+}
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function addFiles(list) {
+  for (const f of list) if (f.name.toLowerCase().endsWith(".pdf")) picked.push(f);
+  refreshPicked();
+}
+const drop = $("#drop");
+drop.addEventListener("click", () => $("#picker").click());
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#picker").click(); } });
+$("#picker").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
+["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => addFiles(e.dataTransfer.files));
+$("#folder").addEventListener("input", refreshPicked);
+
+$("#go").addEventListener("click", async () => {
+  $("#err").textContent = "";
+  const fd = new FormData();
+  picked.forEach(f => fd.append("files", f, f.name));
+  fd.append("folder", $("#folder").value.trim());
+  fd.append("split", $("#opt-split").checked ? "1" : "0");
+  fd.append("ocr", $("#opt-ocr").checked ? "1" : "0");
+  fd.append("force_ocr", $("#opt-force").checked ? "1" : "0");
+  fd.append("lang", $("#opt-lang").value);
+  fd.append("page_images", $("#opt-pages").value);
+  $("#go").disabled = true;
+  $("#go").textContent = picked.length ? "上傳中…" : "建立工作…";
+  try {
+    const r = await fetch("/api/jobs", { method: "POST", body: fd });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "建立工作失敗");
+    picked.length = 0; refreshPicked();
+    watch(j.id);
+  } catch (e) {
+    $("#err").textContent = e.message;
+  } finally {
+    $("#go").textContent = "開始轉錄"; refreshPicked();
+  }
+});
+
+function watch(id) {
+  $("#empty")?.remove();
+  const box = document.createElement("article");
+  box.className = "job"; box.id = "job-" + id;
+  $("#jobs").prepend(box);
+  const tick = async () => {
+    const job = await fetch(`/api/jobs/${id}`).then(r => r.json());
+    renderJob(box, job);
+    if (job.status === "running") setTimeout(tick, 800);
+  };
+  tick();
+}
+
+function renderJob(box, job) {
+  const exams = job.files.flatMap(f => f.exams || []);
+  const q = exams.reduce((a, e) => a + e.questions, 0), ans = exams.reduce((a, e) => a + e.answers_found, 0);
+  const done = job.status === "done";
+  box.innerHTML = `
+    <div class="job-head">
+      <b>#${esc(job.id)}</b>
+      <span class="pill ${job.status === "error" ? "bad" : ""}">${done ? "完成" : job.status === "error" ? "失敗" : "處理中"}</span>
+      <span>${job.files.length} 份 PDF · ${exams.length} 回 · ${q} 題 · 答案 ${ans}</span>
+      ${done ? `<a class="dl" href="/api/jobs/${job.id}/download">下載 zip</a>` : ""}
+    </div>
+    ${job.error ? `<div class="err" style="padding:0 14px">${esc(job.error)}</div>` : ""}
+    <div class="files">${job.files.map(f => fileRow(job, f)).join("")}</div>`;
+  box.querySelectorAll("[data-path]").forEach(b => b.addEventListener("click", () => preview(job.id, b.dataset.path, b.dataset.title)));
+}
+
+function fileRow(job, f) {
+  const pct = f.total ? Math.round(100 * f.done / f.total) : (f.status === "完成" ? 100 : 0);
+  const rows = (f.exams || []).map(e => `
+    <tr><td>${job.status === "done" ? `<button class="link" data-path="${esc(e.path)}" data-title="${esc(e.title)}">${esc(e.title)}</button>` : esc(e.title)}
+      ${e.warnings.map(w => `<span class="warn">${esc(w)}</span>`).join("")}</td>
+      <td class="num">${e.sections}</td><td class="num">${e.questions}</td><td class="num">${e.answers_found}</td>
+      <td class="num">${e.figures}</td><td class="num">${e.ocr_pages || "—"}</td></tr>`).join("");
+  return `<div class="file">
+    <div class="file-top"><span class="name">${esc(f.file)}</span><span class="pill ${f.status === "失敗" ? "bad" : ""}">${esc(f.status)}</span>
+      <span style="color:var(--muted);font-size:13px">${f.total ? `${f.done}/${f.total} 頁` : ""} ${esc(f.current || "")}</span></div>
+    ${f.status === "完成" ? "" : `<div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>`}
+    ${f.error ? `<div class="err">${esc(f.error)}</div>` : ""}
+    ${rows ? `<div class="wrap"><table><thead><tr><th>回</th><th class="num">大題</th><th class="num">題數</th><th class="num">答案</th><th class="num">附圖</th><th class="num">OCR 頁</th></tr></thead><tbody>${rows}</tbody></table></div>` : ""}
+  </div>`;
+}
+
+async function preview(id, path, title) {
+  const exam = await fetch(`/api/jobs/${id}/file?path=${encodeURIComponent(path)}`).then(r => r.json());
+  const dir = path.replace(/exam\.json$/, "");
+  const img = p => `<img src="/api/jobs/${id}/file?path=${encodeURIComponent(dir + p)}" alt="附圖 ${esc(p)}" loading="lazy">`;
+  const secs = exam.sections.map(s => `
+    <div class="sec"><h4><span class="pill">${TYPE[s.type] || s.type}</span>${esc(s.title)}</h4>
+      ${s.groups.map(g => `<div class="${g.passage || g.range ? "grp" : ""}">
+        ${g.passage ? `<p>${esc(g.passage.slice(0, 400))}${g.passage.length > 400 ? "…" : ""}</p>` : ""}
+        ${Object.keys(g.options || {}).length ? `<p>選項：${Object.entries(g.options).map(([k, v]) => `(${k}) ${esc(v)}`).join("　")}</p>` : ""}
+        ${(g.images || []).map(img).join("")}
+        ${g.questions.map(q => `<div class="q"><span class="no">${q.no}</span><div>${esc(q.stem) || "<span style='color:var(--muted)'>（空格題）</span>"}
+          ${Object.keys(q.options).length ? `<ol>${Object.entries(q.options).map(([k, v]) => `<li class="${q.answer && q.answer.includes(k) ? "ok" : ""}">(${k}) ${esc(v)}</li>`).join("")}</ol>` : ""}
+          ${q.answer && !Object.keys(q.options).length ? `<div style="color:var(--good);font-weight:700">答案 ${esc(q.answer)}</div>` : ""}
+          ${(q.images || []).map(img).join("")}</div></div>`).join("")}
+      </div>`).join("")}
+    </div>`).join("");
+  $("#preview").innerHTML = `<div class="preview">
+    <div class="preview-head"><h3>${esc(title)}</h3>
+      <span class="pill">${exam.stats.questions} 題 · 答案 ${exam.stats.answers_found} · 圖 ${exam.stats.figures}</span>
+      <button class="link" id="toggle-json" style="margin-left:auto">看 JSON</button></div>
+    <div class="qview" id="qview">${secs || "<p>沒有切出題目，請看 JSON 的 unparsed_text。</p>"}</div>
+    <pre id="raw" hidden>${esc(JSON.stringify(exam, null, 2))}</pre></div>`;
+  $("#toggle-json").addEventListener("click", () => {
+    const raw = $("#raw"), q = $("#qview");
+    raw.hidden = !raw.hidden; q.hidden = !q.hidden;
+    $("#toggle-json").textContent = raw.hidden ? "看 JSON" : "看題目";
+  });
+  $("#preview").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+</script>
+</body>
+</html>
