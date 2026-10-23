@@ -29,6 +29,7 @@ SUBJECTS = {
     "數學A": [["數學A", "數學"]],
     "數學B": [["數學B", "數學"]],
     "自然": [["自然"]],
+    "社會": [["社會"]],
 }
 PROVIDER_NAME = {"E": "翰林", "N": "南一", "B": "北模", "G": "中模"}
 SERIES_RE = re.compile(r"(\d{3})-([ENBG])(\d)_")
@@ -94,6 +95,35 @@ def page_count(files: list[str]) -> int:
     return sum(len(pages_of(f)) for f in files)
 
 
+def stamp_page_numbers(path: Path, color: str) -> None:
+    """每頁底部外側印頁碼（封面、封底不印）。掃描頁底色不一，所以頁碼放在主色小方塊上。
+    書頁頁碼＝PDF 頁序，目錄上的頁碼與閱讀器顯示的頁數一致。"""
+    import pymupdf
+
+    rgb = tuple(int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    doc = pymupdf.open(path)
+    last = doc.page_count
+    for no, page in enumerate(doc, start=1):
+        if no in (1, last):
+            continue
+        r = page.rect  # 顯示座標（已含旋轉）
+        size = max(8.0, min(r.width, r.height) * 0.017)
+        w, h = size * 3.4, size * 1.9
+        x = r.x1 - w - size * 1.6 if no % 2 else r.x0 + size * 1.6  # 奇數頁在右、偶數頁在左
+        box = pymupdf.Rect(x, r.y1 - h - size * 1.2, x + w, r.y1 - size * 1.2)
+        mat = page.derotation_matrix
+        page.draw_rect(box * mat, color=None, fill=rgb, overlay=True)
+        text = str(no)
+        tw = pymupdf.get_text_length(text, fontname="hebo", fontsize=size)
+        baseline = pymupdf.Point(box.x0 + (box.width - tw) / 2, box.y1 - (box.height - size * 0.72) / 2)
+        page.insert_text(baseline * mat, text, fontsize=size, fontname="hebo", color=(1, 1, 1),
+                         rotate=page.rotation, overlay=True)
+    tmp = path.with_suffix(".tmp.pdf")
+    doc.save(tmp, garbage=3, deflate=True)
+    doc.close()
+    tmp.replace(path)
+
+
 def build(subject: str, rnd: int, sel: dict, bands: dict, out_dir: Path) -> Path | None:
     entries = []
     series_all = sorted({s for s, _ in sel if book_round(s) == rnd},
@@ -132,11 +162,14 @@ def build(subject: str, rnd: int, sel: dict, bands: dict, out_dir: Path) -> Path
         nq = page_count(e["q"])
         e["a_page"] = page + 1 + nq if e["a"] else None
         page += 1 + nq + page_count(e["a"])
+    appendix_page = page
 
     sources = sorted({name for e in entries for f in e["q"] + e["a"] for key, name in SOURCE_HINTS if key in f} or {"公開分享之雲端與學校網站"})
     designed = [design.cover(subject, rnd, f"{entries[-1]['meta']['gsat']}–{entries[0]['meta']['gsat']}", [e["meta"] for e in entries]),
-                design.toc(subject, rnd, entries)]
+                design.toc(subject, rnd, entries, appendix_page)]
     designed += [design.divider(subject, e, e["band"]) for e in entries]
+    appendix = design.appendix(subject, rnd, entries)
+    designed += appendix
     designed.append(design.back(subject, rnd, sources))
     out_dir.mkdir(parents=True, exist_ok=True)
     deco_pdf = out_dir / f".deco-{subject}-{rnd}.pdf"
@@ -157,6 +190,10 @@ def build(subject: str, rnd: int, sel: dict, bands: dict, out_dir: Path) -> Path
                 for pg in pages_of(f):
                     w.add_page(pg)
             w.add_outline_item(label, start, parent=parent)
+    start = len(w.pages)
+    for k in range(len(appendix)):
+        w.add_page(deco.pages[2 + len(entries) + k])
+    w.add_outline_item("附錄　級距、五標與級分對照表", start)
     w.add_page(deco.pages[-1])
     w.add_metadata({"/Title": f"{subject} 學測模擬考 {design.ROUND_NAME[rnd]} 試題與詳解", "/Subject": "個人備考用"})
     w.page_mode = "/UseOutlines"
@@ -165,6 +202,7 @@ def build(subject: str, rnd: int, sel: dict, bands: dict, out_dir: Path) -> Path
     with open(out, "wb") as fh:
         w.write(fh)
     deco_pdf.unlink()
+    stamp_page_numbers(out, design.PALETTES[subject][0])
     print(f"{out.name}: {len(entries)} 回、{len(w.pages)} 頁、{out.stat().st_size / 1e6:.0f} MB")
     return out
 

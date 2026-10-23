@@ -18,6 +18,7 @@ PALETTES = {
     "數學A": ["#2b2d6e", "#5b5fc7", "#f2b134", "#ef6f6c", "#f4f3fb"],
     "數學B": ["#1d4d3a", "#4f9d69", "#d9c26a", "#e07a5f", "#f2f6ef"],
     "自然": ["#0b4f6c", "#01baef", "#20bf55", "#fbb13c", "#eef8fb"],
+    "社會": ["#3d2c5e", "#8e6bbf", "#d4a537", "#c8553d", "#f5f2f9"],
 }
 ROUND_NAME = {2: "第二次", 3: "第三次", 4: "第四次"}
 
@@ -150,7 +151,17 @@ def cover(subject: str, rnd_: int, years: str, exams: list[dict]) -> str:
 </div>"""
 
 
-def toc(subject: str, rnd_: int, entries: list[dict]) -> str:
+def fifteen(band: dict | None) -> str:
+    """15 級分門檻：有官方對照表用表上的數字，沒有則以級距 × 14 推算（加 *）。"""
+    if not band:
+        return "—"
+    th = band.get("thresholds") or {}
+    if th.get("15") is not None:
+        return f"> {float(th['15']):.2f}"
+    return f"> {float(band['band']) * 14:.2f}*" if band.get("band") else "—"
+
+
+def toc(subject: str, rnd_: int, entries: list[dict], appendix_page: int | None = None) -> str:
     pal = PALETTES[subject]
     deco = mosaic(f"toc-{subject}-{rnd_}", pal, (147, 0, 210, 42), fill=0.8)
     rows = []
@@ -160,6 +171,11 @@ def toc(subject: str, rnd_: int, entries: list[dict]) -> str:
           <span style="font-weight:700">{html.escape(e['title'])}</span>
           <span style="color:#6b7280;font-size:9.5pt;margin-left:2mm">{html.escape(e['sub'])}</span></td>
           <td style="text-align:right;border-bottom:.3mm solid #d8dce3;color:#374151;font-size:10pt;white-space:nowrap">{('試題＋詳解 p.' + str(e['q_page'])) if e.get('combined') and not e['a_page'] else ('試題 p.' + str(e['q_page'] or '—') + '　詳解 p.' + str(e['a_page'] or '—'))}</td></tr>""")
+    if appendix_page:
+        rows.append(f"""<tr><td style="padding:3.2mm 0 2.6mm;border-bottom:.3mm solid #d8dce3">
+          <span style="display:inline-block;width:9mm;height:9mm;border:.6mm solid {pal[0]};color:{pal[0]};text-align:center;line-height:8mm;font-weight:800;margin-right:4mm">附</span>
+          <span style="font-weight:700">附錄　各回級距、五標與級分對照表</span></td>
+          <td style="text-align:right;border-bottom:.3mm solid #d8dce3;color:#374151;font-size:10pt">p.{appendix_page}</td></tr>""")
     return f"""<div class="page">{svg(deco, '#ffffff')}
   <div style="position:absolute;left:18mm;top:20mm;right:18mm">
     <div style="font-size:10pt;color:{pal[0]};font-weight:800;letter-spacing:3pt">CONTENTS</div>
@@ -183,7 +199,7 @@ def divider(subject: str, entry: dict, band: dict | None) -> str:
         extra = []
         if band.get("band"):
             extra.append(f"級距 {band['band']}")
-            extra.append(f"15 級分門檻：原始分數 > {float(band['band']) * 14:.2f}")
+            extra.append(f"15 級分門檻：原始分數 {fifteen(band)}")
         if band.get("examinees"):
             extra.append(f"到考 {int(band['examinees']):,} 人")
         stats = f"""<div style="margin-top:14mm;border-top:.6mm solid {pal[0]};padding-top:5mm">
@@ -198,6 +214,84 @@ def divider(subject: str, entry: dict, band: dict | None) -> str:
     {stats}
   </div>
 </div>"""
+
+
+APPENDIX_COLS = 5  # 級分對照表每塊放幾回
+
+
+def appendix_page_count(n_entries: int) -> int:
+    blocks = -(-n_entries // APPENDIX_COLS)
+    return 1 + -(-blocks // 2)  # 一頁級距五標總表，對照表每頁兩塊
+
+
+def short_label(e: dict) -> str:
+    m = e["meta"]
+    return f"{m['gsat']} {m['provider']} {m['code']}{m['round']}"
+
+
+def appendix(subject: str, rnd_: int, entries: list[dict]) -> list[str]:
+    pal = PALETTES[subject]
+    th_style = f"background:{pal[0]};color:#fff;font-weight:700;padding:2mm 1.6mm;font-size:9pt;text-align:center"
+    td = "padding:1.8mm 1.6mm;border-bottom:.3mm solid #d8dce3;text-align:center;font-variant-numeric:tabular-nums"
+
+    def head(no: str, title: str, note: str) -> str:
+        return f"""<div style="display:flex;align-items:baseline;gap:4mm;margin-bottom:5mm">
+      <span style="background:{pal[2]};color:{pal[0]};font-weight:900;padding:1mm 3mm;font-size:11pt">{no}</span>
+      <span style="font-family:Serif;font-weight:900;font-size:19pt;color:{pal[0]}">{title}</span></div>
+      <div style="font-size:9pt;color:#4b5563;margin:-2mm 0 5mm">{note}</div>"""
+
+    rows = []
+    for e in entries:
+        b = e.get("band") or {}
+        cells = [b.get(k) for k in ("top", "front", "mean", "back", "bottom")]
+        rows.append(f"""<tr><td style="{td};text-align:left;font-weight:700">{html.escape(short_label(e))}</td>
+          <td style="{td}">{html.escape(b.get('exam_date') or '—')}</td>
+          <td style="{td}">{b.get('band', '—')}</td>
+          {''.join(f'<td style="{td}">{"—" if c in (None, "") else c}</td>' for c in cells)}
+          <td style="{td}">{f"{int(b['examinees']):,}" if b.get('examinees') else '—'}</td>
+          <td style="{td};font-weight:700;color:{pal[0]}">{fifteen(b)}</td></tr>""")
+    deco = mosaic(f"app-{subject}-{rnd_}", pal, (168, 0, 210, 42), fill=0.8)
+    pages = [f"""<div class="page">{svg(deco, '#ffffff')}
+  <div style="position:absolute;left:16mm;right:16mm;top:24mm">
+    {head("附錄一", "各回級距與五標", f"{html.escape(subject)}　{ROUND_NAME[rnd_]}模擬考。五標單位為級分；級距為原始分數的級分組距；— 表示原始資料未公布。")}
+    <table style="width:100%;border-collapse:collapse">
+      <tr>{''.join(f'<th style="{th_style}">{h}</th>' for h in ("考次", "考試日期", "級距", "頂標", "前標", "均標", "後標", "底標", "到考人數", "15 級分"))}</tr>
+      {''.join(rows)}
+    </table>
+    <div style="font-size:8.5pt;color:#6b7280;margin-top:4mm;line-height:1.7">
+      級分換算：原始分數 x 的級分＝x ÷ 級距後無條件進位，最高 15 級分；0 分為 0 級分。<br>
+      15 級分欄有 * 者為依級距推算（級距 × 14），其餘取自官方原始分數與級分對照表。</div>
+  </div>
+</div>"""]
+
+    blocks = [entries[i:i + APPENDIX_COLS] for i in range(0, len(entries), APPENDIX_COLS)]
+    for p in range(0, len(blocks), 2):
+        tables = []
+        for block in blocks[p:p + 2]:
+            cols = []
+            for e in block:
+                b = e.get("band") or {}
+                th = b.get("thresholds") or {}
+                if len(th) >= 14:
+                    cols.append(([float(th.get(str(n), 0)) for n in range(1, 16)], False))
+                elif b.get("band"):
+                    cols.append(([(n - 1) * float(b["band"]) for n in range(1, 16)], True))
+                else:
+                    cols.append((None, False))
+            body = []
+            for n in range(15, 0, -1):
+                cells = "".join(
+                    f'<td style="{td}">{"—" if c is None else (f"&gt; {c[n - 1]:.2f}" if n > 1 else "&gt; 0")}{"*" if c and est else ""}</td>'
+                    for c, est in cols)
+                body.append(f'<tr><td style="{td};font-weight:800;color:{pal[0]}">{n}</td>{cells}</tr>')
+            tables.append(f"""<table style="width:100%;border-collapse:collapse;margin-bottom:7mm;font-size:9pt">
+      <tr><th style="{th_style}">級分</th>{''.join(f'<th style="{th_style}">{html.escape(short_label(e))}</th>' for e in block)}</tr>
+      {''.join(body)}</table>""")
+        title = head("附錄二", "級分對照表", "表中數字為該級分的原始分數下限（原始分數大於此數、且不超過上一級的下限，即得該級分）。* 為依級距推算。") if p == 0 else ""
+        pages.append(f"""<div class="page">{svg('<rect x="0" y="0" width="210" height="6" fill="' + pal[0] + '"/>', '#ffffff')}
+  <div style="position:absolute;left:16mm;right:16mm;top:18mm">{title}{''.join(tables)}</div>
+</div>""")
+    return pages
 
 
 def back(subject: str, rnd_: int, sources: list[str]) -> str:

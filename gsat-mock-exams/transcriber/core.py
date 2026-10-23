@@ -101,6 +101,9 @@ SECTION_TYPES = [
     ("translation", r"中譯英|翻譯"),
     ("composition", r"英文作文|作文"),
     ("non_choice", r"非選擇題"),
+    ("single_choice", r"單選題|單一選擇題"),
+    ("multi_choice", r"多選題|多重選擇題"),
+    ("choice", r"選擇題"),
 ]
 SECTION_RE = [(t, re.compile(rf"^{ENUM}?.{{0,6}}(?:{k})")) for t, k in SECTION_TYPES]
 GROUP_RE = re.compile(r"第\s*(\d{1,2})\s*(?:題)?\s*[至到~～\-－–]\s*(?:第\s*)?(\d{1,2})\s*題\s*為\s*題組")
@@ -156,6 +159,16 @@ def ocr_lines(page: pymupdf.Page, lang: str, dpi: int = 300) -> list[tuple[str, 
         y1 = max(data["top"][i] + data["height"][i] for i in idx) / scale
         out.append((text, x0, y0, x1, y1))
     return out
+
+
+def is_image_page(page: pymupdf.Page) -> bool:
+    """掃描頁：有一張圖蓋住大半頁面。文字少但沒有大圖的頁（例如只有答案列的解答頁）不算。"""
+    area = page.rect.width * page.rect.height
+    for img in page.get_images(full=True):
+        for r in page.get_image_rects(img[0]):
+            if (r & page.rect).get_area() > 0.5 * area:
+                return True
+    return False
 
 
 def reading_order(raw: list[tuple[str, float, float, float, float]], width: float) -> list[tuple[str, float, float, float, float]]:
@@ -296,8 +309,8 @@ def parse_questions(lines: list[Line]) -> tuple[list[dict], list[str]]:
         kind = section_type(t)
         if kind and not QNUM_RE.match(t):
             open_section(kind, t, ln)
-            if kind in NON_CHOICE:
-                last_no = 0  # 非選擇題的題號從 1 重新開始
+            if kind in ("translation", "composition"):
+                last_no = 0  # 英文的翻譯、作文題號從 1 重新開始；社會、數學的非選擇題接續選擇題題號
             continue
         gm = GROUP_RE.search(t)
         if gm and not QNUM_RE.match(t):
@@ -310,7 +323,8 @@ def parse_questions(lines: list[Line]) -> tuple[list[dict], list[str]]:
             no = int(qm.group(1))
             if sec is None:
                 open_section("unknown", "", ln)
-            if last_no == 0 or no == last_no + 1 or (grp and grp["range"] and grp["range"][0] <= no <= grp["range"][1]):
+            restart = no == 1 and sec is not None and sec["type"] in NON_CHOICE | {"mixed"}
+            if last_no == 0 or no == last_no + 1 or restart or (grp and grp["range"] and grp["range"][0] <= no <= grp["range"][1]):
                 close_q()
                 # 沒有題組、或題號跑出目前題組範圍時，開一個不帶範圍的題組收單題
                 if grp is None or (grp["range"] and not grp["range"][0] <= no <= grp["range"][1]):
@@ -469,7 +483,7 @@ def transcribe_pdf(src: Path | bytes, name: str, zf: zipfile.ZipFile, prefix: st
             for p in pages:
                 page = doc[p]
                 raw = text_lines(page)
-                scanned = sum(len(r[0].strip()) for r in raw) < 40
+                scanned = sum(len(r[0].strip()) for r in raw) < 40 and is_image_page(page)
                 if (scanned and opts.ocr) or opts.force_ocr:
                     if HAS_OCR:
                         raw = ocr_lines(page, opts.ocr_lang)

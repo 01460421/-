@@ -1,7 +1,7 @@
 """把公開分享的 Google 雲端硬碟資料夾樹展開成調查結果（JSON Lines），交給 build_catalog.py 合併。
 
 資料夾名稱若是「113-E2 北模 (翰林)」這種格式，會解析出模考學年度（113 學年度＝114 學測）、次數、考試名稱與命題單位；
-檔名用來判斷科目與文件類型。社會科不在本專案範圍，略過。
+檔名用來判斷科目與文件類型。
 
 用法：
     .venv/bin/python tools/import_gdrive_folder.py FOLDER_ID research/gdrive-xxx.jsonl
@@ -60,8 +60,6 @@ def walk(folder_id: str, ctx: dict, out: list, source_page: str) -> None:
             walk(fid[7:], sub, out, source_page)
             continue
         subject = subject_of(title)
-        if subject == "社會":
-            continue
         doc_type, label = doc_type_of(title)
         if ctx.get("year"):
             # 與 Notion 資料庫同一套編號：113-E2_翰林（模考學年度-代號_命題單位）

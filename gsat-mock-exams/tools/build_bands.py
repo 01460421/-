@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "bands" / "raw"
 OUT = ROOT / "bands"
 
-SUBJECT_ORDER = ["國文", "國寫", "英文", "數學A", "數學B", "數學", "自然", "物理", "化學", "生物", "地科"]
+SUBJECT_ORDER = ["國文", "國寫", "英文", "數學A", "數學B", "數學", "自然", "物理", "化學", "生物", "地科", "社會"]
 FIELDS = ["band", "top", "front", "mean", "back", "bottom", "examinees", "full_score", "exam_date", "title"]
 PROVIDER = {"E": "翰林", "N": "南一", "W": "文昌", "B": "北模", "G": "中模"}
 EXAM_RE = re.compile(r"(\d{3})-([ENWBG])(\d)")

@@ -2,7 +2,7 @@
 
 這個資料夾的子資料夾名稱沒有統一代號，所以用對照表把每個子資料夾指定到考次；
 檔名判斷科目（國綜／國寫／英文／數學A／數學B／數學／自然）與題本或解答。
-高二 R1、英聽、社會、探究與實作、合科解答不收。
+高二 R1、英聽、探究與實作、合科解答不收。
 
 用法：
     .venv/bin/python tools/import_archive_folder.py research/gdrive-archive-1jy.jsonl
@@ -33,7 +33,7 @@ EXAM_MAP = [
     (115, "E1", "E1"), (115, "E2", "E2"), (115, "公私立第二次", "N2"),
 ]
 PROVIDER = {"E": "翰林", "N": "南一", "B": "北模", "G": "中模"}
-SKIP = ("R1", "高二", "英聽", "聽力", "社會", "探究", "合科", "歷史", "地理", "公民")
+SKIP = ("R1", "高二", "英聽", "聽力", "探究", "合科")
 
 
 def subject_of(name: str) -> str | None:
@@ -51,6 +51,8 @@ def subject_of(name: str) -> str | None:
         return "數學"
     if "自然" in name:
         return "自然"
+    if any(k in name for k in ("社會", "歷史", "地理", "公民")):
+        return "社會"
     return None
 
 
