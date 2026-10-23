@@ -2,3 +2,5 @@ files/
 out/
 .venv/
 __pycache__/
+books/fonts/
+books/candidates.json

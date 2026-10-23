@@ -67,3 +67,16 @@ python3 -m venv .venv
 - 南一版國文、英文、自然只在雲端分享看得到，學校官網沒有。
 - 翰林試務中心（成績、答案卡影像）、龍騰教師專區、Dcard、FB 社團需登入，未收錄。
 - `.rar` 整包檔在雲端環境沒有解壓工具，未解開（內容多半已有單檔）。
+
+## 成冊（每科三本）
+
+`books/build_books.py` 把國文（國綜＋國寫）、英文、數學A、數學B、自然各裝訂成第二、三、四次三本，共 15 冊。每本有幾何色塊封面、目錄（頁碼）、每回扉頁（五標、級距、15 級分門檻）、試題、完整詳解、封底與 PDF 書籤。
+
+- 選檔：`books/selection/zz_archive.json`（使用者提供的歷年模考總資料夾，優先）＋ `g111`–`g114.json`（代理逐檔看圖挑選，補缺）。
+- 區域聯模依月份併入：9 月→第二次、10 月→第三次、12 月→第四次。
+- 字型：Noto Sans TC／Noto Serif TC（OFL），放 `books/fonts/`（不進版控，從 google/fonts 下載）。
+
+```bash
+.venv/bin/python books/archive_selection.py
+.venv/bin/python books/build_books.py out/books
+```
