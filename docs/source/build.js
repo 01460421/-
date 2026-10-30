@@ -23,7 +23,7 @@ const { chromium } = require('playwright');
     headerTemplate: '<div></div>',
     footerTemplate:
       `<div style="${footerFont}font-size:7.5px;color:#7B8790;width:100%;padding:0 16mm;display:flex;justify-content:space-between;align-items:center;">` +
-      `<span>116 學測醫學系簡章統整 ・ 彙整日期 2026-09-25 ・ 正式資訊以大考中心與甄選會簡章為準</span>` +
+      `<span>116 學測醫學系簡章統整 ・ 第 2 版 ・ 彙整日期 2026-10-30 ・ 正式資訊以大考中心與甄選會簡章為準</span>` +
       `<span>第 <span class="pageNumber"></span> 頁 / 共 <span class="totalPages"></span> 頁</span>` +
       `</div>`,
   });
