@@ -104,6 +104,19 @@
   .check li::before { content: ""; position: absolute; left: 0; top: 3pt; width: 10pt; height: 10pt; border: 1.5px solid var(--teal); border-radius: 2pt; }
   .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14pt; }
 
+  /* ---------- rule cards ---------- */
+  .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin: 4pt 0 8pt; }
+  .rule { border: 1px solid var(--line); border-radius: 5pt; padding: 7pt 9pt 6pt; background: #fff; break-inside: avoid; page-break-inside: avoid; font-size: 8.3pt; line-height: 1.45; }
+  .rule h4 { margin: 0 0 3pt; font-size: 10pt; color: var(--teal-deep); display: flex; align-items: baseline; gap: 6pt; }
+  .rule h4 .q { margin-left: auto; font-family: "Noto Serif TC", serif; font-weight: 900; font-size: 13pt; color: var(--teal); }
+  .rule h4 .q small { font-family: "Noto Sans TC", sans-serif; font-weight: 400; font-size: 7pt; color: var(--muted); }
+  .rule dl { margin: 0; display: grid; grid-template-columns: 52pt 1fr; column-gap: 6pt; row-gap: 1.5pt; }
+  .rule dt { color: var(--muted); font-size: 7.6pt; letter-spacing: 0.02em; }
+  .rule dd { margin: 0; }
+  .rule dd b { color: var(--ink); }
+  .rule .y16 { margin-top: 4pt; padding-top: 4pt; border-top: 1px dashed var(--line); color: var(--green); font-weight: 500; }
+  .rule .y16.todo { color: var(--rose); font-weight: 400; }
+
   .sources { font-size: 7.6pt; color: var(--ink-soft); columns: 2; column-gap: 16pt; line-height: 1.4; }
   .sources li { break-inside: avoid; margin-bottom: 2pt; }
   .sources ol { padding-left: 13pt; margin: 0; }
@@ -136,7 +149,7 @@
   <div class="cover">
     <div class="kicker">116 學年度 ・ 學科能力測驗 ・ 醫學系</div>
     <h1>116 學測<br>醫學系簡章統整
-      <span>116 簡章公告版：考試時程、參採科目、繁星與申請入學規則，以及 115 學年度各校對照</span>
+      <span>116 簡章公告版：考試時程、參採科目、繁星與申請入學規則，各校檢定、篩選倍率與二階配分分則卡</span>
     </h1>
     <p class="desc">
       彙整大考中心 116 學年度考試簡章、甄選會 10 月 27 日公布的學測參採科目、11 月 3 日公告的 116 學年度繁星推薦與申請入學簡章總量與醫學系公費名額，
@@ -151,7 +164,7 @@
     </div>
     <div class="foot">
       <div>
-        <div>資料彙整日期：2026 年 11 月 3 日（民國 115 年）・第 3 版</div>
+        <div>資料彙整日期：2026 年 11 月 3 日（民國 115 年）・第 4 版（含各校分則卡）</div>
         <div class="legend">
           <span class="badge b-fixed">已公告</span>
           <span class="badge b-new">116 已確認</span>
@@ -178,7 +191,7 @@
       <tr><td><span class="badge b-new">116 已確認</span></td><td>已取得的 116 校系分則：台大醫公費生 1 名（二階 5/15、5/22）、馬偕醫 20 名（二階 5/15）、慈濟醫公費生 8 名（二階 5/15）、義守醫公費生 27 名；各校參採科目組合</td><td>University TW 整理之 116 校系分則頁、甄選會 10/27 公告之報導</td></tr>
       <tr><td><span class="badge b-tent">依簡章轉述</span></td><td>116 繁星推薦與申請入學各階段日期</td><td>簡章已公告，日期經 TKB 與新聞轉述；正式以甄選會網站為準</td></tr>
       <tr><td><span class="badge b-ref">115 參考值</span></td><td>各校醫學系個人申請與繁星名額、檢定標準、篩選倍率、錄取結果、二階日期、五標、分發錄取分數</td><td>115 學年度（2026 年入學）實際資料，供對照 116 之用</td></tr>
-      <tr><td><span class="badge b-todo">待查核</span></td><td>其餘校系的 116 名額、檢定標準、篩選倍率、二階項目與配分、面試日期</td><td>已在甄選會「校系分則查詢系統」公告，本次未能取得；第 08 節附核對清單</td></tr>
+      <tr><td><span class="badge b-todo">待查核</span></td><td>其餘校系的 116 名額、檢定標準、篩選倍率、二階項目與配分、面試日期</td><td>已在甄選會「校系分則查詢系統」公告，本次未能取得；第 08 節以 115 分則卡逐校列出檢定、倍率、二階配分供對照，第 09 節附核對清單</td></tr>
     </tbody>
   </table>
 
@@ -483,19 +496,184 @@
   <p class="note">醫學系一階檢定多要求國、英、數 A、自然達頂標或前標；以 115 五標計，四科頂標合計 51 級分、四科滿級分 60 級分。改採社會的校系（台大、中國醫等），國、數 A、自、社四科頂標合計亦為 51 級分。</p>
 </section>
 
-<!-- ================= 08 ================= -->
+<!-- ================= 08 分則卡 ================= -->
 <section class="page">
-  <div class="section-head"><span class="num">08</span><h2>校系分則核對清單與資料來源</h2><span class="sub">把「待查核」欄位補成 116 正式值</span></div>
+  <div class="section-head"><span class="num">08</span><h2>各校醫學系分則卡：檢定、篩選倍率、二階配分</h2><span class="sub">115 學年度分則；116 已確認者另標</span></div>
+  <p class="lead" style="margin-bottom:5pt">每張卡列出 115 學年度申請入學的學測檢定標準、篩選倍率、通過一階的最低級分、預計甄試人數、第二階段甄選總成績配分、同分參酌與二階日期。數值整理自 University TW、大學問、Target U 與大學申四個平台的校系分則頁；平台之間略有出入者並列註明，報名前請以甄選會校系分則為準。「四科合計 N」為四科總級分的倍率篩選關卡。</p>
+
+  <div class="rules">
+    <div class="rule">
+      <h4>國立臺灣大學 醫學系 <span class="q">51<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、數學 A、社會、自然（不採英文）</dd>
+        <dt>檢定標準</dt><dd>頂標為主（國、社、自），平台未完整列出各科</dd>
+        <dt>篩選倍率</dt><dd>國 6、數 A 3、社 3、自 3；<b>四科合計 2</b>；預計甄試 102 人</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>58</b>；另有國文等單科關卡（國文 13）；超篩 61 人</dd>
+        <dt>二階配分</dt><dd>學測 10%、審查資料 10%、<b>生物＋化學筆試 40%、口試 40%</b>，另有生物化學實作</dd>
+        <dt>二階日期</dt><dd>5/16（六）、5/23（六）</dd>
+      </dl>
+      <div class="y16">116 已確認：公費生 1 名、採計與倍率同 115、二階 5/15 與 5/22；一般生 51 名待查核</div>
+    </div>
+    <div class="rule">
+      <h4>陽明交大 醫學系 醫師組 <span class="q">42<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然；一階限擇醫師組、醫師科學家組、醫師工程師組、公費生其中一組報名</dd>
+        <dt>篩選倍率</dt><dd>國 3.5、英 2.5、數 A 2.5、自 2.5；<b>四科合計 3</b>（114 年為 4.5、3、3、3，合計 4）</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>58–59</b>（平台不一）</dd>
+        <dt>二階配分</dt><dd><b>面試 90%、審查資料 10%</b>、學測 0%（Target U）；大學問另列學測 10%、審查加面試與科學概念測驗 90%</dd>
+        <dt>二階日期</dt><dd>5/16（六）</dd>
+      </dl>
+      <div class="y16 todo">116：採英文、不採社會（10/27）；名額與倍率待查核</div>
+    </div>
+    <div class="rule">
+      <h4>陽明交大 醫師科學家組／醫師工程師組 <span class="q">12＋12<small> 名</small></span></h4>
+      <dl>
+        <dt>科學家組倍率</dt><dd>英 3、數 A 3、自 3；四科合計 3.5；115 通過四科 <b>57</b></dd>
+        <dt>工程師組倍率</dt><dd>國 4、英 4、數 A 3、自 3；四科合計 3.5（Target U 列為國＋英 3.5、四科 3.5、數 A＋自 3.5）；預計甄試 36 人；115 通過四科 <b>55</b></dd>
+        <dt>二階配分</dt><dd>兩組皆 <b>面試 90%、審查資料 10%</b></dd>
+        <dt>公費生 4 名</dt><dd>國 5、英 3.5、數 A 3、自 3；四科合計 4</dd>
+        <dt>二階日期</dt><dd>5/16（六）；報名費 1,500 元</dd>
+      </dl>
+      <div class="y16 todo">116：三組名額分配與公費生待查核</div>
+    </div>
+    <div class="rule">
+      <h4>國立成功大學 醫學系 <span class="q">39<small> 名＋公費 4</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然</dd>
+        <dt>檢定標準</dt><dd>國、英、數 A、自皆<b>頂標</b>（116 分則）</dd>
+        <dt>篩選倍率</dt><dd>國 6、英 5、數 A 3.5、自 3.5；<b>四科合計 3</b>；預計甄試 117 人；超篩順序四科總和→國→數 A→自</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>58</b>；114 年公費生四科 55</dd>
+        <dt>二階配分</dt><dd>學測 15%（加權國 1.00、英 1.25、自 1.25）、指定項目 10%，審查資料與面試合計約 75%；TKB 稱書審加面試逾九成，以簡章為準</dd>
+        <dt>同分參酌</dt><dd>面談→審查資料→指定項目甄試→超額篩選科目一</dd>
+        <dt>二階日期</dt><dd>5/16（六）；5/28 榜示；報名費 1,500 元</dd>
+      </dl>
+      <div class="y16">116 已確認：39 名、四科頂標檢定、預計甄試 117 人（大學申）</div>
+    </div>
+    <div class="rule">
+      <h4>長庚大學 醫學系 <span class="q">59<small> 名（114：54）</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然</dd>
+        <dt>檢定標準</dt><dd>前標（國文明列前標）</dd>
+        <dt>篩選倍率</dt><dd>國、英、數 A、自<b>各 3</b></dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>58</b>；超篩 110 人為全國最多；114 年亦為 59 級分超篩</dd>
+        <dt>二階配分</dt><dd><b>審查資料 60%、面試 20%、學測 20%</b>（學測四科加權各 1.00）</dd>
+        <dt>同分參酌</dt><dd>面試→學測四科總和→自然→審查資料</dd>
+        <dt>二階日期</dt><dd>5/15（五）至 5/18（一）</dd>
+      </dl>
+      <div class="y16 todo">116：採英文（10/27）；名額與倍率待查核</div>
+    </div>
+    <div class="rule">
+      <h4>高雄醫學大學 醫學系 <span class="q">78<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然</dd>
+        <dt>檢定標準</dt><dd>國文<b>前標</b>；英文、數學 A、自然<b>頂標</b></dd>
+        <dt>篩選倍率</dt><dd>國 9、英 4、數 A 8、自 4；<b>四科合計 3</b></dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>57</b>；超篩 80 人；114 年國 12、數 A 11、英＋自 30</dd>
+        <dt>二階配分</dt><dd><b>審查資料 50%、面試 40%、學測 10%</b></dd>
+        <dt>二階日期</dt><dd>5/16（六）至 5/17（日）；另有薪火招生（醫學系）1 名</dd>
+      </dl>
+      <div class="y16 todo">116：待查核；繁星檢定 115 年已提高</div>
+    </div>
+    <div class="rule">
+      <h4>中國醫藥大學 醫學系 <span class="q">85<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、數學 A、社會、自然，另英聽檢定（不採英文）</dd>
+        <dt>檢定標準</dt><dd>國文、社會<b>前標</b>；數學 A、自然<b>頂標</b>；英聽 <b>A 級</b></dd>
+        <dt>篩選倍率</dt><dd>國 5、社 5、數 A 4、自 4；<b>四科合計 3</b>；預計甄試 255 人</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>57</b>；114 年國＋社 27、數 A＋自 27、四科 56</dd>
+        <dt>二階配分</dt><dd><b>審查資料 50%、面試 40%、學測 10%</b>（學測加權自然 1.25，其餘 1.00）；4 月初選填面試梯次</dd>
+        <dt>二階日期</dt><dd>5/15（五）至 5/17（日）</dd>
+      </dl>
+      <div class="y16 todo">116：待查核（115 已改採社會）</div>
+    </div>
+    <div class="rule">
+      <h4>中山醫學大學 醫學系 <span class="q">70<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然</dd>
+        <dt>檢定標準</dt><dd>四科皆<b>頂標</b></dd>
+        <dt>篩選倍率</dt><dd>國 3、英 3、數 A 8、自 8；預計甄試 210 人</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>55</b>；報名 793 人為全國最多；缺額 31</dd>
+        <dt>二階配分</dt><dd><b>審查資料 60%、面試 20%、學測 20%</b></dd>
+        <dt>二階日期</dt><dd>5/16（六）至 5/17（日）</dd>
+      </dl>
+      <div class="y16 todo">116：傳改採國、數 A、社、自，待查核</div>
+    </div>
+    <div class="rule">
+      <h4>臺北醫學大學 醫學系 <span class="q">84<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然</dd>
+        <dt>篩選倍率</dt><dd>國 3、英 3、數 A 3、自 4；<b>四科合計 5</b></dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>57</b>；114 年四科 57、自然 15、國英數 A 43</dd>
+        <dt>二階配分</dt><dd>平台未列出；TKB 稱北醫甄選總成績不採計學測，審查資料加面試為主</dd>
+        <dt>二階日期</dt><dd>5/21（四）至 5/24（日），與多數校系錯開；另有展翅 A 組 3 名</dd>
+      </dl>
+      <div class="y16 todo">116：採英文（10/27）；名額、倍率與配分待查核</div>
+    </div>
+    <div class="rule">
+      <h4>輔仁大學 醫學系 <span class="q">15<small> 名＋公費 4</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>英文、數學 A、社會、自然（<b>不採國文</b>）</dd>
+        <dt>篩選倍率</dt><dd>一般生平台未列；公費生數 A 8、英 3、社 3、自 8</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>57</b></dd>
+        <dt>二階配分</dt><dd><b>審查資料 60%、學測 25%、面試 15%</b></dd>
+        <dt>二階日期</dt><dd>5/16（六）</dd>
+      </dl>
+      <div class="y16 todo">116：待查核</div>
+    </div>
+    <div class="rule">
+      <h4>馬偕醫學大學 醫學系 <span class="q">20<small> 名</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>英文、數學 A、社會、自然（<b>不採國文</b>）</dd>
+        <dt>檢定標準</dt><dd>頂標與前標混用，平台未逐科列出</dd>
+        <dt>篩選倍率</dt><dd>英 8、數 A 8、社 5、自 5；<b>四科合計 3</b>（大學問列為英 8、數 A 5、社 5、自 3）；預計甄試 60 人</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>57</b></dd>
+        <dt>二階配分</dt><dd><b>審查資料 50%、學測 40%、面試 10%</b>（學測加權英 1.25、社 1.00、自 1.50）</dd>
+        <dt>同分參酌</dt><dd>面試→學測四科總和→自然→英文；報名費 1,350 元</dd>
+        <dt>二階日期</dt><dd>5/16（六）</dd>
+      </dl>
+      <div class="y16">116 已確認：20 名、倍率同 115（英 8、數 A 8、社 5、自 5，合計 3）、二階 5/15（六）</div>
+    </div>
+    <div class="rule">
+      <h4>慈濟大學 醫學系 <span class="q">30<small> 名＋公費 8</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然</dd>
+        <dt>篩選倍率</dt><dd>一般生平台未完整列出（114 年數 A＋自合計 3）；公費生國 4、英 4、數 A 8、自 6，數 A＋自 3；預計甄試 90 人</dd>
+        <dt>115 通過級分</dt><dd>四科合計 <b>55</b></dd>
+        <dt>二階配分</dt><dd><b>審查資料 60%、面試 30%、學測 10%</b></dd>
+        <dt>二階日期</dt><dd>5/16（六）；審查資料上傳截止 5/6 21:00</dd>
+      </dl>
+      <div class="y16">116 已確認：公費生 8 名、二階 5/15（六）；一般生待查核</div>
+    </div>
+    <div class="rule">
+      <h4>義守大學 醫學系（公費生） <span class="q">27<small> 名（114：14）</small></span></h4>
+      <dl>
+        <dt>採計科目</dt><dd>國文、英文、數學 A、自然；僅招公費生</dd>
+        <dt>檢定標準</dt><dd>國文<b>前標</b>、英文<b>前標</b></dd>
+        <dt>篩選倍率</dt><dd>篩選一倍率 10（國＋自，大學申列為國文）、篩選二英文 3；預計甄試 81 人</dd>
+        <dt>115 通過級分</dt><dd>篩選一 24 級分、英文 14（114 年 27、15）</dd>
+        <dt>二階配分</dt><dd>平台未列出</dd>
+        <dt>同分參酌</dt><dd>面試→英文→自然→國文；審查資料收件 5/4；報名費 1,200 元</dd>
+        <dt>二階日期</dt><dd>5/15（五）、5/16（六）擇一</dd>
+      </dl>
+      <div class="y16">116 已確認：27 名、採計同 115；日期待查核</div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:0"><b>國防醫學院醫學系</b>為軍事學校正期班獨立招生，不經甄選會：一階以學測成績篩選，另有智力測驗與體檢，軍費生畢業後服役 14 年、自費生學費約每學期 5.3 萬元，分則以國防醫招生專區為準。<b>二階配分的閱讀方式：</b>陽明交大三組、台大（筆試加口試 80%）與北醫最不看學測；長庚、中山醫 20%、輔仁 25%、馬偕 40% 的學測佔比較高，一階通過後學測仍會拉開差距。</p>
+</section>
+
+<!-- ================= 09 ================= -->
+<section class="page">
+  <div class="section-head"><span class="num">09</span><h2>校系分則核對清單與資料來源</h2><span class="sub">把「待查核」欄位補成 116 正式值</span></div>
 
   <div class="cols">
     <div>
       <h3>校系分則逐項核對（每一所目標醫學系）</h3>
       <ul class="check">
-        <li><b>招生名額</b>：自費、公費、各組分別確認，與第 06 節 115 名額及第 04 節公費表比較。</li>
+        <li><b>招生名額</b>：自費、公費、各組分別確認，與第 08 節分則卡及第 04 節公費表比較。</li>
         <li><b>參採科目</b>：對照第 03 節，特別是中山醫是否改採社會、中國醫是否延續不採英文、輔仁與馬偕是否仍不採國文。</li>
         <li><b>學測檢定標準</b>：各科要求頂標、前標或級分數；是否有英聽檢定（116 僅 27 校系）。</li>
-        <li><b>篩選倍率與四科合計</b>：與第 06 節 115 倍率比較，倍率下降代表一階更難通過。</li>
-        <li><b>第二階段項目與配分</b>：學測、審查資料、面試、筆試各佔比；是否有英文口試或 MMI。</li>
+        <li><b>篩選倍率與四科合計</b>：與第 08 節分則卡的 115 倍率比較，倍率下降代表一階更難通過。</li>
+        <li><b>第二階段項目與配分</b>：對照第 08 節的 115 配分，確認學測、審查資料、面試、筆試各佔比是否變動。</li>
         <li><b>審查資料項目</b>：課程學習成果、多元表現、學習歷程自述的指定件數與準備指引。</li>
         <li><b>面試日期與梯次</b>：已知 5/15 為台大、馬偕、慈濟公費的二階日；其餘是否撞期；二階報名與上傳截止日。</li>
         <li><b>公費生服務條件</b>：服務年數、分發區域、違約規定；第三期計畫的名額分配。</li>
@@ -521,7 +699,7 @@
       </table>
       <div class="callout">
         <div class="t">建議的更新節奏</div>
-        <p>本週內用校系分則補齊第 06 節的「待查核」欄位；116/2/25 成績公布後，用當年五標重算各校檢定通過與否；3/30 一階放榜後記錄各校實際篩選級分，作為 117 屆的參考。</p>
+        <p>本週內用校系分則補齊第 06 節與第 08 節的「待查核」欄位；116/2/25 成績公布後，用當年五標重算各校檢定通過與否；3/30 一階放榜後記錄各校實際篩選級分，作為 117 屆的參考。</p>
       </div>
     </div>
   </div>
@@ -530,7 +708,7 @@
   <div class="sources">
     <ol>
       <li>大考中心《116 學年度考試簡章》及 115.08.03 新聞稿<span class="u">ceec.edu.tw/files/file_pool/1/0q215601929252011195/116學年度簡章.pdf</span></li>
-      <li>聯合報〈升大學學測明年 1 月 22 日登場 10 月 27 日開放報名〉、壹蘋〈116 學測今起報名至 11/10〉、1111 落點〈116 學測各科考試時間表〉、大學問〈116 學測六大重要日程〉<span class="u">udn.com/news/story/6925/9833531、exam-match.1111.com.tw、unews.com.tw/News/Info/11379</span></li>
+      <li>聯合報〈升大學學測明年 1 月 22 日登場〉、1111 落點〈116 學測各科考試時間表〉、大學問〈116 學測六大重要日程〉<span class="u">udn.com/news/story/6925/9833531、exam-match.1111.com.tw、unews.com.tw/News/Info/11379</span></li>
       <li>中央社〈116 學年大學考試簡章將公告 攜帶電子穿戴式裝置最重取消資格〉、聯合報〈大學 3 管道簡章公告 學測電子舞弊影響分發入學〉<span class="u">cna.com.tw/news/ahel/202608030239.aspx、udn.com/news/story/6925/9853490</span></li>
       <li>中央社〈116 大學繁星推薦、申請入學 參採學測 3 科居多〉、聯合報〈116 升大學申請入學 339 個系僅參採學測 1 科〉、中時、自由、知新聞、ETtoday 10/27 報導<span class="u">cna.com.tw/news/ahel/202610270068.aspx、udn.com/news/story/6925/9839317</span></li>
       <li>聯合報〈116 升大學招生簡章公布 申請入學提供 5 萬名額、逾 1 千校系參採英文〉、公視〈116 學年度大學招生簡章公告〉、知新聞〈申請入學名額增至 50606 個〉、ETtoday〈繁星＋申請共招 6.6 萬人〉、Yahoo〈116 年大學三管道簡章同步公告〉〈台大狂招名額曝〉<span class="u">udn.com/news/story/6925/9853806、news.pts.org.tw/article/834022、knews.com.tw、ettoday.net/news/20261103/3265315.htm</span></li>
@@ -540,7 +718,7 @@
       <li>大學問〈115 申請入學：醫學系錄取率 9.35%，缺額 137〉、中央社〈申請入學 11 校醫學系 137 缺額創 5 年新高〉、遠見〈115 大學申請一階放榜：超篩系所整理〉<span class="u">unews.com.tw/News/Info/11001、gvm.com.tw/article/129132</span></li>
       <li>TKB〈115 學測醫學系申請：招生名額、繁星、個人申請簡章與面試時間〉（各校個申與繁星名額表）、〈醫學系面試大撞期〉；遠見、今周刊〈115 大學繁星放榜〉、中央社〈繁星推薦醫學系 196 名額 306 人通過篩選〉<span class="u">tkblearning.com.tw、reallygood.com.tw、cna.com.tw/news/ahel/202603180062.aspx</span></li>
       <li>中央社〈學測數 A 五標升〉、公視〈115 學測各科五標〉、聯合報〈115 分科／熱門科系預估錄取門檻出爐〉、TKB〈醫學系排名：各校分數、錄取人數〉<span class="u">cna.com.tw/news/ahel/202602250051.aspx、udn.com/news/story/124910/9627826</span></li>
-      <li>University TW 115 年各校醫學系個人申請分則頁（台大、陽明交大三組與公費、成大、長庚、高醫、中國醫、中山醫、北醫、輔仁、馬偕、慈濟、義守）及 116 年已上線分則頁（台大公費 001252、馬偕 152012、慈濟公費 108022、義守公費）<span class="u">university-tw.ldkrsi.men/caac/medicine</span></li>
+      <li>校系分則平台：University TW（115 各校分則頁與 116 已上線頁）、大學問（二階配分、同分參酌）、Target U、大學申（成大 116、義守公費 116）；聯合報〈申請入學一階 台大醫學系 58 級分過篩〉、TKB 115 一階通過級分表<span class="u">university-tw.ldkrsi.men/caac/medicine、unews.com.tw、targetu.tw、bigstudent.org、udn.com/news/story/6925/9413604</span></li>
     </ol>
   </div>
 </section>
