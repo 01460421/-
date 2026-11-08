@@ -1,0 +1,20 @@
+{
+  "$comment": "外部網站連結模板。佔位符：{code}（不含後綴代號，例如 2330 / AAPL）、{symbol}（本系統正規化代號，例如 2330.TW / BRK.B）、{exchange}（TradingView 交易所，例如 TWSE / TPEX / NASDAQ）、{yahoo}（Yahoo 代號，例如 BRK-B）、{tv}（TradingView 完整代號，例如 TWSE:2330）。只以連結呈現，不抓取或複製外部內容。",
+  "TW": [
+    { "id": "yahoo_tw", "label": "Yahoo 奇摩股市", "url": "https://tw.stock.yahoo.com/quote/{symbol}" },
+    { "id": "goodinfo", "label": "Goodinfo 台灣股市資訊網", "url": "https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID={code}" },
+    { "id": "cnyes", "label": "鉅亨網", "url": "https://www.cnyes.com/twstock/{code}" },
+    { "id": "mops", "label": "公開資訊觀測站", "url": "https://mopsov.twse.com.tw/mops/web/t05st03?firstin=true&co_id={code}" },
+    { "id": "tradingview_tw", "label": "TradingView", "url": "https://www.tradingview.com/symbols/{exchange}-{code}/" }
+  ],
+  "US": [
+    { "id": "yahoo_us", "label": "Yahoo Finance", "url": "https://finance.yahoo.com/quote/{yahoo}" },
+    { "id": "tradingview_us", "label": "TradingView", "url": "https://www.tradingview.com/symbols/{exchange}-{code}/" },
+    { "id": "finviz", "label": "Finviz", "url": "https://finviz.com/quote.ashx?t={yahoo}" },
+    { "id": "sec_edgar", "label": "SEC EDGAR", "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={code}&type=10-K&dateb=&owner=include&count=40" }
+  ],
+  "INDEX": [
+    { "id": "yahoo_index", "label": "Yahoo Finance", "url": "https://finance.yahoo.com/quote/{yahoo}" },
+    { "id": "tradingview_index", "label": "TradingView", "url": "https://www.tradingview.com/chart/?symbol={tv}" }
+  ]
+}

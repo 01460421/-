@@ -236,3 +236,8 @@ export function countFilled(series: PriceSeries): number {
 export function isoNow(): string {
   return new Date().toISOString();
 }
+
+/** epoch ms → 某時區的當地日期 */
+export function localDateOf(tMs: number, tz: string): string {
+  return localParts(new Date(tMs), tz).date;
+}
