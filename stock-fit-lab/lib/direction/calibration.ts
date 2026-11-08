@@ -118,8 +118,18 @@ export function plattScaling(p: number[], outcomes: (boolean | number)[], maxIte
   const tNeg = 1 / (nNeg + 2);
   const t = o.map((v) => (v === 1 ? tPos : tNeg));
   const x = p.map(logit);
+  const nll = (a: number, b: number) => {
+    let L = 0;
+    for (let i = 0; i < x.length; i++) {
+      const z = a * x[i] + b;
+      const sp = z > 0 ? z + Math.log1p(Math.exp(-z)) : Math.log1p(Math.exp(z));
+      L += sp - t[i] * z;
+    }
+    return L;
+  };
   let a = 1;
   let b = 0;
+  let cur = nll(a, b);
   for (let it = 0; it < maxIter; it++) {
     let g0 = 0, g1 = 0, h00 = 0, h01 = 0, h11 = 0;
     for (let i = 0; i < x.length; i++) {
@@ -138,9 +148,23 @@ export function plattScaling(p: number[], outcomes: (boolean | number)[], maxIte
     if (Math.abs(det) < 1e-18) break;
     const da = (h11 * g0 - h01 * g1) / det;
     const db = (-h01 * g0 + h00 * g1) / det;
-    a -= da;
-    b -= db;
-    if (Math.abs(da) + Math.abs(db) < 1e-10) break;
+    // 回溯線搜尋（極端 logit 時純牛頓步會發散）
+    let step = 1;
+    let accepted = false;
+    for (let k = 0; k < 30; k++) {
+      const na = a - step * da;
+      const nb = b - step * db;
+      const v = nll(na, nb);
+      if (v <= cur) {
+        a = na;
+        b = nb;
+        accepted = cur - v > 1e-12;
+        cur = v;
+        break;
+      }
+      step /= 2;
+    }
+    if (!accepted || step * (Math.abs(da) + Math.abs(db)) < 1e-10) break;
   }
   return { kind: 'platt', a, b, apply: (q: number) => sigmoid(a * logit(q) + b) };
 }

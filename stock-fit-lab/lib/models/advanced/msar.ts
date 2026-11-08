@@ -52,7 +52,7 @@ export function regimeLabels(K: number): string[] {
 /**
  * 以 EM 估計 MS-AR(1)。r 為百分比對數報酬。
  */
-export function fitMsar(r: number[], K = 3, maxIter = 300, tol = 1e-7): MsarFit {
+export function fitMsar(r: number[], K = 3, maxIter = 300, tol = 1e-6): MsarFit {
   const T = r.length - 1; // 觀測 r_1..r_{n−1}，迴歸元 r_0..r_{n−2}
   if (T < 10 * K) throw new Error(`msar: 至少需要 ${10 * K + 1} 筆報酬`);
   const yv = r.slice(1);

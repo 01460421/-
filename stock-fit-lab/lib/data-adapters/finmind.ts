@@ -161,8 +161,8 @@ export function computeAdjClose(bars: { date: string; close: number }[], events:
   const adj = new Array<number>(bars.length);
   let cum = 1;
   for (let i = bars.length - 1; i >= 0; i--) {
-    adj[i] = round6(bars[i].close * cum);
     cum *= factorAt[i];
+    adj[i] = round6(bars[i].close * cum);
   }
   return adj;
 }

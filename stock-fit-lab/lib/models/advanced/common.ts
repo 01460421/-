@@ -52,52 +52,71 @@ export function signalOf(pUp: number): 'up' | 'down' | 'neutral' {
   return pUp > 0.5 ? 'up' : pUp < 0.5 ? 'down' : 'neutral';
 }
 
-// ───────────────────────── Holt 線性指數平滑（趨勢層外推用） ─────────────────────────
+// ───────────────────────── 阻尼 Holt 線性平滑（趨勢層外推用） ─────────────────────────
 
 export interface HoltFit {
   alpha: number;
   beta: number;
+  /** 趨勢阻尼 φ ∈ [0.8, 0.995]（φ → 1 為一般 Holt） */
+  phi: number;
   level: number;
   trend: number;
   /** 一步預測誤差 */
   errors: number[];
   fitted: number[];
+  /** k 期外推：ℓ + (φ + φ² + … + φ^k)·b */
+  forecast: (k: number) => number;
 }
 
 /**
- * Holt 線性平滑：
- *   ℓ_t = α y_t + (1−α)(ℓ_{t−1} + b_{t−1}),  b_t = β(ℓ_t − ℓ_{t−1}) + (1−β) b_{t−1}
- * α、β 以最小化一步預測 SSE 求得（logit 參數化 + Nelder–Mead）。
+ * 阻尼 Holt 線性平滑（Gardner & McKenzie）：
+ *   ℓ_t = α y_t + (1−α)(ℓ_{t−1} + φ b_{t−1}),  b_t = β(ℓ_t − ℓ_{t−1}) + (1−β) φ b_{t−1}
+ *   \hat y_{t+k} = ℓ_t + (φ + … + φ^k) b_t
+ * α、β、φ 以最小化一步預測 SSE 求得（logit 參數化 + Nelder–Mead）。
+ * 阻尼避免把邊界處的局部斜率無限外推（股價趨勢層的常見失效）。
  */
 export function holtFit(y: number[]): HoltFit {
   const n = y.length;
-  const run = (a: number, b: number) => {
+  const PHI_LO = 0.8;
+  const PHI_HI = 0.995;
+  const phiOf = (z: number) => PHI_LO + (PHI_HI - PHI_LO) * toUnit(z);
+  const run = (a: number, b: number, phi: number) => {
     let l = y[0];
     let t = n > 1 ? y[1] - y[0] : 0;
     const errors: number[] = [0];
     const fitted: number[] = [y[0]];
     let sse = 0;
     for (let i = 1; i < n; i++) {
-      const f = l + t;
+      const f = l + phi * t;
       fitted.push(f);
       const e = y[i] - f;
       errors.push(e);
       sse += e * e;
       const lPrev = l;
-      l = a * y[i] + (1 - a) * (l + t);
-      t = b * (l - lPrev) + (1 - b) * t;
+      l = a * y[i] + (1 - a) * (l + phi * t);
+      t = b * (l - lPrev) + (1 - b) * phi * t;
     }
     return { l, t, sse, errors, fitted };
   };
   const res = nelderMead(
-    (x) => run(toUnit(x[0]), toUnit(x[1])).sse,
-    [fromUnit(0.5), fromUnit(0.1)],
-    { maxIter: 300, step: [1, 1] },
+    (x) => run(toUnit(x[0]), toUnit(x[1]), phiOf(x[2])).sse,
+    [fromUnit(0.5), fromUnit(0.1), 0],
+    { maxIter: 400, step: [1, 1, 1] },
   );
   const a = toUnit(res.x[0]);
   const b = toUnit(res.x[1]);
-  const r = run(a, b);
-  return { alpha: a, beta: b, level: r.l, trend: r.t, errors: r.errors, fitted: r.fitted };
+  const phi = phiOf(res.x[2]);
+  const r = run(a, b, phi);
+  const forecast = (k: number) => {
+    let s = 0;
+    let p = 1;
+    for (let i = 1; i <= k; i++) {
+      p *= phi;
+      s += p;
+    }
+    return r.l + s * r.t;
+  };
+  return { alpha: a, beta: b, phi, level: r.l, trend: r.t, errors: r.errors, fitted: r.fitted, forecast };
 }
 
 // ───────────────────────── 週期圖 + 諧波最小平方（中週期層外推用） ─────────────────────────

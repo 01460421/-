@@ -162,14 +162,7 @@ export function lstsq(X: Matrix, y: Vector, weights?: Vector): LstsqResult {
   let coef: Vector;
   let method: 'qr' | 'svd' = 'qr';
   if (cond < 1e12 && rank === n) {
-    const { Q, R } = qr(Xw);
-    const qtb = new Array<number>(n).fill(0);
-    for (let j = 0; j < n; j++) {
-      let s = 0;
-      for (let i = 0; i < m; i++) s += Q[i][j] * yw[i];
-      qtb[j] = s;
-    }
-    coef = backSubstitute(R, qtb);
+    coef = householderSolve(Xw, yw);
   } else {
     method = 'svd';
     coef = svdSolve(sv, yw, tol);
@@ -190,6 +183,41 @@ export function lstsq(X: Matrix, y: Vector, weights?: Vector): LstsqResult {
   }
 
   return { coef, fitted, residuals, rss, cond, rank, covUnscaled, method };
+}
+
+/**
+ * 經濟型 Householder 最小平方：反射直接作用在右手邊 b，不建立 m×m 的 Q（O(mn²) 時間、O(mn) 記憶體）。
+ */
+export function householderSolve(A: Matrix, b: Vector): Vector {
+  const m = A.length;
+  const n = A[0].length;
+  const R = clone(A);
+  const y = b.slice();
+  const v = new Array<number>(m).fill(0);
+  for (let k = 0; k < Math.min(m - 1, n); k++) {
+    let norm = 0;
+    for (let i = k; i < m; i++) norm += R[i][k] * R[i][k];
+    norm = Math.sqrt(norm);
+    if (norm === 0) continue;
+    const alpha = R[k][k] > 0 ? -norm : norm;
+    let vnorm2 = 0;
+    for (let i = k; i < m; i++) {
+      v[i] = R[i][k] - (i === k ? alpha : 0);
+      vnorm2 += v[i] * v[i];
+    }
+    if (vnorm2 === 0) continue;
+    for (let j = k; j < n; j++) {
+      let s = 0;
+      for (let i = k; i < m; i++) s += v[i] * R[i][j];
+      const f = (2 * s) / vnorm2;
+      for (let i = k; i < m; i++) R[i][j] -= f * v[i];
+    }
+    let s = 0;
+    for (let i = k; i < m; i++) s += v[i] * y[i];
+    const f = (2 * s) / vnorm2;
+    for (let i = k; i < m; i++) y[i] -= f * v[i];
+  }
+  return backSubstitute(R, y);
 }
 
 export interface SVDResult {

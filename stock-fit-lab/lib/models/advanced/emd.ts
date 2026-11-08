@@ -159,6 +159,7 @@ export class EmdModel extends BaseModel {
         imfGroups: l.groups.join(','),
         holtAlpha: lm.holt.alpha,
         holtBeta: lm.holt.beta,
+        holtPhi: lm.holt.phi,
       },
       paramSpecs: this.paramSpecs(),
       useCases: '非線性、非平穩、週期長度會變動的價格；與小波互為對照（EMD 自適應、不需選基底）。',
@@ -166,7 +167,7 @@ export class EmdModel extends BaseModel {
         '模態混疊（同一 IMF 混入不同尺度）；端點效應導致最新端的 IMF 隨新資料改寫；IMF 分組門檻主觀；諧波外推假設週期持續。',
       derivation:
         '篩選以自然三次樣條包絡 $e_{\\max},e_{\\min}$ 的平均 $m$ 反覆扣除，直到 $SD=\\sum(h_{k-1}-h_k)^2/\\sum h_{k-1}^2<0.2$。' +
-        'IMF 依平均週期 $\\bar T=n/\\#\\max$ 分組：$\\bar T<$ noisePeriod 為雜訊層（不外推），$\\bar T>n/3$ 與殘差為趨勢層（Holt 外推），其餘為中週期層（諧波外推）。' +
+        'IMF 依平均週期 $\\bar T=n/\\#\\max$ 分組：$\\bar T<$ noisePeriod 為雜訊層（不外推），$\\bar T>n/3$ 與殘差為趨勢層（阻尼 Holt 外推），其餘為中週期層（諧波外推）。' +
         '由構造 $\\sum c_i+r=x$ 精確成立。',
       diagnostics: {
         imfCount: l.imfCount,

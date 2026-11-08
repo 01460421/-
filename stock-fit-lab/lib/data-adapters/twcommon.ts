@@ -23,6 +23,10 @@ export function monthStarts(start: string, end: string, maxMonths = 36): string[
 function findCol(fields: string[], ...needles: string[]): number {
   const norm = fields.map((f) => f.replace(/\s+/g, ''));
   for (const n of needles) {
+    const i = norm.indexOf(n);
+    if (i >= 0) return i;
+  }
+  for (const n of needles) {
     const i = norm.findIndex((f) => f.includes(n));
     if (i >= 0) return i;
   }

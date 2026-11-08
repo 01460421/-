@@ -3,7 +3,7 @@
  *
  *   y_t = T_t（趨勢層）+ C_t（中週期層）+ N_t（雜訊層）
  *
- *  - 趨勢層：Holt 線性平滑外推  \hat T_{n-1+k} = \ell_{n-1} + k\,b_{n-1}
+ *  - 趨勢層：阻尼 Holt 外推  \hat T_{n-1+k} = \ell_{n-1} + (\phi+\dots+\phi^k)\,b_{n-1}
  *  - 中週期層：週期圖選前 m 個頻率後最小平方諧波擬合，外推
  *      \hat C_{n-1+k} = c_0 + \sum_j b_j\cos\omega_j(n-1+k) + c_j\sin\omega_j(n-1+k)
  *  - 雜訊層：不外推（預測為 0），只貢獻不確定性
@@ -56,7 +56,7 @@ export function forecastLayers(m: LayerModel, h: number): { mean: number[]; sd: 
   const mean: number[] = [];
   const sd: number[] = [];
   for (let k = 1; k <= h; k++) {
-    const t = m.holt.level + k * m.holt.trend;
+    const t = m.holt.forecast(k);
     const c = m.harm.evalAt(m.n - 1 + k);
     trend.push(t);
     mid.push(c);

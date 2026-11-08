@@ -176,6 +176,7 @@ export class WaveletModel extends BaseModel {
         noiseLevels: Math.round(this.param('noiseLevels', 2)),
         holtAlpha: lm.holt.alpha,
         holtBeta: lm.holt.beta,
+        holtPhi: lm.holt.phi,
         harmonicPeriods: lm.harm.omegas.map((w) => (2 * Math.PI) / w),
       },
       paramSpecs: this.paramSpecs(),
@@ -184,7 +185,7 @@ export class WaveletModel extends BaseModel {
         '邊界效應：最新端的分解受延伸方式影響，新資料進來時最後幾點的分層會被改寫（重繪）；諧波外推假設週期持續；趨勢層的 Holt 斜率在轉折點落後。',
       derivation:
         'db4 正交濾波器組 $g_k=(-1)^kh_{7-k}$，單層 $a_i=\\sum_kh_kx_{2i+k}$、$d_i=\\sum_kg_kx_{2i+k}$，正交性保證完美重建。' +
-        '先對稱延伸 $[x,\\mathrm{rev}(x)]$ 再分解，降低最新端的人為跳躍。趨勢層 $A_J$ 以 Holt 外推、中週期層以週期圖挑頻率後最小平方諧波外推、雜訊層 $\\sum_{j\\le q}D_j$ 預測為 0。' +
+        '先對稱延伸 $[x,\\mathrm{rev}(x)]$ 再分解，降低最新端的人為跳躍。趨勢層 $A_J$ 以阻尼 Holt 外推、中週期層以週期圖挑頻率後最小平方諧波外推、雜訊層 $\\sum_{j\\le q}D_j$ 預測為 0。' +
         '區間 $\\mathrm{sd}_k=\\sqrt{\\sigma_{res}^2+k\\sigma_{\\Delta}^2}$。',
       diagnostics: {
         levels: this.layers.levels,

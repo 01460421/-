@@ -124,7 +124,7 @@ export class GarchModel extends BaseModel {
       this.p = res.params;
       if (this.param('zeroMean', 0) === 1) this.p.mu = 0;
       if (!res.converged) this.degraded = 'GARCH 概似最佳化未收斂，結果僅供參考';
-      if (this.p.alpha + this.p.beta > 0.995) this.degraded = `持續性 α+β = ${(this.p.alpha + this.p.beta).toFixed(4)} 接近 1（IGARCH 邊界），長期變異數不穩定`;
+      if (this.p.alpha + this.p.beta > 0.995 && this.p.alpha > 0.02) this.degraded = `持續性 α+β = ${(this.p.alpha + this.p.beta).toFixed(4)} 接近 1（IGARCH 邊界），長期變異數不穩定`;
     }
     this.refilter();
   }
@@ -214,6 +214,7 @@ export class GarchModel extends BaseModel {
         beta: this.p.beta,
         mu: this.p.mu,
         persistence: pers,
+        nearConstantVariance: this.p.alpha < 0.01,
         halfLife: pers > 0 && pers < 1 ? Math.log(0.5) / Math.log(pers) : Infinity,
         longRunVolPct: pers < 1 ? Math.sqrt(this.p.omega / (1 - pers)) : NaN,
         nextSigmaPct: Math.sqrt(this.sigma2Next),

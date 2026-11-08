@@ -218,7 +218,7 @@ export class GaussianProcessModel extends BaseModel {
       paramSpecs: this.paramSpecs(),
       useCases: '平滑趨勢疊加近似週期的波動；需要「離資料越遠越不確定」的後驗區間；樣本不大（≤ 數百點）。',
       failureModes:
-        '外推超過 RBF 長度尺度 ℓ_r 後，後驗平均回歸到線性核與週期核的部分，區間快速變寬；週期核可能擬合到偶然的週期（過擬合）；O(n³) 計算量需截斷資料。',
+        '價格接近隨機漫步時，GP 會把逐日波動視為觀測雜訊、後驗平均是平滑曲線，最新價可能落在一步區間邊緣，方向機率常過度自信，須經 lib/direction 校準；外推超過 RBF 長度尺度 ℓ_r 後，後驗平均回歸到線性核與週期核的部分，區間快速變寬；週期核可能擬合到偶然的週期（過擬合）；O(n³) 計算量需截斷資料。',
       derivation:
         '假設 $f\\sim\\mathcal{GP}(0,k)$、$y=f+\\varepsilon$。對數邊際概似 $\\ln p(y|\\theta)=-\\tfrac12y^\\top K^{-1}y-\\tfrac12\\ln|K|-\\tfrac n2\\ln2\\pi$，以 Cholesky $K=LL^\\top$ 計算 $\\ln|K|=2\\sum\\ln L_{ii}$。' +
         '超參數在對數空間以 Nelder–Mead 最大化（多個週期起點）。後驗 $\\mu_*=k_*^\\top K^{-1}y$、$\\sigma_*^2=k_{**}-k_*^\\top K^{-1}k_*+\\sigma_n^2$，區間 $\\mu_*\\pm z\\sigma_*$ 即後驗不確定性。' +
