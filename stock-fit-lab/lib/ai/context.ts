@@ -8,6 +8,10 @@
  */
 import type { AnalyzePayload, UiState } from '@/components/stock/types';
 import type { ModelId } from '@/lib/types';
+import type { HistorySummary } from '@/lib/history/summary';
+import type { FundamentalsResult } from '@/lib/fundamentals';
+import type { BehavioralResult } from '@/lib/behavioral';
+import type { NewsSearchResult } from '@/lib/news';
 
 export interface ContextUi {
   range: string;
@@ -201,3 +205,99 @@ export function buildContext(p: AnalyzePayload, ui: ContextUi | UiState, extra: 
 }
 
 export type AiContext = ReturnType<typeof buildContext>;
+
+// ═════════════════════ 情境層（長期歷史 / 財報 / 心理社會 / 近期新聞）精簡摘要 ═════════════════════
+// 由 /api/context/summary 在伺服器端計算後回傳，前端以 attachContextLayers 併入情境 JSON。
+// 欄位路徑（例如 "context_layers.fundamentals.ttm.eps"）可作為 AI 的 cited_fields。
+
+export interface ContextLayers {
+  history?: ReturnType<typeof compactHistoryLayer> | null;
+  fundamentals?: ReturnType<typeof compactFundamentalsLayer> | null;
+  behavioral?: ReturnType<typeof compactBehavioralLayer> | null;
+  recentNews?: ReturnType<typeof compactNewsLayer> | null;
+  errors?: Record<string, string>;
+  generatedAt?: string;
+}
+
+/** 整份情境 JSON 的目標上限（位元組，約略以字元數計） */
+export const CONTEXT_MAX_CHARS = 20_000;
+
+export function compactHistoryLayer(h: HistorySummary) {
+  return {
+    source: h.source,
+    asOf: h.asOf,
+    period: `${h.from}~${h.to}`,
+    years: h.years,
+    cagrPct: h.cagrPct,
+    annVolPct: h.annVolPct,
+    maxDrawdown: h.maxDrawdown,
+    allTimeHigh: h.extremes.allTimeHigh,
+    allTimeLow: h.extremes.allTimeLow,
+    fromAdjustedHighPct: h.extremes.fromAdjustedHighPct,
+    recentYears: h.yearly.slice(-6).map((y) => ({ y: y.year, ret: y.returnPct, vol: y.volPct, mdd: y.maxDrawdownPct })),
+    topMoves: h.topMoves.slice(0, 5).map((m) => ({ d: m.date, pct: m.returnPct })),
+    worstDrawdowns: h.drawdowns.slice(0, 3).map((d) => ({ peak: d.peakDate, trough: d.troughDate, recovered: d.recoveryDate, depthPct: d.depthPct })),
+    regimes: h.regimes.segments.slice(-4).map((r) => ({ from: r.from, to: r.to, label: r.label, annRet: r.annReturnPct, annVol: r.annVolPct })),
+    hmmHighVolLatest: h.regimes.hmm?.pHighVolLatest ?? null,
+  };
+}
+
+export function compactFundamentalsLayer(f: FundamentalsResult) {
+  const q = f.quarters.slice(-4).map((x) => ({ p: x.label, knownAt: x.knownAt, rev: x.revenue, revYoY: x.revenueYoYPct, gm: x.grossMarginPct, om: x.operatingMarginPct, eps: x.eps }));
+  return {
+    asOf: f.asOf,
+    currency: f.currency,
+    quarters: q,
+    ttm: f.ttm ? { eps: f.ttm.eps, revenue: f.ttm.revenue, netIncome: f.ttm.netIncome, quarters: f.ttm.quarters } : null,
+    valuation: { price: f.valuation.price, priceDate: f.valuation.priceDate, pe: f.valuation.peTtm, pb: f.valuation.pb, dividendYieldPct: f.valuation.dividendYieldPct },
+    officialValuation: f.officialValuation,
+    monthlyRevenue: f.monthlyRevenue.slice(-3).map((m) => ({ m: m.month, yoy: m.yoyPct, mom: m.momPct, knownAt: m.knownAt })),
+    pendingNext: f.pendingNext,
+    lagRule: f.lagRule,
+    sources: f.sources.map((s) => `${s.name}${s.asOf ? `@${s.asOf}` : ''}`).slice(0, 5),
+    ...(f.unavailableReason ? { unavailableReason: f.unavailableReason } : {}),
+  };
+}
+
+export function compactBehavioralLayer(b: BehavioralResult) {
+  return {
+    asOf: b.asOf,
+    indicators: b.indicators.map((x) => ({ id: x.id, value: x.value, unit: x.unit ?? null, reading: x.reading.slice(0, 90), ok: x.available })),
+    caveat: '相關不等於因果',
+  };
+}
+
+export function compactNewsLayer(n: NewsSearchResult) {
+  return {
+    window: `${n.from}~${n.to}`,
+    asOf: n.asOf,
+    total: n.total,
+    items: n.items.slice(0, 8).map((i) => ({ t: i.publishedAt.slice(0, 16), title: i.title.slice(0, 80), src: i.source, tier: i.tier, s: i.sentiment?.score ?? null, url: i.url })),
+    daily: n.daily.slice(-5).map((d) => ({ d: d.date, n: d.count, s: d.meanScore })),
+    sentimentLabel: '標題情緒為詞典法粗略啟發式',
+    sources: n.sources.filter((s) => s.ok).map((s) => s.name),
+  };
+}
+
+/** 把情境層併入情境 JSON（key：context_layers），超過 CONTEXT_MAX_CHARS 時依序裁減 */
+export function attachContextLayers<T extends Record<string, unknown>>(ctx: T, layers: ContextLayers | null | undefined, maxChars = CONTEXT_MAX_CHARS): T & { context_layers?: ContextLayers } {
+  if (!layers) return ctx;
+  const L: ContextLayers = JSON.parse(JSON.stringify(layers));
+  delete L.generatedAt;
+  const size = () => JSON.stringify({ ...ctx, context_layers: L }).length;
+  const steps: (() => void)[] = [
+    () => L.recentNews && (L.recentNews.items = L.recentNews.items.slice(0, 4)),
+    () => L.history && ((L.history.recentYears = L.history.recentYears.slice(-3)), (L.history.regimes = L.history.regimes.slice(-2))),
+    () => L.behavioral && (L.behavioral.indicators = L.behavioral.indicators.map((x) => ({ ...x, reading: x.reading.slice(0, 40) }))),
+    () => L.fundamentals && ((L.fundamentals.quarters = L.fundamentals.quarters.slice(-2)), (L.fundamentals.monthlyRevenue = L.fundamentals.monthlyRevenue.slice(-1))),
+    () => L.recentNews && (L.recentNews.items = []),
+    () => delete L.errors,
+    () => delete L.recentNews,
+    () => delete L.behavioral,
+  ];
+  for (const step of steps) {
+    if (size() <= maxChars) break;
+    step();
+  }
+  return { ...ctx, context_layers: L };
+}

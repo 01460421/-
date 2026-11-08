@@ -17,6 +17,10 @@ import { findSuspects } from '../engine/leak-audit';
 import { ALL_MODEL_IDS, createModel, isAdvanced } from '../models';
 import { getStore } from '../storage';
 import { r4 } from './context';
+import { getHistorySummary, getLongHistory, getRangeSeries, px, round, type Granularity } from '../history';
+import { searchNews, TIER_RANK, type AuthorityTier, type NewsItem } from '../news';
+import { getFundamentals, getGuidance } from '../fundamentals';
+import { getBehavioralIndicators, CAVEAT as BEHAVIORAL_CAVEAT } from '../behavioral';
 
 type Schema = Anthropic.Beta.Messages.BetaTool['input_schema'];
 
@@ -426,5 +430,341 @@ export function makeChatTools(binding: ToolBinding): AiTool[] {
     run: async () => ({ ok: true }),
   };
 
-  return [refit, whatIf, querySnapshots, compare, getDataset, runWf, chart];
+  return [refit, whatIf, querySnapshots, compare, getDataset, runWf, chart, ...makeContextTools(symbol)];
 }
+
+// ═════════════════════ 情境層工具：長期歷史 / 新聞 / 財報 / 方針 / 心理社會指標 ═════════════════════
+// 每個結果都帶 sources: [{ name, url?, publishedAt? | asOf? }]，並以 capToolOutput 限制大小（摘要而非原始傾印）。
+
+export const TOOL_OUTPUT_MAX_CHARS = 14_000;
+
+/** 把結果壓到 maxChars 以內：反覆把最長的陣列砍半（保留前段，結果多已依重要性 / 時間排序），並標記 _truncated */
+export function capToolOutput<T>(value: T, maxChars = TOOL_OUTPUT_MAX_CHARS): T {
+  let v: unknown = JSON.parse(JSON.stringify(value ?? null));
+  for (let iter = 0; iter < 40 && JSON.stringify(v).length > maxChars; iter++) {
+    let best: { holder: Record<string, unknown> | unknown[]; key: string | number; len: number } | null = null;
+    const walk = (node: unknown, holder: Record<string, unknown> | unknown[] | null, key: string | number | null) => {
+      if (Array.isArray(node)) {
+        if (holder && key !== null && node.length > 1 && (!best || node.length > best.len)) best = { holder, key, len: node.length };
+        node.forEach((x, i) => walk(x, node, i));
+      } else if (node && typeof node === 'object') for (const [k, x] of Object.entries(node)) walk(x, node as Record<string, unknown>, k);
+    };
+    walk(v, null, null);
+    if (!best) break;
+    const b = best as { holder: Record<string, unknown> | unknown[]; key: string | number; len: number };
+    const arr = (b.holder as Record<string | number, unknown[]>)[b.key];
+    (b.holder as Record<string | number, unknown>)[b.key] = arr.slice(0, Math.max(1, Math.floor(arr.length / 2)));
+    if (v && typeof v === 'object' && !Array.isArray(v)) (v as Record<string, unknown>)._truncated = true;
+  }
+  const s = JSON.stringify(v);
+  if (s.length > maxChars) return { _truncated: true, preview: s.slice(0, maxChars - 200) } as unknown as T;
+  return v as T;
+}
+
+const TIERS: AuthorityTier[] = ['official', 'wire', 'major', 'trade', 'other'];
+const GRAN = ['auto', 'day', 'week', 'month', 'quarter', 'year'] as const;
+
+function todayDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function compactNews(n: NewsItem) {
+  return {
+    publishedAt: n.publishedAt,
+    title: n.title.slice(0, 140),
+    source: n.source,
+    tier: n.tier,
+    kind: n.kind,
+    url: n.url,
+    ...(n.form ? { form: n.form } : {}),
+    sentiment: n.sentiment ? n.sentiment.score : null,
+    ...(n.tags?.length ? { tags: n.tags } : {}),
+  };
+}
+
+const dateOrder = (v: { from?: string; to?: string }, ctx: z.RefinementCtx) => {
+  if (v.from && v.to && v.from > v.to) ctx.addIssue({ code: 'custom', message: 'from 不可晚於 to' });
+};
+
+export const CONTEXT_TOOL_NAMES = ['get_long_history', 'search_news', 'explain_move', 'get_fundamentals', 'get_guidance', 'get_behavioral_indicators'] as const;
+
+export function makeContextTools(symbol: string): AiTool[] {
+  // ───── get_long_history ─────
+  const lhSchema = z.object({ from: z.string().regex(DATE).optional(), to: z.string().regex(DATE).optional(), granularity: z.enum(GRAN).optional() }).strict().superRefine(dateOrder);
+  const longHistory: AiTool = {
+    definition: {
+      name: 'get_long_history',
+      description:
+        '取得目前代號上市以來（1990 起）的長期日線摘要（point-in-time：只用 to 之前的資料）。不給 from/to 時回傳全期摘要：逐年報酬 / 年化波動 / 最大回撤、歷史高低點、單日最大漲跌前 10 名、回撤事件與收復時間、PELT/HMM 結構區段；給 from/to 時另回傳該區間降採樣 OHLC（最多 80 筆，granularity 可指定 day/week/month/quarter/year 或 auto）。',
+      input_schema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          from: { type: 'string', description: '起日 YYYY-MM-DD（可省略）' },
+          to: { type: 'string', description: '迄日 YYYY-MM-DD；也是 point-in-time 截止日（預設今天）' },
+          granularity: { type: 'string', enum: [...GRAN], description: '降採樣顆粒度，預設 auto' },
+        },
+      } as Schema,
+    },
+    validate: zodValidator(lhSchema),
+    run: async (input) => {
+      const inp = lhSchema.parse(input);
+      const sum = await getHistorySummary(symbol, { from: inp.from, to: inp.to });
+      const src = [{ name: sum.source, asOf: sum.asOf }];
+      const base = {
+        symbol: sum.symbol,
+        period: { from: sum.from, to: sum.to, bars: sum.bars, years: sum.years },
+        adjusted: sum.adjusted,
+        cagrPct: sum.cagrPct,
+        annVolPct: sum.annVolPct,
+        maxDrawdown: sum.maxDrawdown,
+        extremes: sum.extremes,
+        yearly: sum.yearly.map((y) => ({ year: y.year, returnPct: y.returnPct, volPct: y.volPct, maxDrawdownPct: y.maxDrawdownPct, ...(y.partial ? { partial: true } : {}) })),
+        topMoves: sum.topMoves,
+        drawdowns: sum.drawdowns,
+        regimes: { method: sum.regimes.method, segments: sum.regimes.segments.slice(-10), hmm: sum.regimes.hmm },
+        notes: sum.notes,
+      };
+      let range = null;
+      if (inp.from || inp.to) {
+        const g = inp.granularity && inp.granularity !== 'auto' ? (inp.granularity as Granularity) : undefined;
+        const r = await getRangeSeries(symbol, { from: inp.from, to: inp.to, granularity: g, maxPoints: 80 });
+        range = { from: r.from, to: r.to, granularity: r.granularity, truncated: r.truncated, stats: r.stats, points: r.points.map((p) => ({ d: p.date, o: p.open, h: p.high, l: p.low, c: p.close, chg: p.changePct, v: p.volume })) };
+      }
+      return capToolOutput({ ...base, range, stale: sum.stale, sources: src });
+    },
+  };
+
+  // ───── search_news ─────
+  const snSchema = z.object({ from: z.string().regex(DATE), to: z.string().regex(DATE), query: z.string().min(1).max(80).optional(), min_tier: z.enum(TIERS as [AuthorityTier, ...AuthorityTier[]]).optional() }).strict().superRefine(dateOrder);
+  const searchNewsTool: AiTool = {
+    definition: {
+      name: 'search_news',
+      description:
+        '查詢目前代號在 from~to 期間的權威新聞標題與官方公告（point-in-time：只回傳發布時間 ≤ to 當日的項目）。來源：台股公開資訊觀測站重大訊息 / TWSE OpenAPI / FinMind 新聞；美股 SEC EDGAR 申報；全球 GDELT（權威網域白名單）。只有標題 + 連結 + 來源 + 時間 + 權威等級（official > wire > major > trade > other）+ 詞典法標題情緒（粗略啟發式），沒有內文。',
+      input_schema: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['from', 'to'],
+        properties: {
+          from: { type: 'string', description: '起日 YYYY-MM-DD' },
+          to: { type: 'string', description: '迄日 YYYY-MM-DD（亦為 point-in-time 截止）' },
+          query: { type: 'string', description: '標題關鍵字（可省略），例如 法說、guidance、裁員' },
+          min_tier: { type: 'string', enum: TIERS, description: '最低權威等級，預設 trade' },
+        },
+      } as Schema,
+    },
+    validate: zodValidator(snSchema),
+    run: async (input) => {
+      const inp = snSchema.parse(input);
+      const r = await searchNews({ symbol, from: inp.from, to: inp.to, asOf: inp.to, query: inp.query, minTier: inp.min_tier, limit: 25 });
+      return capToolOutput({
+        symbol: r.symbol,
+        from: r.from,
+        to: r.to,
+        asOf: r.asOf,
+        total: r.total,
+        truncated: r.truncated,
+        items: r.items.map(compactNews),
+        dailySentiment: r.daily.slice(-15),
+        sentimentLabel: r.sentimentLabel,
+        sourceStatus: r.sources.map((s) => ({ name: s.name, ok: s.ok, count: s.count, ...(s.error ? { error: s.error.slice(0, 120) } : {}) })),
+        notes: r.notes,
+        sources: [
+          ...r.sources.filter((s) => s.ok).map((s) => ({ name: s.name, url: s.url, asOf: r.asOf })),
+          ...r.items.slice(0, 10).map((n) => ({ name: n.source, url: n.url ?? undefined, publishedAt: n.publishedAt })),
+        ],
+      });
+    },
+  };
+
+  // ───── explain_move ─────
+  const emSchema = z.object({ date: z.string().regex(DATE) }).strict();
+  const explainMove: AiTool = {
+    definition: {
+      name: 'explain_move',
+      description:
+        '解釋某一交易日的價格變動：回傳當日漲跌幅 / 跳空 / 量比與歷史分位、前後數日走勢、期間（date−2 ~ date+1）的權威新聞與官方公告、公司事件，以及當日的心理社會指標讀數。所有資料皆 ≤ date+1（point-in-time）。時間上相近不代表因果，請以「可能相關」表述。',
+      input_schema: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['date'],
+        properties: { date: { type: 'string', description: '交易日 YYYY-MM-DD' } },
+      } as Schema,
+    },
+    validate: zodValidator(emSchema),
+    run: async (input) => {
+      const { date } = emSchema.parse(input);
+      const asOf = addDays(date, 1);
+      const h = await getLongHistory(symbol, { to: asOf });
+      const bars = h.bars;
+      let i = -1;
+      for (let k = bars.length - 1; k >= 0; k--)
+        if (bars[k].date <= date) {
+          i = k;
+          break;
+        }
+      if (i <= 0) throw new Error(`${date} 之前沒有行情資料`);
+      const b = bars[i];
+      const prev = bars[i - 1];
+      const ret = px(b) / px(prev) - 1;
+      const absRets = bars.slice(1, i + 1).map((x, k) => Math.abs(px(x) / px(bars[k]) - 1));
+      const pctRank = absRets.length ? (absRets.filter((x) => x < Math.abs(ret)).length / absRets.length) * 100 : null;
+      const avgVol = bars.slice(Math.max(0, i - 20), i).reduce((s, x) => s + (x.volume || 0), 0) / Math.max(1, Math.min(20, i));
+      const around = bars.slice(Math.max(0, i - 5), Math.min(bars.length, i + 2)).map((x, k, arr) => ({ d: x.date, c: round(x.close), chg: k > 0 ? round((px(x) / px(arr[k - 1]) - 1) * 100, 2) : null }));
+      const [news, events, beh] = await Promise.allSettled([
+        searchNews({ symbol, from: addDays(b.date, -2), to: asOf, asOf, minTier: 'trade', limit: 20, maxFinMindDays: 4, maxMopsMonths: 2 }),
+        getMarketData().getEvents(symbol, { start: addDays(b.date, -5), end: asOf }),
+        getBehavioralIndicators(symbol, { asOf: b.date, includeNews: false }),
+      ]);
+      const n = news.status === 'fulfilled' ? news.value : null;
+      return capToolOutput({
+        symbol,
+        date: b.date,
+        requestedDate: date,
+        pointInTimeCutoff: asOf,
+        move: {
+          close: round(b.close),
+          prevClose: round(prev.close),
+          returnPct: round(ret * 100, 2),
+          gapPct: b.open ? round((b.open / prev.close - 1) * 100, 2) : null,
+          intradayRangePct: b.high && b.low ? round(((b.high - b.low) / prev.close) * 100, 2) : null,
+          volumeRatio20d: avgVol > 0 ? round((b.volume || 0) / avgVol, 2) : null,
+          absMovePercentileSinceListing: pctRank === null ? null : round(pctRank, 1),
+        },
+        around,
+        officialDisclosures: n ? n.items.filter((x) => x.tier === 'official').slice(0, 10).map(compactNews) : [],
+        news: n ? n.items.filter((x) => x.tier !== 'official').slice(0, 12).map(compactNews) : [],
+        newsStatus: n ? n.sources.map((s) => ({ name: s.name, ok: s.ok, count: s.count, ...(s.error ? { error: s.error.slice(0, 100) } : {}) })) : [{ name: 'news', ok: false, error: String((news as PromiseRejectedResult).reason).slice(0, 120) }],
+        corporateEvents: events.status === 'fulfilled' ? events.value.filter((e) => e.date <= asOf).map((e) => ({ date: e.date, type: e.type, title: e.title.slice(0, 80), source: e.source })) : [],
+        behavioral: beh.status === 'fulfilled' ? beh.value.indicators.map((x) => ({ id: x.id, name: x.name, value: x.value, unit: x.unit, reading: x.reading.slice(0, 120), available: x.available })) : [],
+        caveat: '時間上接近的新聞 / 公告不代表造成股價變動的原因；相關不等於因果。',
+        sources: [
+          { name: h.source, asOf: b.date },
+          ...(n ? n.sources.filter((s) => s.ok).map((s) => ({ name: s.name, url: s.url, asOf })) : []),
+          ...(n ? n.items.slice(0, 8).map((x) => ({ name: x.source, url: x.url ?? undefined, publishedAt: x.publishedAt })) : []),
+        ],
+      });
+    },
+  };
+
+  // ───── get_fundamentals ─────
+  const fdSchema = z.object({ as_of: z.string().regex(DATE).optional() }).strict();
+  const fundamentals: AiTool = {
+    definition: {
+      name: 'get_fundamentals',
+      description:
+        '取得目前代號 as_of 當時「已公開」的實際財報（point-in-time）：台股以 FinMind 季報 / 月營收 / 股利 / TWSE 估值（無申報日時以法定公告期限判斷已知）；美股以 SEC XBRL companyfacts 的 filed 日。回傳近 6 季營收 / 毛利 / 營益 / 淨利 / EPS 與 YoY、QoQ、三率，近四季 TTM，以 as_of 收盤計算的 P/E、P/B、殖利率，以及尚未公開的下一期。不提供分析師預期或財報驚喜。',
+      input_schema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: { as_of: { type: 'string', description: 'point-in-time 日期 YYYY-MM-DD（預設今天）' } },
+      } as Schema,
+    },
+    validate: zodValidator(fdSchema),
+    run: async (input) => {
+      const inp = fdSchema.parse(input);
+      const f = await getFundamentals(symbol, { asOf: inp.as_of });
+      return capToolOutput({
+        symbol: f.symbol,
+        asOf: f.asOf,
+        currency: f.currency,
+        entityName: f.entityName,
+        unavailableReason: f.unavailableReason,
+        quarters: f.quarters.slice(-6).map((q) => ({
+          period: q.label,
+          periodEnd: q.periodEnd,
+          knownAt: q.knownAt,
+          basis: q.basis,
+          revenue: q.revenue,
+          revenueYoYPct: q.revenueYoYPct,
+          revenueQoQPct: q.revenueQoQPct,
+          grossMarginPct: q.grossMarginPct,
+          operatingMarginPct: q.operatingMarginPct,
+          netMarginPct: q.netMarginPct,
+          netIncome: q.netIncome,
+          eps: q.eps,
+          operatingCashFlow: q.operatingCashFlow,
+          ...(q.derivedFields.length ? { derivedFields: q.derivedFields } : {}),
+        })),
+        ttm: f.ttm,
+        valuation: f.valuation,
+        officialValuation: f.officialValuation,
+        marginTrends: f.marginTrends,
+        monthlyRevenue: f.monthlyRevenue.slice(-6),
+        dividends: f.dividends.slice(-4),
+        pendingNext: f.pendingNext,
+        lagRule: f.lagRule,
+        notes: f.notes,
+        sources: f.sources,
+      });
+    },
+  };
+
+  // ───── get_guidance ─────
+  const gdSchema = z.object({ from: z.string().regex(DATE).optional(), to: z.string().regex(DATE).optional() }).strict().superRefine(dateOrder);
+  const guidance: AiTool = {
+    definition: {
+      name: 'get_guidance',
+      description:
+        '列出公司官方「方針」出處（point-in-time ≤ to）：台股公開資訊觀測站重大訊息中含 展望 / 資本支出 / 股利政策 / 財測 的公告與法人說明會；美股 SEC 8-K Item 2.02（財報新聞稿）、7.01、8.01 與 Exhibit 99 連結。只回傳 標題 + 日期 + 章節 + 連結；不得轉述或推測其中的財測數字，請引導使用者點連結閱讀原文。',
+      input_schema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          from: { type: 'string', description: '起日 YYYY-MM-DD（預設 to 往前一年）' },
+          to: { type: 'string', description: '迄日 YYYY-MM-DD（預設今天，亦為 point-in-time 截止）' },
+        },
+      } as Schema,
+    },
+    validate: zodValidator(gdSchema),
+    run: async (input) => {
+      const inp = gdSchema.parse(input);
+      const g = await getGuidance(symbol, { from: inp.from, to: inp.to, asOf: inp.to ?? todayDate() });
+      return capToolOutput({
+        symbol: g.symbol,
+        from: g.from,
+        to: g.to,
+        asOf: g.asOf,
+        items: g.items.slice(0, 20).map((i) => ({ date: i.date, section: i.section, title: i.title.slice(0, 140), url: i.url, exhibits: i.exhibits.slice(0, 3), source: i.source })),
+        sourceStatus: g.sources.map((s) => ({ name: s.name, ok: s.ok, count: s.count, ...(s.error ? { error: s.error.slice(0, 120) } : {}) })),
+        notes: g.notes,
+        sources: [...g.sources.filter((s) => s.ok).map((s) => ({ name: s.name, url: s.url, asOf: g.asOf })), ...g.items.slice(0, 8).map((i) => ({ name: i.source, url: i.url ?? undefined, publishedAt: i.publishedAt }))],
+      });
+    },
+  };
+
+  // ───── get_behavioral_indicators ─────
+  const bhSchema = z.object({ as_of: z.string().regex(DATE).optional() }).strict();
+  const behavioral: AiTool = {
+    definition: {
+      name: 'get_behavioral_indicators',
+      description:
+        '取得 as_of 當時的心理與社會面指標（point-in-time）：52 週高點接近度（錨定）、異常成交量（注意力）、短期過度反應 z 分數、動能 12-1、台股融資 vs 法人背離與融資使用率、VIX / 台指選擇權 P/C 恐慌指標、新聞注意力與媒體悲觀度、簡化 Baker–Wurgler 市場情緒代理、行事曆情境（休市 / 財報季 / 季底 / 總經新聞）。每項附公式、說明與學術出處；均為統計關聯，相關不等於因果。',
+      input_schema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: { as_of: { type: 'string', description: 'point-in-time 日期 YYYY-MM-DD（預設今天）' } },
+      } as Schema,
+    },
+    validate: zodValidator(bhSchema),
+    run: async (input) => {
+      const inp = bhSchema.parse(input);
+      const r = await getBehavioralIndicators(symbol, { asOf: inp.as_of });
+      return capToolOutput({
+        symbol: r.symbol,
+        asOf: r.asOf,
+        indicators: r.indicators.map((x) => ({ id: x.id, name: x.name, available: x.available, value: x.value, unit: x.unit, reading: x.reading, details: x.details, formula: x.formula, reference: x.reference.split('；')[0].slice(0, 160), asOf: x.asOf })),
+        macroHeadlines: r.macroHeadlines,
+        notes: r.notes,
+        caveat: BEHAVIORAL_CAVEAT,
+        sources: r.indicators.flatMap((x) => x.sources.map((s) => ({ name: s.name, url: s.url, asOf: s.asOf ?? undefined }))).filter((s, i, a) => a.findIndex((y) => y.name === s.name) === i),
+      });
+    },
+  };
+
+  return [longHistory, searchNewsTool, explainMove, fundamentals, guidance, behavioral];
+}
+
+/** 新聞權威等級排序值（供前端 / 測試使用） */
+export const NEWS_TIER_RANK = TIER_RANK;
