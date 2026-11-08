@@ -6,7 +6,8 @@
 import { z } from 'zod';
 import type { ModelId } from '@/lib/types';
 import { barPrice, walkForward, LEAK_LABEL, type WalkForwardHorizonResult } from '@/lib/engine';
-import { findSuspects } from '@/lib/engine/leak-audit';
+import { auditForLeakage, findSuspects } from '@/lib/engine/leak-audit';
+import { getMarketData } from '@/lib/data-adapters';
 import { BENCHMARK_META } from '@/lib/benchmarks';
 import { MODEL_META, BASIC_IDS, isAdvanced } from '@/lib/models';
 import { getStore, newId } from '@/lib/storage';
@@ -80,23 +81,32 @@ export async function POST(req: Request) {
       deps: ENGINE_DEPS,
     });
     const suspects = findSuspects(wf);
-    const suspectKey = new Set(suspects.map((s) => `${s.model}|${s.horizon}`));
+    // 疑似洩漏 → 執行完整稽核：(a) 時間對齊 (b) 還原價 (c) 截斷不變性 (d) 快照未被改寫。
+    // 稽核未通過前結果一律隱藏；通過則寫入 auditPassed 事件，計分卡據此解除隱藏。
+    let audit: Awaited<ReturnType<typeof auditForLeakage>> | null = null;
     if (suspects.length) {
       try {
         const store = await getStore();
+        const events = await getMarketData()
+          .getEvents(symbol)
+          .catch(() => []);
+        audit = await auditForLeakage({ wf, prices, dates, deps: ENGINE_DEPS, bars, events, store, symbol, checkAllModels: false });
         await store.appendEvent({
           id: newId(),
           at: new Date().toISOString(),
           kind: 'leak_suspect',
           symbol,
-          severity: 'warn',
-          title: `${symbol} 走動式驗證${LEAK_LABEL}（${suspects.length} 項）`,
-          detail: { suspects },
+          severity: audit.passed ? 'info' : 'warn',
+          title: audit.passed
+            ? `${symbol} 走動式驗證疑似洩漏 ${suspects.length} 項，稽核通過（結果可顯示，但請謹慎解讀）`
+            : `${symbol} 走動式驗證${LEAK_LABEL}（${suspects.length} 項，稽核未通過）`,
+          detail: { suspects, auditPassed: audit.passed, models: [...new Set(suspects.map((x) => x.model))], checks: audit.checks },
         });
       } catch {
-        /* 事件寫入失敗不影響回應 */
+        /* 稽核或事件寫入失敗 → 維持隱藏 */
       }
     }
+    const suspectKey = new Set(audit?.passed ? [] : suspects.map((s) => `${s.model}|${s.horizon}`));
 
     const rows = Object.entries(wf.models).flatMap(([model, byH]) =>
       Object.values(byH).map((r) => {
@@ -154,6 +164,7 @@ export async function POST(req: Request) {
         benchmarks,
         curves,
         suspects,
+        audit: audit ? { passed: audit.passed, checks: audit.checks, auditedAt: audit.auditedAt } : null,
         leakLabel: LEAK_LABEL,
         failures: wf.failures,
         timings: wf.timings,

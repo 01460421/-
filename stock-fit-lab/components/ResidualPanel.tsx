@@ -7,7 +7,7 @@ import { durbinWatson, histogram, qqPoints, mean, std, ljungBox } from '@/lib/ma
 export default function ResidualPanel({ dates, residuals }: { dates: string[]; residuals: Record<string, number[]> }) {
   const ids = Object.keys(residuals);
   const [sel, setSel] = useState(ids[0] ?? '');
-  const r = residuals[sel] ?? [];
+  const r = useMemo(() => residuals[sel] ?? [], [residuals, sel]);
   const d = dates.slice(-r.length);
   const stats = useMemo(() => {
     if (r.length < 5) return null;

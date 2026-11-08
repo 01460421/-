@@ -296,6 +296,17 @@ npm test
 
 ---
 
+## 規格歧義的假設
+
+1. **專案位置**：放在 repository 的 `stock-fit-lab/` 子目錄，部署時以此為 Vercel Root Directory。
+2. **使用者帳號**：規格要求個人資料「存於其帳號下」但未指定登入系統 → 先以匿名 cookie UUID 識別，`lib/user.ts` 為唯一替換點。
+3. **LINE Notify**：已於 2025-03-31 停止服務 → 改用 LINE Messaging API。
+4. **預設 LLM**：Anthropic `claude-opus-5-5`，可用 `LLM_MODEL` 更換；預設開啟伺服器端拒答備援（`fallbacks: "default"`）。
+5. **時間標準化**：只依賴視窗長度（不使用價格統計量），因此不引入前視偏誤；對數模型使用 s = (i+1)/n 確保自變數為正。
+6. **快照頻率**：每次分析寫入快照，但訓練終點與最後價格未變時略過，避免滑桿調整造成重複快照灌水準度回顧。
+7. **集成權重初始化**：以訓練視窗最後 k 筆樣本內殘差初始化（可切換為樣本外，較慢）。
+8. **漲跌色**：依台股慣例紅漲綠跌，並在色塊旁附文字說明。
+
 ## 已知限制與下一步
 
 見 [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md)。

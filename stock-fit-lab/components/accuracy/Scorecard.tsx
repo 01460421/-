@@ -91,7 +91,7 @@ export default function Scorecard({ rows, names, thresholds }: { rows: ScoreRowJ
                   <td className="whitespace-nowrap" title={r.modelId}>
                     {names[r.modelId] ?? r.modelId}
                   </td>
-                  <td>{r.horizon} 日</td>
+                  <td className="whitespace-nowrap">{r.horizon} 日</td>
                   <td>{r.n}</td>
                   {r.hidden ? (
                     <td colSpan={11} className="text-center font-medium" style={{ color: WORSE_COLOR }} title={r.hiddenReason}>
