@@ -25,8 +25,11 @@ export interface GdeltArticle {
   sourcecountry?: string;
 }
 
+/** 可調整（測試會調小）：GDELT 要求每 5 秒最多 1 次 */
+export const gdeltConfig = { refillPerSec: 1 / 6, baseDelayMs: 6000, retries: 2 };
+
 function limiter() {
-  return getLimiter('gdelt', { capacity: 1, refillPerSec: 1 / 6, hourlyQuota: 600 });
+  return getLimiter('gdelt', { capacity: 1, refillPerSec: gdeltConfig.refillPerSec, hourlyQuota: 600 });
 }
 
 function dt(date: string, end: boolean): string {
@@ -94,7 +97,7 @@ export async function fetchGdelt(p: { terms: string[]; from: string; to: string;
   const url = gdeltUrl({ ...p, from });
   const today = new Date().toISOString().slice(0, 10);
   return cached(`ctx:gdelt:v1:${url}`, p.to >= today ? 3600 : 7 * 86400, async () => {
-    const res = await fetchWithRetry(url, { limiter: limiter(), retries: 2, baseDelayMs: 6000, timeoutMs: 20000, headers: { Accept: 'application/json' } });
+    const res = await fetchWithRetry(url, { limiter: limiter(), retries: gdeltConfig.retries, baseDelayMs: gdeltConfig.baseDelayMs, timeoutMs: 20000, headers: { Accept: 'application/json' } });
     const text = await res.text();
     if (!text.trim()) return [];
     let body: { articles?: GdeltArticle[] };

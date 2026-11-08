@@ -32,8 +32,11 @@ export class MopsBlockedError extends Error {
   }
 }
 
+/** 可調整（測試會調小）：每 4 秒最多 1 次 */
+export const mopsConfig = { refillPerSec: 0.25, baseDelayMs: 4000 };
+
 function limiter() {
-  return getLimiter('mops', { capacity: 1, refillPerSec: 0.25, hourlyQuota: 300 });
+  return getLimiter('mops', { capacity: 1, refillPerSec: mopsConfig.refillPerSec, hourlyQuota: 300 });
 }
 
 export function isMopsBlocked(html: string): boolean {
@@ -51,7 +54,7 @@ async function postForm(path: string, form: Record<string, string>): Promise<str
     body,
     limiter: limiter(),
     retries: 1,
-    baseDelayMs: 4000,
+    baseDelayMs: mopsConfig.baseDelayMs,
     timeoutMs: 15000,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', Accept: 'text/html, */*' },
   });

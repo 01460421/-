@@ -106,10 +106,11 @@ export function dedupe(items: NewsItem[]): NewsItem[] {
   const out: NewsItem[] = [];
   for (const it of items) {
     const k1 = it.url && !/news\.google\.com/.test(it.url) ? it.url : null;
-    const k2 = it.title.replace(/\s*-\s*[^-]{1,20}$/, '').replace(/\s+/g, '').toLowerCase();
-    if ((k1 && seen.has(k1)) || seen.has(k2)) continue;
+    // 標題去重（同日同標題，跨來源轉載）；官方申報各有唯一網址，不以標題去重
+    const k2 = it.kind === 'filing' && k1 ? null : `${it.title.replace(/\s*-\s*[^-]{1,20}$/, '').replace(/\s+/g, '').toLowerCase()}|${it.publishedAt.slice(0, 10)}`;
+    if ((k1 && seen.has(k1)) || (k2 && seen.has(k2))) continue;
     if (k1) seen.add(k1);
-    seen.add(k2);
+    if (k2) seen.add(k2);
     out.push(it);
   }
   return out;

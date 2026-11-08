@@ -6,10 +6,15 @@
  *  - 框選區間 →「這段發生什麼事」
  *  - 主動推送：輪詢偵測到新偵測器命中時插入簡短系統說明（可關閉）
  *  - 每則 AI 回答末尾標示「AI 分析，非投資建議」與引用
+ *  - 情境層（長期歷史 / 財報 / 心理社會 / 近期新聞）精簡摘要自動併入情境 JSON（context_layers，總量 < 20KB）
+ *  - 框選區間 →「以歷史與新聞解釋選取區間」（get_long_history / search_news / explain_move，point-in-time）
+ *  - 可展開精簡版情境脈絡面板（ContextPanel）
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChartCommand } from './types';
 import { fetchJson, fmtTime, readLocal, writeLocal } from './util';
+import { attachContextLayers, type ContextLayers } from '@/lib/ai/context';
+import ContextPanel from './ContextPanel';
 
 const LABEL = 'AI 分析，非投資建議';
 
@@ -78,6 +83,9 @@ export default function AiPanel({
   const [adviceBusy, setAdviceBusy] = useState(false);
   const [adviceErr, setAdviceErr] = useState<string | null>(null);
   const [proactive, setProactive] = useState(true);
+  const [layers, setLayers] = useState<ContextLayers | null>(null);
+  const [layersState, setLayersState] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [showContext, setShowContext] = useState(false);
   const seenAlerts = useRef(new Set<string>());
   const box = useRef<HTMLDivElement>(null);
   const abort = useRef<AbortController | null>(null);
@@ -96,6 +104,26 @@ export default function AiPanel({
     setAdvice(null);
     seenAlerts.current.clear();
   }, [symbol]);
+
+  // 情境層摘要（伺服器端快取 30 分鐘）；AI 啟用時才載入，失敗不影響對話
+  useEffect(() => {
+    if (!status?.configured) return;
+    let alive = true;
+    setLayers(null);
+    setLayersState('loading');
+    fetchJson<ContextLayers>(`/api/context/summary?symbol=${encodeURIComponent(symbol)}`)
+      .then((l) => {
+        if (!alive) return;
+        setLayers(l);
+        setLayersState('ok');
+      })
+      .catch(() => alive && setLayersState('error'));
+    return () => {
+      alive = false;
+    };
+  }, [symbol, status?.configured]);
+
+  const withLayers = useCallback((ctx: Record<string, unknown> | null) => (ctx ? (attachContextLayers(ctx, layers) as Record<string, unknown>) : null), [layers]);
 
   useEffect(() => {
     box.current?.scrollTo({ top: box.current.scrollHeight });
@@ -123,7 +151,7 @@ export default function AiPanel({
     async (text: string, sel?: { from: string; to: string } | null) => {
       const q = text.trim();
       if (!q || busy || !status?.configured) return;
-      const context = getContext(sel ?? null);
+      const context = withLayers(getContext(sel ?? null));
       if (!context) return;
       const userMsg: Msg = { id: uid(), role: 'user', content: q, at: new Date().toISOString() };
       const asst: Msg = { id: uid(), role: 'assistant', content: '', tools: [], at: new Date().toISOString(), streaming: true };
@@ -189,11 +217,11 @@ export default function AiPanel({
         abort.current = null;
       }
     },
-    [busy, status, getContext, msgs, symbol, config, convId, onChartCommand],
+    [busy, status, getContext, withLayers, msgs, symbol, config, convId, onChartCommand],
   );
 
   const runAdvice = async () => {
-    const context = getContext(null);
+    const context = withLayers(getContext(null));
     if (!context) return;
     setAdviceBusy(true);
     setAdviceErr(null);
@@ -208,7 +236,15 @@ export default function AiPanel({
   };
 
   const disabled = !status?.configured;
-  const suggestions = ['目前哪個模型最可信？為什麼？', '如果視窗改成 60 日會怎樣？', '近 20 日三大法人買賣超如何？請加到圖上', '把卡爾曼曲線高亮'];
+  const suggestions = [
+    '目前哪個模型最可信？為什麼？',
+    '如果視窗改成 60 日會怎樣？',
+    '近 20 日三大法人買賣超如何？請加到圖上',
+    '把卡爾曼曲線高亮',
+    '上市以來最大的幾次回撤各花多久收復？',
+    '最近一季財報與公司方針有哪些官方資訊？',
+    '目前的心理與社會指標顯示什麼？（請說明相關不等於因果）',
+  ];
 
   return (
     <section className="panel flex flex-col gap-2" aria-label="AI 分析助理">
@@ -348,10 +384,34 @@ export default function AiPanel({
       </div>
 
       {selection && (
-        <button className="btn text-xs" disabled={disabled || busy} onClick={() => send(`這段（${selection.from} ~ ${selection.to}）發生什麼事？請根據情境 JSON 的 selection 與偵測器、事件資料說明，必要時查詢三大法人資料並在圖上標註。`, selection)}>
-          🔍 問 AI：框選區間 {selection.from} ~ {selection.to} 發生什麼事？
-        </button>
+        <div className="flex flex-col gap-1">
+          <button className="btn text-xs" disabled={disabled || busy} onClick={() => send(`這段（${selection.from} ~ ${selection.to}）發生什麼事？請根據情境 JSON 的 selection 與偵測器、事件資料說明，必要時查詢三大法人資料並在圖上標註。`, selection)}>
+            🔍 問 AI：框選區間 {selection.from} ~ {selection.to} 發生什麼事？
+          </button>
+          <button
+            className="btn text-xs"
+            disabled={disabled || busy}
+            onClick={() =>
+              send(
+                `以歷史與新聞解釋選取區間 ${selection.from} ~ ${selection.to}：請依序呼叫 get_long_history（from=${selection.from}, to=${selection.to}）取得區間走勢與歷史對照，search_news（from=${selection.from}, to=${selection.to}）取得當時的權威新聞與官方公告，對區間內漲跌幅最大的交易日呼叫 explain_move，並以 get_behavioral_indicators（as_of=${selection.to}）補充當時的心理與社會指標。只使用 ${selection.to} 之前已公開的資訊（point-in-time），每則新聞 / 公告標明來源與日期，明確區分相關與因果，必要時在圖上標註區間。`,
+                selection,
+              )
+            }
+          >
+            📰 以歷史與新聞解釋選取區間
+          </button>
+        </div>
       )}
+      <div className="flex flex-wrap items-center gap-2 text-[11px] muted">
+        <span>
+          情境層：
+          {layersState === 'loading' ? '載入中…' : layersState === 'ok' ? `已載入（${['history', 'fundamentals', 'behavioral', 'recentNews'].filter((k) => layers?.[k as keyof ContextLayers]).length}/4 層${layers?.errors ? `，${Object.keys(layers.errors).length} 層失敗` : ''}）` : layersState === 'error' ? '載入失敗（不影響對話）' : '未載入'}
+        </span>
+        <button className="underline" onClick={() => setShowContext((v) => !v)} aria-expanded={showContext}>
+          {showContext ? '收起情境脈絡' : '展開情境脈絡（歷史 / 新聞 / 財報 / 心理指標）'}
+        </button>
+      </div>
+      {showContext && <ContextPanel symbol={symbol} selection={selection} compact onAskAi={disabled ? undefined : (q) => send(q, selection)} initialTab={selection ? 'news' : 'history'} />}
       <form
         className="flex gap-1"
         onSubmit={(e) => {
