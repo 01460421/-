@@ -46,16 +46,63 @@ interface TickerEntry {
   title: string;
 }
 
-/** 代號 → { cik, title }；查無則 null */
+/** 少數大型股的靜態對照（company_tickers.json 與 EDGAR 實體搜尋都失敗時的最後備援） */
+export const STATIC_CIKS: Record<string, { cik: string; title: string }> = {
+  AAPL: { cik: '0000320193', title: 'Apple Inc.' },
+  MSFT: { cik: '0000789019', title: 'MICROSOFT CORP' },
+  NVDA: { cik: '0001045810', title: 'NVIDIA CORP' },
+  AMZN: { cik: '0001018724', title: 'AMAZON COM INC' },
+  GOOGL: { cik: '0001652044', title: 'Alphabet Inc.' },
+  GOOG: { cik: '0001652044', title: 'Alphabet Inc.' },
+  META: { cik: '0001326801', title: 'Meta Platforms, Inc.' },
+  TSLA: { cik: '0001318605', title: 'Tesla, Inc.' },
+  AVGO: { cik: '0001730168', title: 'Broadcom Inc.' },
+  AMD: { cik: '0000002488', title: 'ADVANCED MICRO DEVICES INC' },
+  INTC: { cik: '0000050863', title: 'INTEL CORP' },
+  TSM: { cik: '0001046179', title: 'TAIWAN SEMICONDUCTOR MANUFACTURING CO LTD' },
+};
+
+interface EntityHits {
+  hits?: { hits?: { _id: string; _source?: { entity?: string; tickers?: string } }[] };
+}
+
+/** EDGAR 實體搜尋（efts.sec.gov keysTyped）：在 www.sec.gov 拒絕通用 UA 時仍可用 */
+export function parseEntitySearch(body: EntityHits, ticker: string): { cik: string; title: string } | null {
+  const t = ticker.toUpperCase();
+  for (const h of body?.hits?.hits ?? []) {
+    const tickers = String(h._source?.tickers ?? '')
+      .split(/[,\s]+/)
+      .map((x) => x.toUpperCase());
+    if (tickers.includes(t)) return { cik: padCik(h._id), title: String(h._source?.entity ?? '').replace(/\s*\([^)]*\)\s*$/, '').trim() };
+  }
+  return null;
+}
+
+/**
+ * 代號 → { cik, title }；查無則 null。
+ * 依序：company_tickers.json（需含聯絡資訊的 SEC_USER_AGENT，否則 www.sec.gov 會回 403）
+ *      → EDGAR 實體搜尋 → 靜態對照表。
+ */
 export async function tickerToCik(ticker: string): Promise<{ cik: string; title: string } | null> {
-  const map = await cached('ctx:sec:tickers:v1', 7 * 86400, async () => {
-    const body = await secFetchJson<Record<string, TickerEntry>>('https://www.sec.gov/files/company_tickers.json', { timeoutMs: 30000 });
-    const m: Record<string, { cik: string; title: string }> = {};
-    for (const e of Object.values(body)) if (e?.ticker) m[e.ticker.toUpperCase()] = { cik: padCik(e.cik_str), title: e.title };
-    return m;
-  }, 30 * 86400);
   const t = ticker.toUpperCase().replace(/\./g, '-');
-  return map[t] ?? map[ticker.toUpperCase()] ?? null;
+  try {
+    const map = await cached('ctx:sec:tickers:v1', 7 * 86400, async () => {
+      const body = await secFetchJson<Record<string, TickerEntry>>('https://www.sec.gov/files/company_tickers.json', { timeoutMs: 30000 });
+      const m: Record<string, { cik: string; title: string }> = {};
+      for (const e of Object.values(body)) if (e?.ticker) m[e.ticker.toUpperCase()] = { cik: padCik(e.cik_str), title: e.title };
+      return m;
+    }, 30 * 86400);
+    return map[t] ?? map[ticker.toUpperCase()] ?? null;
+  } catch {
+    /* 通常是未設定 SEC_USER_AGENT 被拒：改用實體搜尋 */
+  }
+  try {
+    const hit = await cached(`ctx:sec:entity:v1:${t}`, 30 * 86400, async () => parseEntitySearch(await secFetchJson<EntityHits>(`https://efts.sec.gov/LATEST/search-index?keysTyped=${encodeURIComponent(t)}`), t));
+    if (hit) return hit;
+  } catch {
+    /* 實體搜尋失敗 */
+  }
+  return STATIC_CIKS[t] ?? null;
 }
 
 export interface SecFiling {
