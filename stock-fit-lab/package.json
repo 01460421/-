@@ -21,6 +21,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.6.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "@vercel/functions": "^1.6.0",
     "echarts": "^5.6.0",
     "jspdf": "^2.5.2",
     "katex": "^0.16.22",

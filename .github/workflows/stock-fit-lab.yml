@@ -1,0 +1,54 @@
+name: stock-fit-lab CI
+
+on:
+  push:
+    paths: ['stock-fit-lab/**', '.github/workflows/stock-fit-lab.yml']
+  pull_request:
+    paths: ['stock-fit-lab/**', '.github/workflows/stock-fit-lab.yml']
+
+concurrency:
+  group: sfl-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Typecheck · Lint · Test · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: stock-fit-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: stock-fit-lab/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx next lint --max-warnings 0
+      - run: npm test
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
+  py:
+    name: Python service tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: stock-fit-lab/services/py
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: stock-fit-lab/services/py/requirements*.txt
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pytest -q
