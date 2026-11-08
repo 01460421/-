@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "title": "標題情緒詞典（繁中 + 英文）",
+  "description": "粗略的啟發式標題情緒分數，僅計算標題中正向 / 負向詞的出現次數，不讀取內文、不理解語境，可能誤判（例如反諷、比較句、引述他人看法）。僅作為『媒體語氣』的參考，相關不等於因果。",
+  "method": "score = (pos − neg) / (pos + neg)，沒有命中詞時為 0。中文以最長詞優先比對（避免「下修」同時命中「修」），英文以完整單字比對（不分大小寫）。若詞前 2 個中文字內或前 2 個英文單字內出現否定詞，該詞的正負號反轉。每日彙總取當日各標題分數的平均，另計 Tetlock (2007) 風格的負向詞比例 neg / (總詞數近似為命中詞數)。",
+  "reference": "Tetlock, P. C. (2007). Giving Content to Investor Sentiment: The Role of Media in the Stock Market. Journal of Finance, 62(3), 1139–1168；Loughran, T. & McDonald, B. (2011). When Is a Liability Not a Liability? Journal of Finance, 66(1), 35–65（英文財經詞彙的啟發來源，本詞典為精簡自編版本）。",
+  "positive": {
+    "zh": ["利多", "成長", "創新高", "新高", "看好", "上修", "調升", "優於預期", "超乎預期", "超預期", "大增", "勁揚", "大漲", "上漲", "走揚", "攀升", "強勁", "暢旺", "熱銷", "獲利", "轉盈", "擴產", "擴廠", "加碼", "回升", "反彈", "突破", "創高", "亮眼", "增長", "樂觀", "旺季", "復甦", "得標", "訂單滿", "漲價", "配息增加", "買超", "升評", "上調"],
+    "en": ["beat", "beats", "surge", "surges", "soar", "soars", "jump", "jumps", "rally", "rallies", "record", "growth", "upgrade", "upgrades", "upgraded", "raise", "raises", "raised", "strong", "stronger", "gain", "gains", "profit", "profits", "outperform", "bullish", "boost", "boosts", "expand", "expands", "expansion", "rebound", "rebounds", "optimistic", "exceed", "exceeds", "exceeded", "win", "wins", "approval", "approved"]
+  },
+  "negative": {
+    "zh": ["利空", "衰退", "下修", "調降", "裁員", "虧損", "轉虧", "不如預期", "低於預期", "遜於預期", "大跌", "重挫", "下跌", "走低", "暴跌", "崩跌", "疲弱", "疲軟", "減產", "砍單", "下滑", "萎縮", "悲觀", "警訊", "風險", "罰款", "訴訟", "違約", "停工", "停產", "延宕", "跌破", "賣超", "降評", "下調", "淡季", "庫存調整", "制裁", "關稅", "調查", "減少", "示警", "失火", "地震"],
+    "en": ["miss", "misses", "missed", "plunge", "plunges", "slump", "slumps", "fall", "falls", "fell", "drop", "drops", "decline", "declines", "cut", "cuts", "layoff", "layoffs", "loss", "losses", "downgrade", "downgrades", "downgraded", "weak", "weaker", "lawsuit", "probe", "investigation", "fine", "fined", "warning", "warns", "bearish", "slowdown", "recession", "tariff", "tariffs", "sanction", "sanctions", "default", "recall", "halt", "halts", "delay", "delays", "shortfall"]
+  },
+  "negators": {
+    "zh": ["不", "未", "沒有", "無", "非", "難"],
+    "en": ["not", "no", "never", "without", "despite", "fails", "failed"]
+  }
+}
