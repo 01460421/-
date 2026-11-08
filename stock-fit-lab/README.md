@@ -146,6 +146,19 @@
 
 ---
 
+## AI 參考資料層（point-in-time）
+
+AI 助理除了模型輸出，還能查詢四類背景資料；所有查詢都帶 `asOf`，只回傳**當時已公開**的資料（回放或詢問過去日期時不會看到未來資訊）：
+
+| 類別 | 來源 | 重點 |
+|---|---|---|
+| 長期歷史 `lib/history` | FinMind（台股，2330 自 1994）、Yahoo（美股，AAPL 自 1990） | 逐年報酬 / 波動 / 最大回撤、歷史高低點、最大單日漲跌、回撤與修復期、PELT / HMM regime、週 / 月 / 季 / 年降採樣 |
+| 新聞與公告 `lib/news` | 公開資訊觀測站重大訊息、TWSE OpenAPI、FinMind 新聞、SEC EDGAR、GDELT（權威媒體白名單） | 只取標題 + 連結 + 來源 + 發布時間 + 權威等級；標題情緒為詞典法粗略指標 |
+| 財報與方針 `lib/fundamentals` | FinMind（台股財報、月營收、股利、本益比）、SEC XBRL companyfacts、MOPS 法說會、8-K | 美股以 `filed` 日判定公開時點；台股依法定期限（Q1 5/15、Q2 8/14、Q3 11/14、年報 3/31）；方針只附官方連結不轉述 |
+| 心理與社會指標 `lib/behavioral` | 由價格、成交量、融資融券、法人、VIX、新聞計算 | 52 週高點錨定、異常成交量注意力、過度反應、動能、融資情緒背離、恐慌指標、新聞注意力與情緒；皆附公式、文獻與「相關不等於因果」 |
+
+AI 工具：`get_long_history`、`search_news`、`explain_move`、`get_fundamentals`、`get_guidance`、`get_behavioral_indicators`（每個輸出附 `sources`，大小上限 14 KB）。分析頁的「歷史 · 新聞 · 財報 · 心理指標」面板可直接瀏覽同一批資料。
+
 ## 即時修正四層機制
 
 | 層 | 內容 | 可在介面開關 |
@@ -184,6 +197,7 @@
 | `FINMIND_TOKEN` | FinMind（選填，提高額度） |
 | `ALPHAVANTAGE_API_KEY`, `POLYGON_API_KEY`, `FINNHUB_API_KEY` | 美股備援與盤中、事件資料 |
 | `PY_SERVICE_URL` | Python 數值微服務 |
+| `SEC_USER_AGENT` | SEC EDGAR 要求的聯絡式 User-Agent（AI 參考資料層） |
 | `ANTHROPIC_API_KEY`, `LLM_PROVIDER`, `LLM_MODEL`, `LLM_EFFORT` | AI 分析助理（預設 `claude-opus-5-5`） |
 | `LLM_DAILY_REQUEST_LIMIT`, `LLM_DAILY_COST_LIMIT_USD` | AI 每日配額與費用上限 |
 | `LLM_FALLBACKS` | `off` 關閉伺服器端拒答備援（預設開啟 `fallbacks: "default"`） |

@@ -21,6 +21,7 @@ import DirectionCard from './DirectionCard';
 import CorrectionTimeline from './CorrectionTimeline';
 import BenchmarkTable from './BenchmarkTable';
 import DataTabs from './DataTabs';
+import ContextPanel from './ContextPanel';
 import LinksPanel from './LinksPanel';
 import WatchlistPanel from './WatchlistPanel';
 import AiPanel from './AiPanel';
@@ -553,6 +554,7 @@ export default function StockWorkspace({ initial, meta }: { initial: InitialStat
           {payload && <CorrectionTimeline payload={payload} refreshKey={refreshKey} />}
           <BenchmarkTable symbol={symbol} models={enabled} window={winN} lambda={lambda} priceMode={priceMode} params={params} data={wf} onData={setWf} />
           <DataTabs symbol={symbol} market={market} onAddSubplot={(s) => setSubplots((p) => (p.some((x) => x.id === s.id) ? p : [...p, s].slice(-3)))} activeSubplots={subplots.map((s) => s.id)} />
+          <ContextPanel symbol={symbol} selection={selection} />
         </div>
 
         {/* ───── 右側欄 ───── */}
