@@ -5,6 +5,8 @@ export interface FactValue {
   /** 何時公開（YYYY-MM-DD）：SEC 用 filed、台股用申報日或法定期限 */
   knownAt: string;
   basis: 'filed' | 'statutory-deadline' | 'published';
+  /** 數值所採用的申報日（可能是後來的重編 / 比較期，仍 ≤ asOf） */
+  lastFiled?: string;
   /** 是否由累計值相減推得（例如 Q4 = 全年 − 前三季） */
   derived?: boolean;
   form?: string;

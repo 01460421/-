@@ -120,7 +120,7 @@ export async function getFundamentals(symbol: string, opts: { asOf?: string } = 
     // 下一期（asOf 之後才申報）
     const future = parseCompanyFacts(cf, '9999-12-31').quarters.filter((q) => q.periodEnd > (latest?.periodEnd ?? '') && q.knownAt > asOf);
     sources.push({ name: 'SEC XBRL companyfacts', url: `https://data.sec.gov/api/xbrl/companyfacts/CIK${c.cik}.json`, asOf: latest?.knownAt });
-    notes.push('美股季值：期間 80–100 天的申報值直接採用；Q4 等由累計值相減者標記 derivedFields。同一期間取 asOf 前最後一次申報的數值（含重編）。');
+    notes.push('美股季值：期間 80–100 天的申報值直接採用；Q4 等由累計值相減者標記 derivedFields。同一期間取 asOf 前最後一次申報的數值（含重編），公開日（knownAt）為第一次申報日。季度標籤為日曆季（非公司會計年度）。');
     return {
       symbol: info.symbol,
       market: info.market,

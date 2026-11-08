@@ -25,7 +25,8 @@ async function build(symbol: string, asOf?: string): Promise<ContextLayers> {
     getHistorySummary(symbol, { to: asOf }),
     getFundamentals(symbol, { asOf }),
     getBehavioralIndicators(symbol, { asOf, includeNews: false }),
-    searchNews({ symbol, from: addDays(to, -6), to, asOf: asOf ?? undefined, limit: 20, maxFinMindDays: 3, maxMopsMonths: 1 }),
+    // 摘要不等待 GDELT（受限流時退避可達數十秒）；完整新聞由 search_news 工具查詢
+    searchNews({ symbol, from: addDays(to, -6), to, asOf: asOf ?? undefined, limit: 20, maxFinMindDays: 3, maxMopsMonths: 1, includeGdelt: false }),
   ]);
   const errors: Record<string, string> = {};
   const val = <T, R>(r: PromiseSettledResult<T>, key: string, fn: (x: T) => R): R | null => {

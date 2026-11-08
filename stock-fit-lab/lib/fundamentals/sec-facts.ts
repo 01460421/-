@@ -54,13 +54,15 @@ export function knownFacts(facts: XbrlFact[], asOf: string): XbrlFact[] {
   return facts.filter((f) => typeof f.val === 'number' && Number.isFinite(f.val) && f.filed && f.filed <= asOf && (!f.form || ALLOWED_FORMS.test(f.form)));
 }
 
-/** 同期間（start,end）取 filed 最新者 */
-function latestByPeriod(facts: XbrlFact[]): Map<string, XbrlFact> {
-  const m = new Map<string, XbrlFact>();
+/** 同期間（start,end）：數值取 filed 最新者（含重編），firstFiled 為該期間「第一次」公開的日期 */
+function latestByPeriod(facts: XbrlFact[]): Map<string, XbrlFact & { firstFiled: string }> {
+  const m = new Map<string, XbrlFact & { firstFiled: string }>();
   for (const f of facts) {
     const k = `${f.start ?? ''}|${f.end}`;
     const prev = m.get(k);
-    if (!prev || f.filed > prev.filed || (f.filed === prev.filed && (f.accn ?? '') > (prev.accn ?? ''))) m.set(k, f);
+    const firstFiled = prev && prev.firstFiled < f.filed ? prev.firstFiled : f.filed;
+    if (!prev || f.filed > prev.filed || (f.filed === prev.filed && (f.accn ?? '') > (prev.accn ?? ''))) m.set(k, { ...f, firstFiled });
+    else prev.firstFiled = firstFiled;
   }
   return m;
 }
@@ -71,10 +73,10 @@ export function quarterlyDurations(facts: XbrlFact[], asOf: string): Map<string,
   const q = new Map<string, FactValue>();
   for (const f of known) {
     const d = days(f.start!, f.end);
-    if (d >= 80 && d <= 100) q.set(f.end, { value: f.val, knownAt: f.filed, basis: 'filed', form: f.form, accn: f.accn });
+    if (d >= 80 && d <= 100) q.set(f.end, { value: f.val, knownAt: f.firstFiled, lastFiled: f.filed, basis: 'filed', form: f.form, accn: f.accn });
   }
   // 同一起點的累計值相減
-  const byStart = new Map<string, XbrlFact[]>();
+  const byStart = new Map<string, (XbrlFact & { firstFiled: string })[]>();
   for (const f of known) {
     const arr = byStart.get(f.start!) ?? [];
     arr.push(f);
@@ -85,8 +87,10 @@ export function quarterlyDurations(facts: XbrlFact[], asOf: string): Map<string,
     for (let i = 1; i < arr.length; i++) {
       const gap = days(arr[i - 1].end, arr[i].end);
       if (gap < 80 || gap > 100 || q.has(arr[i].end)) continue;
-      const filed = arr[i].filed > arr[i - 1].filed ? arr[i].filed : arr[i - 1].filed;
-      q.set(arr[i].end, { value: arr[i].val - arr[i - 1].val, knownAt: filed, basis: 'filed', derived: true, form: arr[i].form, accn: arr[i].accn });
+      // 兩個累計值都公開之後才算已知（取兩者第一次公開日的較晚者）
+      const first = arr[i].firstFiled > arr[i - 1].firstFiled ? arr[i].firstFiled : arr[i - 1].firstFiled;
+      const last = arr[i].filed > arr[i - 1].filed ? arr[i].filed : arr[i - 1].filed;
+      q.set(arr[i].end, { value: arr[i].val - arr[i - 1].val, knownAt: first, lastFiled: last, basis: 'filed', derived: true, form: arr[i].form, accn: arr[i].accn });
     }
   }
   return q;
@@ -95,7 +99,7 @@ export function quarterlyDurations(facts: XbrlFact[], asOf: string): Map<string,
 /** 時點型概念（權益、股數）→ 每個期末的最新值 */
 export function instants(facts: XbrlFact[], asOf: string): Map<string, FactValue> {
   const m = new Map<string, FactValue>();
-  for (const f of latestByPeriod(knownFacts(facts, asOf).filter((x) => !x.start)).values()) m.set(f.end, { value: f.val, knownAt: f.filed, basis: 'filed', form: f.form, accn: f.accn });
+  for (const f of latestByPeriod(knownFacts(facts, asOf).filter((x) => !x.start)).values()) m.set(f.end, { value: f.val, knownAt: f.firstFiled, lastFiled: f.filed, basis: 'filed', form: f.form, accn: f.accn });
   return m;
 }
 
@@ -172,7 +176,9 @@ export function parseCompanyFacts(cf: CompanyFacts, asOf: string): SecFundamenta
     .sort()
     .map((end) => {
       const fields = { revenue: revenue.get(end), grossProfit: gp.get(end), operatingIncome: op.get(end), netIncome: ni.get(end), eps: eps.get(end), operatingCashFlow: ocf.get(end), equity: nearest(eq, end), shares: nearest(sh, end) ?? nearest(deiShares, end) };
-      const vals = Object.values(fields).filter((v): v is FactValue => !!v);
+      // 季資料的公開日：核心損益欄位第一次公開日的最晚者（權益 / 股數等時點值不影響）
+      const core = [fields.revenue, fields.netIncome, fields.eps].filter((v): v is FactValue => !!v);
+      const vals = core.length ? core : Object.values(fields).filter((v): v is FactValue => !!v);
       const knownAt = vals.reduce((m, v) => (v.knownAt > m ? v.knownAt : m), '');
       return {
         periodEnd: end,

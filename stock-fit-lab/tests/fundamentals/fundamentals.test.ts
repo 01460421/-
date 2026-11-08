@@ -258,3 +258,12 @@ describe('getFundamentals 整合', () => {
     expect(f.lagRule).toContain('5/15');
   });
 });
+
+describe('SEC 公開日 = 第一次申報日', () => {
+  it('重編後 knownAt 仍為原始申報日，數值改用重編值', () => {
+    const p = parseCompanyFacts(facts, '2024-06-01');
+    const q = p.quarters.find((x) => x.periodEnd === '2023-04-01')!;
+    expect(q.revenue).toBe(95000);
+    expect(q.knownAt).toBe('2023-05-05');
+  });
+});
