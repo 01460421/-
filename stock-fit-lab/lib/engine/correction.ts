@@ -180,10 +180,8 @@ export class CorrectionSession {
       }
       // 第 4 層
       if (L.ensembleReweight) {
-        const t2 = performance.now();
         report = this.weights.update(y, prevPrice, preds, this.activeMembers());
         layers.ensembleReweight = true;
-        void t2;
       }
     }
 

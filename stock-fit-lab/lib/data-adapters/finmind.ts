@@ -54,8 +54,9 @@ function token(): string | undefined {
 
 /** 代號 → FinMind data_id */
 export function finmindDataId(symbol: string): string | null {
-  if (symbol === '^TWII') return 'TAIEX';
   const info = normalizeSymbol(symbol);
+  if (info?.symbol === '^TWII') return 'TAIEX';
+  if (info?.symbol === '^TWOII') return 'TPEx';
   if (!info || (info.market !== 'TW' && info.market !== 'TWO') || info.symbol.startsWith('^')) return null;
   return info.code;
 }
@@ -199,7 +200,7 @@ export class FinMindAdapter implements DataAdapter {
     if (!raw.length) throw new ValidationError(`FinMind: ${symbol} 無資料（${start}~${end}）`);
 
     let adjusted = false;
-    const isIndex = symbol.startsWith('^');
+    const isIndex = info.symbol.startsWith('^');
     if (!isIndex) {
       let adjMap: Map<string, number> | null = null;
       if (token() && !this.adjDenied) {
@@ -351,7 +352,7 @@ export class FinMindAdapter implements DataAdapter {
 
   async getEvents(symbol: string, opts: { start?: string; end?: string } = {}): Promise<CorporateEvent[]> {
     const dataId = finmindDataId(symbol);
-    if (!dataId || symbol.startsWith('^')) return [];
+    if (!dataId || normalizeSymbol(symbol)?.symbol.startsWith('^')) return [];
     const end = opts.end ?? addDays(new Date().toISOString().slice(0, 10), 120);
     const start = opts.start ?? addDays(end, -365 * 3);
     const rows = await finmindRequest<FinMindDividendRow>('TaiwanStockDividend', { data_id: dataId, start_date: addDays(start, -200), end_date: end });
@@ -378,6 +379,8 @@ export async function loadTaiwanStockInfo(): Promise<number> {
   const seen = new Map<string, { code: string; market: 'TW' | 'TWO'; name: string }>();
   for (const r of rows) {
     if (r.type !== 'twse' && r.type !== 'tpex') continue;
+    // 只保留普通股、特別股與 ETF（排除權證等 6 位數衍生商品）
+    if (!/^(\d{4}|\d{4}[A-Z]|00\d{2,4}[A-Z]?)$/.test(r.stock_id)) continue;
     seen.set(r.stock_id, { code: r.stock_id, market: r.type === 'tpex' ? 'TWO' : 'TW', name: r.stock_name });
   }
   registerTwSymbols([...seen.values()]);

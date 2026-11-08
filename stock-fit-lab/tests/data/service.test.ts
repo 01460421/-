@@ -43,6 +43,7 @@ class FakeAdapter implements ExtendedAdapter {
     return { symbol, price: 1, at: '', delayMinutes: 0, source: this.name };
   }
   async getDataset(symbol: string, dataset: string): Promise<DataTable> {
+    if (dataset === 'options' || dataset === 'short_interest') throw new UnsupportedError(dataset);
     if (this.fail) throw this.fail;
     return { dataset, title: 't', symbol, source: this.name, fetchedAt: '', asOf: '', delayMinutes: 0, columns: [], rows: [{ a: 1 }] };
   }

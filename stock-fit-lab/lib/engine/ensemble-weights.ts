@@ -150,7 +150,7 @@ export class EnsembleWeightState {
 
   /** 目前權重 w_m = ē_m^{-2} / Σ ē_j^{-2}（歸零者 0）；無誤差資訊時等權 */
   weights(active?: string[]): Record<string, number> {
-    const ids = (active ?? this.ids()).filter((id) => this.models[id] || active);
+    const ids = active ?? this.ids();
     for (const id of ids) this.ensure(id);
     const compute = (useZero: boolean) => {
       const raw: Record<string, number> = {};

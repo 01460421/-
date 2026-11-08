@@ -19,12 +19,13 @@ export const MODEL_IDS: readonly ModelId[] = [
 export const MODEL_MAIN_PARAM: Partial<Record<ModelId, string>> = {
   poly: 'degree',
   fourier: 'harmonics',
-  holtwinters: 'period',
+  holtwinters: 'season',
   arima: 'p',
   linchannel: 'k',
-  msar: 'order',
-  wavelet: 'level',
-  emd: 'imfs',
+  gbm: 'lookback',
+  msar: 'regimes',
+  wavelet: 'levels',
+  emd: 'maxImfs',
 };
 
 export interface DeepLinkModel {
