@@ -258,3 +258,33 @@ describe('searchNews 整合（point-in-time）', () => {
     expect(r.notes.join()).toContain('SEC_USER_AGENT');
   });
 });
+
+describe('SEC 備援：ticker → CIK 與 Exhibit 99', () => {
+  it('company_tickers.json 403（未設 UA）時改用 EDGAR 實體搜尋', async () => {
+    const { parseEntitySearch } = await import('@/lib/news/sec');
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url.includes('company_tickers')) return fx.textResponse('Forbidden', 403);
+      if (url.includes('keysTyped=AAPL'))
+        return fx.jsonResponse({ hits: { hits: [{ _id: '320193', _source: { entity: 'Apple Inc. (AAPL)', tickers: 'AAPL' } }, { _id: '2055491', _source: { entity: 'Permuto Capital AAPL Trust I' } }] } });
+      return fx.textResponse('nf', 404);
+    });
+    expect(await tickerToCik('AAPL')).toEqual({ cik: '0000320193', title: 'Apple Inc.' });
+    expect(parseEntitySearch({ hits: { hits: [] } }, 'X')).toBeNull();
+  });
+
+  it('全部失敗時使用靜態對照', async () => {
+    fetchMock.mockImplementation(async () => fx.textResponse('Forbidden', 403));
+    expect((await tickerToCik('NVDA'))?.cik).toBe('0001045810');
+    expect(await tickerToCik('ZZZZ')).toBeNull();
+  });
+
+  it('index.json → Exhibit 99 連結', async () => {
+    const { parseExhibit99 } = await import('@/lib/news/sec');
+    const idx = 'https://www.sec.gov/Archives/edgar/data/320193/000032019324000005/';
+    const r = parseExhibit99({ directory: { item: [{ name: 'aapl-20240201.htm' }, { name: 'a8-kex991q1202412302023.htm' }, { name: 'ex99-2.htm' }, { name: 'R1.htm' }, { name: 'Financial_Report.xlsx' }] } }, idx);
+    expect(r).toEqual([
+      { label: 'EX-99.1', url: `${idx}a8-kex991q1202412302023.htm` },
+      { label: 'EX-99.2', url: `${idx}ex99-2.htm` },
+    ]);
+  });
+});

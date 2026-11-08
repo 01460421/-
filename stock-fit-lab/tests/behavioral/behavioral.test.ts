@@ -65,7 +65,7 @@ describe('異常成交量（Barber & Odean 2008）', () => {
 describe('短期過度反應 z（De Bondt & Thaler 1985）', () => {
   it('與獨立計算一致', () => {
     // 對數報酬交替 +1% / −1%，最後 5 日連續 +3%
-    const lr = Array.from({ length: 199 }, (_, i) => (i % 2 ? -0.01 : 0.01));
+    const lr: number[] = Array.from({ length: 199 }, (_, i) => (i % 2 ? -0.01 : 0.01));
     for (let k = 0; k < 5; k++) lr[lr.length - 1 - k] = 0.03;
     const lp = [Math.log(100)];
     for (const r of lr) lp.push(lp[lp.length - 1] + r);

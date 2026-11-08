@@ -8,7 +8,7 @@ import { addDays } from '../calendar';
 import { normalizeSymbol } from '../data-adapters';
 import { fetchMopsAnnouncements, fetchMopsConferences, GUIDANCE_KEYWORDS_ZH, MOPS_T05ST01_PAGE, MOPS_T100SB02_PAGE } from '../news/mops';
 import { filterAsOf, localDate, MARKET_TZ_OF } from '../news/pit';
-import { EIGHT_K_ITEMS, getSubmissions, searchEfts, SEC_UA_NOTE, secUserAgent, tickerToCik } from '../news/sec';
+import { EIGHT_K_ITEMS, getExhibit99, getSubmissions, SEC_UA_NOTE, secUserAgent, tickerToCik } from '../news/sec';
 import type { SourceStatus } from '../news/types';
 
 export interface GuidanceItem {
@@ -79,20 +79,19 @@ export async function getGuidance(symbol: string, opts: { from?: string; to?: st
       if (!c) throw new Error(`SEC 查無 ${info.code} 的 CIK`);
       const sub = await getSubmissions(c.cik, { from });
       const eight = sub.filings.filter((f) => f.form.startsWith('8-K') && f.filingDate >= from && f.filingDate <= to && f.items.some((i) => SECTION_BY_ITEM[i]));
-      // Exhibit 99 連結（EDGAR 全文檢索；失敗時只給申報索引頁，索引頁內列有所有附件）
+      // Exhibit 99 連結：讀取官方申報目錄 index.json（最多 12 筆）；失敗時只給申報索引頁（索引頁內列有所有附件）
       const exhibits = new Map<string, { label: string; url: string }[]>();
-      if (eight.length) {
+      let exOk = 0;
+      let exErr: string | null = null;
+      for (const f of eight.slice(0, 12)) {
         try {
-          const r = await searchEfts({ ciks: [c.cik], forms: ['8-K'], startdt: from, enddt: to });
-          for (const h of r.hits) {
-            if (!/^EX-99/i.test(h.fileType)) continue;
-            exhibits.set(h.adsh, [...(exhibits.get(h.adsh) ?? []), { label: h.fileType, url: h.url }]);
-          }
-          sources.push({ name: 'SEC EDGAR 全文檢索（Exhibit 99）', provider: 'sec-efts', ok: true, count: r.hits.length, url: 'https://efts.sec.gov/LATEST/search-index' });
+          exhibits.set(f.accessionNumber, await getExhibit99(f.indexUrl));
+          exOk++;
         } catch (e) {
-          sources.push({ name: 'SEC EDGAR 全文檢索（Exhibit 99）', provider: 'sec-efts', ok: false, count: 0, error: (e as Error).message.slice(0, 160) });
+          exErr ??= (e as Error).message.slice(0, 160);
         }
       }
+      if (eight.length) sources.push({ name: 'SEC EDGAR 申報目錄（Exhibit 99）', provider: 'sec-edgar', ok: exOk > 0 || !exErr, count: exOk, error: exOk ? undefined : exErr ?? undefined, note: exErr && !secUserAgent().configured ? '需設定 SEC_USER_AGENT 才能讀取 www.sec.gov 目錄' : undefined });
       items = eight.map((f) => {
         const main = f.items.find((i) => SECTION_BY_ITEM[i])!;
         return {

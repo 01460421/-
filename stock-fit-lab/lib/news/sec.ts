@@ -361,3 +361,22 @@ export function eftsHitToNews(h: EftsHit, symbol: string): NewsItem {
     items: h.items,
   };
 }
+
+interface IndexJson {
+  directory?: { item?: { name: string; type?: string; size?: string | number }[] };
+}
+
+/** 申報目錄 index.json → Exhibit 99 檔案連結（檔名含 ex99 / ex-99） */
+export function parseExhibit99(body: IndexJson, indexUrl: string): { label: string; url: string }[] {
+  return (body?.directory?.item ?? [])
+    .filter((i) => /ex-?99/i.test(i.name) && /\.(htm|html|txt|pdf)$/i.test(i.name))
+    .map((i) => {
+      const m = /ex-?(99)[-_.]?(\d{1,2})?/i.exec(i.name);
+      return { label: `EX-99${m?.[2] ? `.${Number(m[2])}` : ''}`, url: `${indexUrl}${i.name}` };
+    });
+}
+
+/** 取得某申報的 Exhibit 99 連結（過去申報不會變動：快取 90 天） */
+export async function getExhibit99(indexUrl: string): Promise<{ label: string; url: string }[]> {
+  return cached(`ctx:sec:ex99:v1:${indexUrl}`, 90 * 86400, async () => parseExhibit99(await secFetchJson<IndexJson>(`${indexUrl}index.json`), indexUrl), 180 * 86400);
+}
