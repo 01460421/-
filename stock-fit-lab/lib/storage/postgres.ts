@@ -5,7 +5,7 @@ import postgres from 'postgres';
 import type { Conversation, PredictionSnapshot, SnapshotOutcome, SystemEvent, WatchlistItem } from '../types';
 import type { EventQuery, SnapshotQuery, Store } from './types';
 
-type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+type Row = Record<string, any>;
 
 const iso = (v: unknown) => (v instanceof Date ? v.toISOString() : String(v));
 const ymd = (v: unknown) => (v instanceof Date ? v.toISOString().slice(0, 10) : String(v).slice(0, 10));

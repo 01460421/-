@@ -12,7 +12,7 @@ interface Props {
   height?: number | string;
   /** 多圖聯動群組名（echarts.connect） */
   group?: string;
-  onEvents?: Record<string, (params: any) => void>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onEvents?: Record<string, (params: any) => void>;
   className?: string;
   notMerge?: boolean;
 }

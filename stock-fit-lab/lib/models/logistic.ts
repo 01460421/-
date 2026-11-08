@@ -65,7 +65,7 @@ export class LogisticModel extends BaseModel {
     // 線性基準（同時是降級後的模型）
     const lr = wls2(taus, y, w);
     this.rssLinear = lr.rss;
-    const useLinear = (msg: string) => {
+    const fallbackToLinear = (msg: string) => {
       this.degraded = msg;
       this.lin = { a: lr.a, b: lr.b, cov: lr.cov };
       this.sigma = residualSigma(lr.rss, lr.sw, 2);
@@ -77,7 +77,7 @@ export class LogisticModel extends BaseModel {
     this.rssLogistic = NaN;
 
     if (y.some((v) => !(v > 0))) {
-      useLinear('模型空間出現非正值（log 模式下價格 ≤ 1），logistic 無定義，改用線性回歸');
+      fallbackToLinear('模型空間出現非正值（log 模式下價格 ≤ 1），logistic 無定義，改用線性回歸');
       return;
     }
 
@@ -110,7 +110,7 @@ export class LogisticModel extends BaseModel {
       }
     }
     if (!best) {
-      useLinear('無法取得 logistic 初始值（序列近乎水平），改用線性回歸');
+      fallbackToLinear('無法取得 logistic 初始值（序列近乎水平），改用線性回歸');
       return;
     }
 
@@ -127,12 +127,12 @@ export class LogisticModel extends BaseModel {
     const [L, k, t0] = lm.params;
     const sw = w ? w.reduce((a, b) => a + b, 0) : n;
 
-    if (!lm.converged) return useLinear(`LM 於 ${lm.iterations} 次迭代內未收斂，改用線性回歸`);
-    if (!lm.params.every(Number.isFinite) || !Number.isFinite(lm.rss)) return useLinear('LM 產生非有限參數，改用線性回歸');
-    if (L >= L_UP * ymax * 0.999) return useLinear('L 觸及上界：資料仍處於指數成長段，飽和上限無法辨識，改用線性回歸');
-    if (Math.abs(k) >= K_MAX * 0.999) return useLinear('|k| 觸及邊界：曲線退化為階梯函數，改用線性回歸');
-    if (Math.abs(t0) >= T_MAX * 0.999) return useLinear('反曲點 τ₀ 遠離資料範圍，參數無法辨識，改用線性回歸');
-    if (lm.rss > 1.25 * lr.rss) return useLinear('logistic 殘差平方和比線性回歸差 25% 以上，改用線性回歸');
+    if (!lm.converged) return fallbackToLinear(`LM 於 ${lm.iterations} 次迭代內未收斂，改用線性回歸`);
+    if (!lm.params.every(Number.isFinite) || !Number.isFinite(lm.rss)) return fallbackToLinear('LM 產生非有限參數，改用線性回歸');
+    if (L >= L_UP * ymax * 0.999) return fallbackToLinear('L 觸及上界：資料仍處於指數成長段，飽和上限無法辨識，改用線性回歸');
+    if (Math.abs(k) >= K_MAX * 0.999) return fallbackToLinear('|k| 觸及邊界：曲線退化為階梯函數，改用線性回歸');
+    if (Math.abs(t0) >= T_MAX * 0.999) return fallbackToLinear('反曲點 τ₀ 遠離資料範圍，參數無法辨識，改用線性回歸');
+    if (lm.rss > 1.25 * lr.rss) return fallbackToLinear('logistic 殘差平方和比線性回歸差 25% 以上，改用線性回歸');
 
     this.p = lm.params.slice();
     this.sigma = residualSigma(lm.rss, sw, 3);
