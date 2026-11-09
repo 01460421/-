@@ -1,0 +1,39 @@
+name: stock-fit-lab schedule
+
+# Vercel Hobby 方案的 Cron 每天只能跑一次，因此盤中 15 分鐘偵測與每日回填改由這裡呼叫。
+# 需要在 repo Settings → Secrets and variables → Actions 設定：
+#   SFL_SITE_URL  部署網址（例如 https://your-app.vercel.app，必須是不受登入保護的正式網址）
+#   CRON_SECRET   與 Vercel 環境變數 CRON_SECRET 相同
+# 未設定時工作會自動略過，不會失敗。端點內部會再以交易日曆判斷是否開盤。
+
+on:
+  schedule:
+    - cron: '*/15 1-5 * * 1-5'   # 台股盤中（UTC 01:00–05:59 ≈ 台北 09:00–13:59）
+    - cron: '*/15 13-21 * * 1-5' # 美股盤中（涵蓋夏令與冬令）
+    - cron: '40 23 * * *'        # 每日回填
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  call:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SITE: ${{ secrets.SFL_SITE_URL }}
+      SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Call cron endpoint
+        run: |
+          if [ -z "$SITE" ] || [ -z "$SECRET" ]; then
+            echo "SFL_SITE_URL / CRON_SECRET 未設定，略過。"; exit 0
+          fi
+          case "${{ github.event.schedule }}" in
+            '*/15 1-5 * * 1-5')   path='/api/cron/intraday?market=TW' ;;
+            '*/15 13-21 * * 1-5') path='/api/cron/intraday?market=US' ;;
+            *)                    path='/api/cron/backfill' ;;
+          esac
+          code=$(curl -s -o resp.txt -w '%{http_code}' -m 280 -H "Authorization: Bearer $SECRET" "${SITE%/}$path")
+          echo "HTTP $code"; head -c 600 resp.txt; echo
+          [ "$code" -lt 400 ]

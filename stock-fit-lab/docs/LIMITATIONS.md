@@ -49,7 +49,8 @@
 ## 四、即時修正與排程
 
 - 分析頁輪詢時重跑完整分析，而非在前端以 `CorrectionSession.ingest()` 逐筆遞增；因此頁面上的 RLS / 卡爾曼軌跡來自視窗重擬合。逐筆遞增路徑已在整合測試中驗證。
-- Vercel Hobby 方案 Cron 每日一次；盤中 15 分鐘偵測需 Pro 方案或外部排程器。
+- Vercel Hobby 方案 Cron 每日一次：`vercel.json` 只保留兩個收盤工作；盤中 15 分鐘偵測改由 GitHub Actions 排程呼叫（需設定 `SFL_SITE_URL`、`CRON_SECRET`），GitHub 排程可能延遲數分鐘。
+- API 逾時上限統一 60 秒；AI 長對話或大範圍走動式驗證可能被截斷，Pro / Fluid compute 可調高。
 - 健康頁的排程時間表是 `vercel.json` 的手動複本，修改排程時需同步。
 - 資料源健康度與 LLM 每日配額計數器存在記憶體，只涵蓋單一 Serverless 實例、冷啟動即歸零。**下一步**：改存 KV / Postgres。
 

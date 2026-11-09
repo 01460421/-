@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { runCloseJob } from '@/jobs/close';
 import { checkCronAuth, marketParam } from '../_auth';
 
-export const maxDuration = 300;
+export const maxDuration = 60; // Hobby 方案上限；Pro 或啟用 Fluid compute 可調高到 300
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {

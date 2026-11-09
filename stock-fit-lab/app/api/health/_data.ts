@@ -9,14 +9,21 @@ import { getStore } from '@/lib/storage';
 import { getMarketData } from '@/lib/data-adapters';
 import { limits as llmLimits, usage as llmUsage } from '@/lib/ai/quota';
 
-/** 與 vercel.json 的 crons 保持一致（Vercel Cron 時間為 UTC） */
-export const CRON_SCHEDULES: { id: string; job: 'close' | 'intraday' | 'backfill'; market?: 'TW' | 'US'; path: string; cron: string; label: string }[] = [
+/**
+ * 與 vercel.json 的 crons 保持一致（Vercel Cron 時間為 UTC）。
+ * Vercel Hobby 方案只允許每日一次的 Cron：收盤全量（含回填與偵測）走 Vercel Cron；
+ * 盤中 15 分鐘偵測與額外回填改由 GitHub Actions（.github/workflows/stock-fit-lab-schedule.yml）呼叫，
+ * 只有設定 EXTERNAL_SCHEDULER=1 時才列入健康監控，避免未啟用時誤報「漏跑」。
+ */
+const ALL_CRON_SCHEDULES: { id: string; job: 'close' | 'intraday' | 'backfill'; market?: 'TW' | 'US'; path: string; cron: string; label: string }[] = [
   { id: 'close-TW', job: 'close', market: 'TW', path: '/api/cron/close?market=TW', cron: '10 6 * * 1-5', label: '台股收盤全量（台北 14:10）' },
   { id: 'close-US', job: 'close', market: 'US', path: '/api/cron/close?market=US', cron: '20 22 * * 1-5', label: '美股收盤全量（UTC 22:20）' },
   { id: 'intraday-TW', job: 'intraday', market: 'TW', path: '/api/cron/intraday?market=TW', cron: '*/15 1-5 * * 1-5', label: '台股盤中輕量偵測（每 15 分）' },
   { id: 'intraday-US', job: 'intraday', market: 'US', path: '/api/cron/intraday?market=US', cron: '*/15 13-21 * * 1-5', label: '美股盤中輕量偵測（每 15 分）' },
   { id: 'backfill', job: 'backfill', path: '/api/cron/backfill', cron: '40 23 * * *', label: '實際值回填（UTC 23:40）' },
 ];
+
+export const CRON_SCHEDULES = ALL_CRON_SCHEDULES.filter((s) => s.job === 'close' || process.env.EXTERNAL_SCHEDULER === '1');
 
 // ───────── 極簡 cron 解析（支援 *、*/n、a-b、a-b/n、逗號清單） ─────────
 

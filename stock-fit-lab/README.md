@@ -240,12 +240,10 @@ uvicorn main:app --port 8000   # 然後設定 PY_SERVICE_URL=http://localhost:80
 2. Storage → 建立 Postgres（或連接 Supabase / Neon）並取得 `DATABASE_URL`；建立 KV（選填）。
 3. 於本機執行 `DATABASE_URL=... npm run db:migrate` 套用 schema（含 append-only 觸發器）。
 4. 於 Project Settings → Environment Variables 填入需要的變數（至少建議 `DATABASE_URL`、`CRON_SECRET`、`NEXT_PUBLIC_SITE_URL`）。
-5. 部署。`vercel.json` 已設定排程：
-   - 台股收盤後 `10 6 * * 1-5`（UTC，= 台北 14:10）
-   - 美股收盤後 `20 22 * * 1-5`（UTC；夏令時間 = 美東 18:20、冬令 = 17:20，皆在收盤後）
-   - 盤中每 15 分鐘輕量偵測（台股 `*/15 1-5`、美股 `*/15 13-21`，端點內再以交易日曆判斷是否開盤）
-   - 每日回填 `40 23 * * *`
-   > Vercel Hobby 方案的 Cron 每日僅能觸發一次且精度為小時；盤中排程需 Pro 方案或改用外部排程器（GitHub Actions / cron-job.org 呼叫同一端點並帶 `Authorization: Bearer $CRON_SECRET`）。
+5. 部署。排程分兩部分：
+   - **Vercel Cron**（`vercel.json`，Hobby 方案相容、每日一次）：台股收盤後 `10 6 * * 1-5`（UTC，= 台北 14:10）、美股收盤後 `20 22 * * 1-5`（UTC，夏令 = 美東 18:20、冬令 = 17:20）。收盤工作同時執行回填與偵測器。
+   - **GitHub Actions**（`.github/workflows/stock-fit-lab-schedule.yml`，選用）：盤中每 15 分鐘輕量偵測與每日額外回填。於 repo Secrets 設定 `SFL_SITE_URL`（不受登入保護的正式網址）與 `CRON_SECRET` 後自動啟用，並在 Vercel 設定 `EXTERNAL_SCHEDULER=1` 讓健康頁一併監控。
+   - 所有 API 的 `maxDuration` 設為 60 秒（Hobby 上限）；Pro 方案或啟用 Fluid compute 可調高。
 6. （選用）把 `services/py` 以 Dockerfile 部署到 Fly.io / Render / Cloud Run，設定 `PY_SERVICE_URL`。
 
 ---

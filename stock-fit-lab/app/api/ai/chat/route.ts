@@ -21,7 +21,7 @@ import { ConfigSchema } from '../../analyze/_schemas';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 300;
+export const maxDuration = 60; // Hobby 方案上限；Pro 或啟用 Fluid compute 可調高到 300
 
 export async function GET() {
   const cfg = llmConfig();

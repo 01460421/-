@@ -12,7 +12,7 @@ import { normalizeSymbol } from '@/lib/data-adapters';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 120;
+export const maxDuration = 60; // Hobby 方案上限；Pro 或啟用 Fluid compute 可調高到 300
 
 const Body = z.object({ symbol: z.string().min(1).max(40), context: z.record(z.unknown()) });
 

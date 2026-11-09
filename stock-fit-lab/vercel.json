@@ -2,9 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     { "path": "/api/cron/close?market=TW", "schedule": "10 6 * * 1-5" },
-    { "path": "/api/cron/close?market=US", "schedule": "20 22 * * 1-5" },
-    { "path": "/api/cron/intraday?market=TW", "schedule": "*/15 1-5 * * 1-5" },
-    { "path": "/api/cron/intraday?market=US", "schedule": "*/15 13-21 * * 1-5" },
-    { "path": "/api/cron/backfill", "schedule": "40 23 * * *" }
+    { "path": "/api/cron/close?market=US", "schedule": "20 22 * * 1-5" }
   ]
 }
