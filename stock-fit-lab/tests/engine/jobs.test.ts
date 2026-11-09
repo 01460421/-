@@ -94,7 +94,7 @@ describe('jobs', () => {
     const store = new MemoryStore(false);
     setStore(store);
     const { GET, maxDuration, dynamic } = await import('@/app/api/cron/backfill/route');
-    expect(maxDuration).toBe(300);
+    expect(maxDuration).toBe(60); // Hobby 方案上限
     expect(dynamic).toBe('force-dynamic');
     const denied = await GET(new Request('http://x/api/cron/backfill?market=US'));
     expect(denied.status).toBe(401);
