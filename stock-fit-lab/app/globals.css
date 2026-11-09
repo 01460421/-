@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --border: #e3e6eb;
+  --text: #1a1d23;
+  --muted: #6b7280;
+  --accent: #2563eb;
+}
+.dark {
+  --bg: #0e1116;
+  --panel: #161b22;
+  --border: #2a313c;
+  --text: #e6e8eb;
+  --muted: #9aa4b2;
+  --accent: #60a5fa;
+}
+html, body { background: var(--bg); color: var(--text); }
+body { font-family: ui-sans-serif, system-ui, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+
+@layer components {
+  .panel { @apply rounded-lg border p-3; background: var(--panel); border-color: var(--border); }
+  .muted { color: var(--muted); }
+  .btn { @apply inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-sm transition hover:opacity-80 disabled:opacity-40; border-color: var(--border); background: var(--panel); }
+  .btn-primary { @apply inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-40; background: var(--accent); }
+  .input { @apply rounded-md border px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40; border-color: var(--border); background: var(--panel); color: var(--text); }
+  .chip { @apply inline-flex items-center rounded-full border px-2 py-0.5 text-xs; border-color: var(--border); }
+  .table-std { @apply w-full text-sm; }
+  .table-std th { @apply border-b px-2 py-1.5 text-left font-medium; border-color: var(--border); color: var(--muted); }
+  .table-std td { @apply border-b px-2 py-1 tabular-nums; border-color: var(--border); }
+  .h2 { @apply text-base font-semibold; }
+}
+.katex { font-size: 1.02em; }

@@ -1,0 +1,50 @@
+{
+  "name": "stock-fit-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "可解釋的股價數學擬合實驗台：多模型擬合、即時修正、基準對照與歷史準度回顧",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "job:close": "tsx jobs/run.ts close",
+    "job:intraday": "tsx jobs/run.ts intraday",
+    "job:backfill": "tsx jobs/run.ts backfill",
+    "db:migrate": "tsx scripts/migrate.ts"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "@vercel/functions": "^1.6.0",
+    "echarts": "^5.6.0",
+    "jspdf": "^2.5.2",
+    "katex": "^0.16.22",
+    "next": "^14.2.35",
+    "postgres": "^3.4.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/node": "^20.17.10",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

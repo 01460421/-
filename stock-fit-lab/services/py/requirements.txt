@@ -1,0 +1,14 @@
+# 執行期必要相依
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.5
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+statsmodels>=0.14
+
+# 選用相依（未安裝時對應功能自動降級）：
+#   arch    → GARCH 改用 arch 套件（否則 scipy MLE 後備）
+#   torch   → LSTM 對照組（否則 /fit 回 501）
+# arch>=6.3
+# torch>=2.2
