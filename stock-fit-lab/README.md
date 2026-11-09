@@ -236,7 +236,7 @@ uvicorn main:app --port 8000   # 然後設定 PY_SERVICE_URL=http://localhost:80
 
 ## 部署到 Vercel
 
-1. 在 Vercel 匯入此 repository，**Root Directory 設為 `stock-fit-lab`**，Framework 選 Next.js。
+1. 在 Vercel 匯入此 repository，**Root Directory 設為 `stock-fit-lab`**（Settings → Build and Deployment → Root Directory），Framework 選 Next.js。若 build 只花幾秒就完成，代表 Root Directory 沒生效、部署到的是 repo 根目錄的其他檔案。
 2. Storage → 建立 Postgres（或連接 Supabase / Neon）並取得 `DATABASE_URL`；建立 KV（選填）。
 3. 於本機執行 `DATABASE_URL=... npm run db:migrate` 套用 schema（含 append-only 觸發器）。
 4. 於 Project Settings → Environment Variables 填入需要的變數（至少建議 `DATABASE_URL`、`CRON_SECRET`、`NEXT_PUBLIC_SITE_URL`）。
