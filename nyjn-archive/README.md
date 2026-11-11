@@ -96,7 +96,7 @@ npm run live -- https://你的網域   # 部署後的實機檢查（32 項，會
 
 - **改了任何檔案**：把 `assets/js/config.js` 的 `SITE_VERSION` 和 `index.html` 裡每個 `?v=` 一起往上加，瀏覽器和離線快取才會換新。
 - **網站和後端不在同一個網域**：`config.js` 的 `API_URL` 填後端網址；後端的 `ALLOW_ORIGINS` 填網站網址；`vercel.json` 的 `connect-src` 加上後端網址。
-- **換網域**：`index.html` 的 `og:url` 和 `og:image` 寫的是 `https://nyjn-archive.vercel.app`。換成自己的網域時一起改，社群平台的預覽圖才會指到新的位址。
+- **換網域**：`index.html` 的 `og:url` 和 `og:image` 寫的是 `https://reverse-1999-art.vercel.app`。換成自己的網域時一起改，社群平台的預覽圖才會指到新的位址。
 - **放映廳的配樂**：音檔在 `assets/audio/score.mp4`，要換檔案就改 `config.js` 的 `SCORE_URL`。配樂是照影片的時間軸剪的，而時間軸的算法寫在 `assets/js/plus/cinema.js` 開頭（每句幾秒、長句怎麼拆、鏡頭前後留多少空白）。這兩樣是一對：改了旁白或算法，音軌就會對不上章節。播放時是影片跟著配樂的時間走，音軌只在跳轉時定位一次（每定位一次就會聽到一次斷點），改這一段之後請跑 `npm run score`。
 - **展間自動翻頁的節奏**：`assets/js/plus/reader.js` 的 `cueSec`。
 - **徽記**：`assets/js/plus/rank.js` 的 `ACH`。
