@@ -42,12 +42,19 @@ def post(k, body, owner=OWNER):
     if s == 201 and d and d.get('item'): created.append((k, d['item']['id'], owner))
     return s, h, d
 
+before = {'h33': [], 'wall': []}
 try:
-    # 1. empty board, headers
+    # 1. board, headers
     s, h, d = call('GET', '/api/board?k=h33')
     check('GET board h33 → 200 with items[]', s == 200 and isinstance(d.get('items'), list), (s, d))
     check('board response carries ETag and CDN cache header', 'etag' in h and 's-maxage' not in h.get('cache-control', 'x') or 'etag' in h, h.get('cache-control'))
     print('     cache-control seen by client:', h.get('cache-control'), '| x-vercel-cache:', h.get('x-vercel-cache'))
+    # the site is live: visitors' own posts may already be in these channels. Remember them, so the checks
+    # below count only what this run adds, and the cleanup check can prove nothing of theirs was touched.
+    for k in ('h33', 'wall'):
+        s, h, d = call('GET', f'/api/board?k={k}&fresh=before')
+        before[k] = sorted(i['id'] for i in (d or {}).get('items', []))
+    print('     already there before the test — h33:', len(before['h33']), '| wall:', len(before['wall']))
 
     # 2. post one relay segment
     text = '（部署測試，稍後會刪除）鐘敲了第二下。'
@@ -89,7 +96,7 @@ try:
         rs = list(ex.map(lambda a: post('wall', {'x': f'（部署測試，稍後會刪除）第 {a} 段。'}, owner=a[1]), [('甲', OWNER), ('乙', OWNER2)]))
     check('2 simultaneous first posts to a new channel both → 201', all(r[0] == 201 for r in rs), [(r[0], r[2]) for r in rs])
     s, h, d = call('GET', '/api/board?k=wall&fresh=cc')
-    check('both simultaneous posts are stored', s == 200 and len(d['items']) == 2, (s, d and d.get('n')))
+    check('both simultaneous posts are stored', s == 200 and len(d['items']) == len(before['wall']) + 2, (s, d and d.get('n')))
 
     # 8. validation
     s, h, d = call('POST', '/api/board', {'k': 'nope', 'o': OWNER, 'x': 'x'})
@@ -137,7 +144,7 @@ finally:
         check(f'cleanup: delete test item in {k}', s == 200, (s, d))
     for k in ('h33', 'wall'):
         s, h, d = call('GET', f'/api/board?k={k}&fresh=clean')
-        check(f'cleanup: {k} is empty again', s == 200 and d['items'] == [], (s, d and d.get('n')))
+        check(f'cleanup: {k} holds exactly what it held before the test', s == 200 and sorted(i['id'] for i in d['items']) == before[k], (s, d and d.get('n'), len(before[k])))
     s, h, d = call('GET', '/api/pulse?fresh=1')
     print('     pulse after cleanup:', d and d.get('totals'), '| feed n:', d and len(d.get('feed', [])))
 
