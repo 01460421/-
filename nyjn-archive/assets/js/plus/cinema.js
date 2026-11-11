@@ -121,7 +121,7 @@
   }
   /* 開始放映時把銀幕和控制列一起捲進畫面 */
   function frameStage() {
-    if (isFs()) return; const r = E.stage.getBoundingClientRect(), bar = document.querySelector('.bar'), top = bar ? bar.getBoundingClientRect().bottom : 0;
+    if (isFs()) return; const r = E.stage.getBoundingClientRect(), bar = document.querySelector('.bar'), top = bar ? bar.offsetHeight : 0;
     if (r.top >= top - 4 && r.bottom <= innerHeight + 4) return;
     window.scrollTo({ top: Math.max(0, scrollY + r.top - top), behavior: K.rm() ? 'auto' : 'smooth' });
   }
