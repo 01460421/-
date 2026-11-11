@@ -16,4 +16,4 @@ const FILM_URL='';
 const SCORE_URL='';
 
 /* 版本：改了檔案之後把它往上加，瀏覽器和離線快取才會換新。 */
-const SITE_VERSION='2.1.0';
+const SITE_VERSION='2.1.1';

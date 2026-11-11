@@ -54,7 +54,7 @@
 
   /* ---- 狀態 ---- */
   let built = false, pos = 0, u = 0, playing = false, raf = 0, last = 0, shotNow = null, entNow = null, ended = false;
-  let wake = null, idleT = 0, speaking = false, voice = null, saveT = 0, holding = false;
+  let wake = null, idleT = 0, speaking = false, voice = null, saveT = 0, holding = false, scrub = false;
   const E = {};
   const set = () => A.Settings.get();
   const synth = window.speechSynthesis || null;
@@ -132,12 +132,24 @@
     raf = requestAnimationFrame(frame);
     if (document.hidden) { last = now; return; }
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
-    u += dt * (+set().rate || 1);
+    let adv = dt * (+set().rate || 1);
+    /* 配樂在出聲的時候，影片照配樂的時間走：超前就放慢，落後就追上，差太多才直接跳過去。
+       音軌本身不動，所以畫面再卡、分頁放到背景再回來，聲音都是連續的。 */
+    const c = holding ? null : A.Score.clock(now);
+    if (c === 'wait') { paint(); return; }                          // 配樂還在起步或緩衝：等它
+    if (c !== null) {
+      if (c >= TOTAL) { finish(); return; }
+      const err = c - (SEG[pos].t0 + u);                            // 正的：影片落後
+      if (err > 1.5) { const i = segAt(c); if (i !== pos) { go(i, c - SEG[i].t0, { natural: true }); return; } u = c - SEG[i].t0; adv = 0; }
+      else if (err < -3) A.Score.resync(now);
+      else if (Math.abs(err) > 0.03) adv = Math.max(adv * 0.25, adv + err * Math.min(1, dt * 2));
+    }
+    u += adv;
     const s = SEG[pos], hold = speaking && u >= s.dur && u < s.dur * 2.4;
-    if (hold !== holding) { holding = hold; A.Score.apply(); }     // 朗讀還沒唸完：影片等它，配樂也跟著停一下
+    holding = hold;                                                 // 朗讀還沒唸完：影片等它（配樂不停）
     if (hold) { paint(); return; }
-    if (u >= s.dur) { if (pos >= SEG.length - 1) { finish(); return; } go(pos + 1, 0, { natural: true }); return; }
-    paint(); barPaint(); A.Score.tick(now);
+    if (u >= s.dur) { if (pos >= SEG.length - 1) { finish(); return; } go(pos + 1, u - s.dur < 0.5 ? u - s.dur : 0, { natural: true }); return; }
+    paint(); barPaint();
   }
   function play() {
     if (playing) return; if (ended) { go(0, 0, { cut: true }); }
@@ -222,7 +234,7 @@
   }
   function tog(btn, key, label) {
     const paintB = () => { btn.setAttribute('aria-pressed', set()[key] ? 'true' : 'false'); btn.textContent = label + (set()[key] ? ' 開' : ' 關'); };
-    btn.onclick = () => { A.Settings.set(key, !set()[key]); paintB(); if (key === 'sub') { overlays(SEG[pos], true); subTick(); } if (key === 'voice') { if (set().voice && playing) speak(SEG[pos]); else if (synth) { synth.cancel(); speaking = false; } } };
+    btn.onclick = () => { A.Settings.set(key, !set()[key]); paintB(); if (key === 'sub') { overlays(SEG[pos], true); subTick(); } if (key === 'voice') { if (set().voice && playing) speak(SEG[pos]); else if (synth) { synth.cancel(); speaking = false; } holding = false; A.Score.apply(true); } };
     paintB();
   }
 
@@ -250,7 +262,11 @@
     E.rate.textContent = (+set().rate || 1) + '×';
     E.mus = B('配樂', () => A.Score.toggle(), '配樂');
     const musPaint = () => { E.mus.textContent = A.Score.label(); E.mus.setAttribute('aria-pressed', set().mus !== false ? 'true' : 'false'); };
-    A.Score.attach({ now: () => SEG[pos].t0 + Math.min(u, SEG[pos].dur), playing: () => playing && !holding, rate: () => +set().rate || 1 }, musPaint);
+    A.Score.attach({
+      now: () => SEG[pos].t0 + Math.min(u, SEG[pos].dur), playing: () => playing && !scrub, rate: () => +set().rate || 1,
+      free: () => !!(synth && voice && set().voice), play, pause, end: () => { if (playing) finish(); },
+      at: t => { if (t >= TOTAL) return; const i = segAt(t), uu = t - SEG[i].t0; if (i !== pos) go(i, uu, { natural: true, cut: true }); else if (Math.abs(uu - u) > 0.3) u = uu; }
+    }, musPaint);
     musPaint();
     E.subB = B('字幕', null); tog(E.subB, 'sub', '字幕');
     E.voice = B('朗讀', null); tog(E.voice, 'voice', '朗讀'); E.voice.hidden = true;
@@ -269,10 +285,12 @@
     E.cv.addEventListener('click', () => { if (isFs() && E.stage.classList.contains('idle')) { poke(); return; } toggle(); });
     K.swipe(screen, d => step(d));
     const seek = e => { const r = E.bar.getBoundingClientRect(), t = K.clamp((e.clientX - r.left) / r.width, 0, 0.9999) * TOTAL, i = segAt(t); go(i, t - SEG[i].t0, { cut: true }); if (!playing) bigPaint(); };
+    /* 拖進度條的時候配樂先停，放開才定位一次——邊拖邊定位，聽起來就是一連串的斷點 */
     let drag = false;
-    E.bar.addEventListener('pointerdown', e => { drag = true; try { E.bar.setPointerCapture(e.pointerId); } catch (x) { /* 忽略 */ } seek(e); });
+    const drop = () => { if (!drag) return; drag = false; scrub = false; A.Score.apply(true); };
+    E.bar.addEventListener('pointerdown', e => { drag = true; scrub = true; try { E.bar.setPointerCapture(e.pointerId); } catch (x) { /* 忽略 */ } seek(e); });
     E.bar.addEventListener('pointermove', e => { if (drag) seek(e); });
-    E.bar.addEventListener('pointerup', () => { drag = false; }); E.bar.addEventListener('pointercancel', () => { drag = false; });
+    E.bar.addEventListener('pointerup', drop); E.bar.addEventListener('pointercancel', drop); E.bar.addEventListener('lostpointercapture', drop);
     E.bar.addEventListener('keydown', e => { if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); step(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); step(-1); } });
     E.stage.addEventListener('pointermove', poke); E.stage.addEventListener('pointerdown', poke);
     document.addEventListener('fullscreenchange', () => { E.fs.textContent = document.fullscreenElement ? '離開全螢幕' : '全螢幕'; requestAnimationFrame(paint); });
@@ -305,6 +323,6 @@
   A.Cinema = {
     total: TOTAL, segs: SEG.length,
     where(p) { const s = SEG[K.clamp(p | 0, 0, SEG.length - 1)]; return { label: entLabel(s.ent) + '　' + mmss(s.t0), shot: s.shot }; },
-    get playing() { return playing; }, play, pause
+    get playing() { return playing; }, get now() { return SEG[pos].t0 + Math.min(u, SEG[pos].dur); }, play, pause
   };
 })();

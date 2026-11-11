@@ -1,7 +1,9 @@
 'use strict';
 /* ---------- 放映廳的配樂 ----------
    原版紀錄片的配樂是一條音軌：十七段，照章節剪好，長度跟著影片的時間軸走。
-   所以這裡只做一件事：讓音軌的時間永遠等於影片的時間（播放、暫停、跳轉、變速都跟著）。
+   兩邊要對在一起，但誰跟誰很重要：每動一次音軌的時間，耳朵就會聽到一次斷點。
+   所以平常播放時是「影片跟著配樂走」（見 clock），音軌從頭到尾不被拉來拉去；
+   只有時間真的被人動過（跳章、拖進度條、點逐字稿）才對音軌定位一次。
    音檔載不到時，退回即時合成的環境音：雨、一組低鳴的和弦、每句旁白一個單音，做法和原版相同。 */
 (function () {
   const A = window.__A, K = A.K;
@@ -70,65 +72,102 @@
     }
   };
 
-  /* ---- 配樂：一個 audio 元素，時間跟著影片 ---- */
+  /* ---- 配樂：一個 audio 元素 ---- */
+  const GRACE = 3000;                                   // 配樂起步、跳轉或緩衝時，影片最多等它這麼久（毫秒）
+  const free = () => !!(host.free && host.free());      // 朗讀模式：影片照朗讀的速度走，配樂只管不停地放
   const Mus = {
-    el: null, fail: false, ok: false, need: false, pend: -1, fixT: 0,
+    el: null, fail: false, ok: false, need: false, sys: false, led: false, pend: -1, sk: 0, skAt: 0, w0: 0, c0: -1, cAt: 0, fixT: 0,
     init() {
       if (this.el || this.fail) return;
       try {
         const a = this.el = new Audio(); a.preload = 'auto';
         a.addEventListener('error', () => { this.fail = true; this.ok = false; apply(); });
-        a.addEventListener('loadedmetadata', () => { if (this.pend >= 0) { try { a.currentTime = this.pend; } catch (e) { /* 忽略 */ } this.pend = -1; } });
-        a.addEventListener('ended', () => { coda = false; apply(); });
-        a.addEventListener('playing', () => {
-          if (!this.ok) { this.ok = true; this.need = false; state(); }
-          const n = performance.now();
-          if (!coda && host.playing() && n > this.fixT && Math.abs(a.currentTime - host.now()) > 0.15) { this.fixT = n + 1500; this.seek(host.now()); }
+        a.addEventListener('loadedmetadata', () => { if (this.pend >= 0) { const T = this.pend; this.pend = -1; try { a.currentTime = T; } catch (e) { /* 忽略 */ } } });
+        a.addEventListener('playing', () => { if (!this.ok || this.need) { this.ok = true; this.need = false; } state(); });
+        a.addEventListener('waiting', state); a.addEventListener('seeked', state); a.addEventListener('canplay', state);
+        /* 配樂唱完了。影片正跟著它走的話，影片也到底了；朗讀模式下影片比較長，就讓它安靜到下一個場次 */
+        a.addEventListener('ended', () => { const led = !coda && host.playing() && !free(); coda = false; if (led && host.end) host.end(); else if (!host.playing()) apply(); else state(); });
+        /* 不是我們叫它停的（耳機拔掉、來電、系統的媒體鍵、手機把分頁收到背景）：影片跟著停，回來按播放就一起接下去 */
+        a.addEventListener('pause', () => {
+          if (!a.paused || a.ended || this.fail || coda || free() || !this.led || !wantMus() || !host.playing()) return;
+          if (host.at) host.at(a.currentTime);           // 畫面停在背景的話，先把影片帶到配樂停下來的地方
+          if (host.pause) { host.pause(); this.sys = true; }
         });
+        a.addEventListener('play', () => { if (this.sys && !host.playing() && host.play) { this.sys = false; host.play(); } });
         a.src = SRC;
       } catch (e) { this.fail = true; }
     },
-    seek(T) { const a = this.el; if (!a) return; if (a.readyState >= 1) { try { a.currentTime = T; } catch (e) { /* 忽略 */ } } else this.pend = T; }
+    /* 定位。拖進度條時會連續叫很多次：第一次立刻做，之後的併成最後一次 */
+    seek(T) {
+      const a = this.el; if (!a) return;
+      if (a.readyState < 1) { this.pend = T; return; }
+      const put = t => { this.skAt = performance.now(); this.c0 = -1; try { a.currentTime = t; } catch (e) { /* 忽略 */ } };
+      clearTimeout(this.sk); this.sk = 0;
+      if (performance.now() - this.skAt > 180) put(T);
+      else this.sk = setTimeout(() => { this.sk = 0; put(host.now()); }, 180);
+    }
   };
 
-  /* 影片那邊每次播放、暫停、跳轉、變速都叫一次；hard 代表時間被人動過，要重新對齊 */
+  /* 影片那邊每次播放、暫停、跳轉、變速都叫一次；hard 代表時間被人動過，音軌要重新定位 */
   function apply(hard) {
     const play = host.playing(), on = wantMus();
     if (play || hard) coda = false;                      // 重新開始放，或有人動了時間：尾奏結束
     const want = on && (play || coda);
+    Mus.sys = false; Mus.led = false; Mus.c0 = -1;
     if (A.Snd && A.Snd.hold) A.Snd.hold(want);          // 配樂在的時候，館內的雨聲先讓開
     if (on && play) Mus.init();                          // 真的要播才建立，這時才開始下載
     const a = Mus.el;
     if (a && !Mus.fail) {
-      if (!want) { if (!a.paused) a.pause(); }
+      if (!want) { clearTimeout(Mus.sk); Mus.sk = 0; if (!a.paused) a.pause(); }
       else {
         a.volume = vol();
-        if (!coda && (hard || a.paused || Math.abs(a.currentTime - host.now()) > 0.45)) Mus.seek(host.now());
-        try { a.playbackRate = coda ? 1 : host.rate(); } catch (e) { /* 忽略 */ }
+        const T = host.now();
+        // 正在出聲的音軌不去動它。只有時間被人動過，或是停著的時候位置差太多，才定位
+        if (!coda && (hard || ((a.paused || a.ended) && Math.abs(a.currentTime - T) > 0.35))) Mus.seek(T);
+        const r = coda ? 1 : host.rate();
+        try { if (a.playbackRate !== r) a.playbackRate = r; } catch (e) { /* 忽略 */ }
         if (a.paused) { const p = a.play(); if (p && p.catch) p.catch(e => { if (e && e.name === 'NotAllowedError') { Mus.need = true; state(); } }); }
       }
     }
     Amb.level(on && play && Mus.fail);
     state();
   }
-  function tick(now) {
-    const a = Mus.el; if (!a || Mus.fail || a.paused || coda || !host.playing() || now < Mus.fixT) return;
-    if (!a.seeking && a.readyState >= 3 && Math.abs(a.currentTime - host.now()) > 0.45) { Mus.fixT = now + 1500; Mus.seek(host.now()); }
+  /* 影片每畫一格來問一次：配樂現在唱到哪裡？
+     回數字：配樂正在出聲，影片照這個時間走。
+     回 'wait'：配樂正在起步、跳轉或緩衝，影片先停在原地等（最多 GRACE）。
+     回 null：沒有配樂可跟（關了、載不到、被瀏覽器擋下、朗讀模式、等太久），影片照自己的時鐘走。 */
+  function clock(now) {
+    const a = Mus.el;
+    if (!a || Mus.fail || Mus.need || coda || free() || !wantMus() || !host.playing() || a.paused || a.ended) { Mus.w0 = 0; Mus.led = false; return null; }
+    if (!Mus.sk && Mus.pend < 0 && !a.seeking && a.readyState >= 3) {
+      const c = a.currentTime;
+      if (c !== Mus.c0) { Mus.c0 = c; Mus.cAt = now; }
+      if (now - Mus.cAt < 700) {                         // 有在前進（有些瀏覽器的時間是一格一格跳的，中間用推算補上）
+        Mus.w0 = 0; Mus.led = true;
+        return c + Math.min(0.25, Math.max(0, now - Mus.cAt) / 1000) * a.playbackRate;
+      }
+    }
+    if (!Mus.w0) Mus.w0 = now;
+    return now - Mus.w0 < GRACE ? 'wait' : null;
   }
+  /* 最後的手段：影片已經超前配樂太多（配樂卡了很久才回來），把音軌拉到影片這裡，幾秒內最多一次 */
+  function resync(now) { if (now < Mus.fixT) return; Mus.fixT = now + 6000; Mus.seek(host.now() + 0.2); }
   /* 影片放完：配樂把最後一段奏完（尾奏） */
-  function finish() { coda = wantMus() && !Mus.fail && !!Mus.el && Mus.ok; }
+  function finish() { const a = Mus.el; coda = wantMus() && !Mus.fail && !!a && Mus.ok && !a.paused && !a.ended; }
   function leave() { coda = false; if (Mus.el && !Mus.el.paused) Mus.el.pause(); Amb.level(false); if (A.Snd && A.Snd.hold) A.Snd.hold(false); state(); }
   /* 換到新的一段：給退路的環境音用（換和弦、彈一個音、暴雨時雨聲湧上來） */
   function onSeg(seg) {
     if (seg.ent && typeof seg.ent.si === 'number') Amb.mood(seg.ent.si);
     if (!host.playing()) return;
+    const a = Mus.el;                                   // 朗讀模式：每換一個場次，把配樂對回這一場的開頭
+    if (a && !Mus.fail && !Mus.need && wantMus() && free() && seg.ent && seg.i === seg.ent.seg0 && Math.abs(a.currentTime - host.now()) > 1.5) { Mus.seek(host.now()); if (a.paused) apply(); }
     if (seg.type === 'cue') { Amb.pluck(); if (seg.stormHead) Amb.swell(); }
   }
   function label() {
     if (!wantMus()) return '配樂 關';
     if (Mus.need) return '點此播放配樂';
     if (Mus.fail) return '配樂（環境音）';
-    if (Mus.el && !Mus.ok && host.playing()) return '配樂 載入中';
+    if (Mus.el && host.playing() && !free() && (!Mus.ok || Mus.el.seeking || Mus.el.readyState < 3)) return '配樂 載入中';
     return '配樂 開';
   }
   /* 瀏覽器擋下自動播放時，按鈕的意思是「現在播」，不是關掉 */
@@ -142,7 +181,7 @@
   document.addEventListener('visibilitychange', () => { if (Amb.ac && document.hidden && !host.playing()) Amb.ac.suspend().catch(() => {}); });
 
   A.Score = {
-    attach(h, cb) { host = h; onState = cb; }, apply, tick, finish, leave, onSeg, label, toggle,
+    attach(h, cb) { host = h; onState = cb; }, apply, clock, resync, finish, leave, onSeg, label, toggle,
     get src() { return SRC; }, get audio() { return Mus.el; }, get failed() { return Mus.fail; }, get coda() { return coda; }
   };
 })();
