@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "node dev/server.mjs",
     "test": "node --test \"test/*.test.mjs\"",
-    "smoke": "node dev/smoke.cjs"
+    "smoke": "node dev/smoke.cjs",
+    "live": "python3 dev/live-check.py"
   },
   "dependencies": {
     "@vercel/blob": "^2.9.0"
