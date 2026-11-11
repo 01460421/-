@@ -8,7 +8,7 @@ const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg', 'icon-
   q('assets/css/base.css'), q('assets/css/plus.css'), q('assets/js/theme.js'), q('assets/js/config.js'),
   q('assets/js/paint.js'), q('assets/js/film.js'), q('assets/js/data.js'), q('assets/js/app.js'),
   q('assets/js/plus/kit.js'), q('assets/js/plus/settings.js'), q('assets/js/plus/sound.js'), q('assets/js/plus/gloss.js'),
-  q('assets/js/plus/palette.js'), q('assets/js/plus/reader.js'), q('assets/js/plus/cinema.js'), q('assets/js/plus/quiz.js'),
+  q('assets/js/plus/palette.js'), q('assets/js/plus/reader.js'), q('assets/js/plus/score.js'), q('assets/js/plus/cinema.js'), q('assets/js/plus/quiz.js'),
   q('assets/js/plus/rank.js'), q('assets/js/plus/social.js'), q('assets/js/plus/sync.js'), q('assets/js/plus/admin.js'),
   q('assets/js/boot.js')];
 
@@ -29,6 +29,7 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== self.location.origin) return;            // 字型等外部資源交給瀏覽器
   if (url.pathname.indexOf('/api/') >= 0) return;             // 後端永遠走網路
   if (url.pathname.endsWith('/sw.js')) return;
+  if (req.headers.has('range') || /\.(mp4|m4a|mp3|ogg|webm|wav)$/i.test(url.pathname)) return;   // 配樂是分段抓的大檔，交給瀏覽器
   if (req.mode === 'navigate') {                              // 頁面：先網路，斷線才用快取
     e.respondWith(fetch(req).then((r) => {
       if (r && r.ok) { const copy = r.clone(); caches.open(CACHE).then((c) => c.put('index.html', copy)); }

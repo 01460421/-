@@ -11,5 +11,9 @@ const API_URL='';
    填了之後，放映廳會多一個「另開原版」的連結。 */
 const FILM_URL='';
 
+/* 放映廳配樂的音檔。整部片一條音軌，時間和影片對齊；換成別的檔案時，長度與章節的位置要一致。
+   留空就用 assets/audio/score.mp4。載不到時會改用即時合成的環境音。 */
+const SCORE_URL='';
+
 /* 版本：改了檔案之後把它往上加，瀏覽器和離線快取才會換新。 */
-const SITE_VERSION='2.0.0';
+const SITE_VERSION='2.1.0';

@@ -50,6 +50,10 @@ async function main() {
     const p = await visitor('甲');
     await p.goto(BASE + '/#film/c1'); await p.waitForTimeout(1500);
     ok(await p.evaluate(() => window.__A.Cinema.playing), '放映廳帶章節進來時應該自動開始');
+    ok(Math.abs(await p.evaluate(() => window.__A.Cinema.total) - 1645.5) < 0.1, '放映廳的時間軸應該和原版紀錄片一樣長（1645.5 秒），配樂才對得上');
+    await p.waitForTimeout(2500);
+    const sc = await p.evaluate(() => { const S = window.__A.Score, a = S.audio, t = document.querySelector('.film-row .time').textContent.split(' ')[0].split(':'); return { failed: S.failed, label: S.label(), on: !!a && !a.paused, drift: a ? Math.abs(a.currentTime - (+t[0] * 60 + +t[1])) : 99 }; });
+    ok(sc.failed || sc.label === '點此播放配樂' || (sc.on && sc.drift < 1.6), '配樂應該跟著影片的時間在播，或已經退回環境音（' + JSON.stringify(sc) + '）');
     await p.keyboard.press(' '); await p.waitForTimeout(200);
     ok(!(await p.evaluate(() => window.__A.Cinema.playing)), '空白鍵應該暫停');
     await p.goto(BASE + '/#quiz'); await p.waitForTimeout(500); await p.click('#quiz-box .btn.pri');

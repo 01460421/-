@@ -160,6 +160,8 @@ button.gl:hover,button.gl[aria-expanded="true"]{color:var(--mark)}
 .film-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;justify-content:space-between;gap:14px;padding:14px clamp(14px,3vw,34px);font-family:var(--f-ui);font-size:11px;letter-spacing:.24em;text-shadow:0 1px 8px rgba(0,0,0,.8);pointer-events:none}
 .film-top span:first-child{color:#b9c6ff}
 .film-sub{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 clamp(14px,3vw,34px) clamp(16px,3.2vw,36px);font-size:clamp(17px,2.3vw,25px);line-height:1.8;letter-spacing:.04em;text-shadow:0 1px 2px #000,0 0 18px rgba(0,0,0,.9);pointer-events:none;max-width:38em;text-wrap:pretty}
+.film-sub{transition:opacity .45s ease}
+.film-sub.off{opacity:0}
 .film-sub span{display:block;animation:lineIn .7s ease both}
 .film-storm{position:absolute;left:clamp(14px,3vw,34px);top:48px;z-index:3;border:1px solid #b9c6ff;color:#b9c6ff;padding:7px 12px;font-family:var(--f-display);font-weight:900;letter-spacing:.16em;font-size:14px;animation:lineIn .7s ease both;pointer-events:none}
 .film-storm span{font-family:var(--f-ui);font-weight:400;font-size:11.5px;letter-spacing:.06em;margin-left:10px}

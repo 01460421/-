@@ -4,7 +4,7 @@
    其他模組用 A.Snd.cue('stamp') 之類的名字觸發短音效；聲音關著的時候什麼都不做。 */
 (function () {
   const A = window.__A, K = A.K;
-  let ctx = null, master = null, rainGain = null, noiseBuf = null, dropT = 0, armed = false, mood = 1;
+  let ctx = null, master = null, rainGain = null, noiseBuf = null, dropT = 0, armed = false, mood = 1, held = false;
   const want = () => !!A.Settings.get().snd;
   const vol = () => K.clamp(+A.Settings.get().vol || 0, 0, 1);
 
@@ -49,7 +49,7 @@
   function start() {
     if (!want()) return;
     if (!ctx && !build()) return;
-    const go = () => { fade(vol() * 0.9, 1.6); loopDrops(); };
+    const go = () => { fade(held ? 0 : vol() * 0.9, 1.6); loopDrops(); };
     if (ctx.state === 'suspended') ctx.resume().then(go).catch(() => {}); else go();
   }
   function stop() { clearTimeout(dropT); if (ctx) { fade(0, 0.5); } }
@@ -99,7 +99,7 @@
   A.on('ready', () => { if (want()) arm(); });
   A.on('setting', ({ k, v }) => {
     if (k === 'snd') { if (v) start(); else stop(); }
-    if (k === 'vol' && ctx && want()) fade(vol() * 0.9, 0.15);
+    if (k === 'vol' && ctx && want() && !held) fade(vol() * 0.9, 0.15);
   });
   A.on('import', () => { if (want()) arm(); else stop(); });
   A.on('veil', long => cue(long ? 'swell' : 'veil'));
@@ -109,5 +109,8 @@
     if (document.hidden) ctx.suspend().catch(() => {}); else if (want()) ctx.resume().catch(() => {});
   });
 
-  A.Snd = { cue, setMood, get on() { return want() && !!ctx && ctx.state === 'running'; } };
+  /* 放映廳的配樂響著的時候，雨聲先退到沒有；配樂停了再回來 */
+  function hold(h) { h = !!h; if (h === held) return; held = h; if (!ctx || !want()) return; fade(h ? 0 : vol() * 0.9, h ? 0.5 : 1.4); }
+
+  A.Snd = { cue, setMood, hold, get on() { return want() && !!ctx && ctx.state === 'running'; } };
 })();

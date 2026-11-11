@@ -35,6 +35,10 @@ const CONTENT_TYPES = {
   '.md': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8',
   '.woff2': 'font/woff2',
+  '.mp4': 'video/mp4',
+  '.m4a': 'audio/mp4',
+  '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav',
 };
 
 // 這些最上層的資料夾不當靜態檔案送出去（以 . 開頭的檔案和資料夾另外一律不送）
@@ -210,18 +214,40 @@ async function handleStatic(req, res, root, rootReal, pathname, rules) {
     return;
   }
 
-  res.statusCode = 200;
   res.setHeader('Content-Type', CONTENT_TYPES[path.extname(found.file).toLowerCase()] || 'application/octet-stream');
-  res.setHeader('Content-Length', found.size);
   res.setHeader('Last-Modified', found.mtime.toUTCString());
   res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Accept-Ranges', 'bytes');
   applyRules(res, rules, pathname);
+
+  // 分段請求（bytes=a-b／a-／-n）：瀏覽器在音檔裡跳轉時會用到，Vercel 的靜態檔也支援
+  let range = null;
+  const wanted = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || '').trim());
+  if (wanted && (wanted[1] || wanted[2]) && found.size > 0) {
+    let start = wanted[1] ? Number(wanted[1]) : Math.max(0, found.size - Number(wanted[2]));
+    let end = wanted[1] && wanted[2] ? Math.min(Number(wanted[2]), found.size - 1) : found.size - 1;
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start > end || start >= found.size) {
+      res.statusCode = 416;
+      res.setHeader('Content-Range', `bytes */${found.size}`);
+      res.end();
+      return;
+    }
+    range = { start, end };
+  }
+  if (range) {
+    res.statusCode = 206;
+    res.setHeader('Content-Range', `bytes ${range.start}-${range.end}/${found.size}`);
+    res.setHeader('Content-Length', range.end - range.start + 1);
+  } else {
+    res.statusCode = 200;
+    res.setHeader('Content-Length', found.size);
+  }
 
   if (req.method === 'HEAD') {
     res.end();
     return;
   }
-  const stream = createReadStream(found.file);
+  const stream = createReadStream(found.file, range || undefined);
   stream.on('error', (error) => {
     console.error(`[dev] 讀檔失敗 ${found.file}:`, error.message);
     res.destroy();

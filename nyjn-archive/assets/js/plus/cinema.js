@@ -1,33 +1,52 @@
 'use strict';
 /* ---------- 放映廳：把整部紀錄片在館內放出來 ----------
    片子不是影片檔，是一份腳本（FILM）加上即時繪製的底片。這裡把腳本攤成一條時間軸：
-   幕卡、章名卡、片名卡，以及一句一句的旁白。每句旁白的長度依字數估算。 */
+   幕卡、章名卡、片名卡，以及一句一句的旁白。
+   時間的算法和原版紀錄片完全相同（每句的秒數、長句怎麼拆、鏡頭前後留多少空白），
+   因為配樂是照那條時間軸剪的：影片走到幾分幾秒，音軌就要在幾分幾秒。 */
 (function () {
   const A = window.__A, K = A.K, { $, Case, Plates, pad, toast } = A;
   const fm = () => K.bag('fm', { pos: 0, fin: 0, done: {} });
-  const cueSec = A.Reader.cueSec;
+  const cueDur = t => K.clamp(1.4 + t.length * 0.155, 3, 11);
+  /* 超過四十四個字的旁白，在最接近中間的句號拆成兩段字幕 */
+  const split = t => {
+    if (t.length <= 44) return [t];
+    const ps = t.match(/[^。？！；]+[。？！；]?/g) || [t]; if (ps.length < 2) return [t];
+    let best = 1, bd = 1e9, acc = 0;
+    for (let i = 0; i < ps.length - 1; i++) { acc += ps[i].length; const d = Math.abs(acc - t.length / 2); if (d < bd) { bd = d; best = i + 1; } }
+    return [...split(ps.slice(0, best).join('')), ...split(ps.slice(best).join(''))];
+  };
 
   /* ---- 時間軸 ---- */
   const SEG = [], ENT = [];
+  let shotNo = 0, partNo = 0;
   FILM.forEach((e, ei) => {
     const ent = { ei, seg0: SEG.length };
     if (e.act) {
       ent.kind = 'act'; ent.id = 'act' + ei; ent.label = e.act.n; ent.zh = e.act.zh;
-      SEG.push({ type: 'act', act: e.act, shot: { p: e.bg[0], a: e.bg[1] || {}, cues: [] }, dur: 7, ent });
+      SEG.push({ type: 'act', act: e.act, shot: { p: e.bg[0], a: e.bg[1] || {}, cues: [] }, dur: 6.5, sd: 6.5, sx: shotNo++, ent });
     } else {
-      ent.kind = /^c\d+$/.test(e.id) ? 'ch' : 'part'; ent.id = e.id; ent.label = e.no || ''; ent.zh = e.zh; ent.meta = e.meta || '';
-      if (ent.kind === 'ch') SEG.push({ type: 'title', ch: e, shot: { p: e.bg[0], a: e.bg[1] || {}, cues: [] }, dur: 6.5, ent });
-      e.shots.forEach((s, si) => {
-        if (s.card || !s.cues.length) { SEG.push({ type: 'card', card: s.card || null, shot: s, dur: s.dur || 6, ent, si }); return; }
-        const head = SEG.length; let sum = 0;
-        s.cues.forEach((text, ci) => { const d = cueSec(text); sum += d; SEG.push({ type: 'cue', shot: s, ci, n: s.cues.length, text, dur: d, ent, si, head }); });
-        if (s.min && sum < s.min) SEG[SEG.length - 1].dur += s.min - sum;
+      ent.kind = /^c\d+$/.test(e.id) ? 'ch' : 'part'; ent.id = e.id; ent.label = e.no || ''; ent.zh = e.zh; ent.meta = e.meta || ''; ent.si = partNo++;
+      if (e.no) SEG.push({ type: 'title', ch: e, shot: { p: e.bg[0], a: e.bg[1] || {}, cues: [] }, dur: 7.5, sd: 7.5, sx: shotNo++, ent });
+      e.shots.forEach((sh, si) => {
+        const sx = shotNo++;
+        if (sh.card) { const d = sh.dur || 8; SEG.push({ type: 'card', card: sh.card, shot: sh, dur: d, sd: d, sx, ent, si }); return; }
+        const storm = !!sh.storm, mine = []; let t = storm ? 1.3 : 0.7;          // 鏡頭開頭先留一小段空白
+        (sh.cues || []).forEach((cu, oi) => {
+          const o0 = t, part = [];
+          split(cu).forEach(text => { const d = cueDur(text), g = { type: 'cue', shot: sh, text, oi, o0, a: t, d, ent, si, sx }; SEG.push(g); part.push(g); mine.push(g); t += d; });
+          part.forEach(g => { g.oD = t - o0; });
+        });
+        const sd = Math.max(sh.min || 0, t + (storm ? 1.4 : 0.9), storm ? 7 : 4);  // 結尾也留白；暴雨的鏡頭至少七秒
+        if (!mine.length) { SEG.push({ type: 'card', card: null, shot: sh, dur: sd, sd, sx, ent, si }); return; }
+        /* 一段字幕佔的時間：從它出現到下一段出現；第一段含開頭的空白，最後一段含結尾的空白 */
+        mine.forEach((g, i) => { g.s0 = i ? g.a : 0; g.dur = (i === mine.length - 1 ? sd : mine[i + 1].a) - g.s0; g.pre = g.a - g.s0; g.show = g.pre + g.d - 0.28; g.sd = sd; g.stormHead = storm && i === 0; });
       });
     }
     ent.seg1 = SEG.length - 1; ENT.push(ent);
   });
   let TOTAL = 0;
-  SEG.forEach((s, i) => { s.i = i; s.t0 = TOTAL; TOTAL += s.dur; });
+  SEG.forEach((g, i) => { g.i = i; g.t0 = TOTAL; TOTAL += g.dur; });
   ENT.forEach(e => { e.t0 = SEG[e.seg0].t0; e.dur = SEG[e.seg1].t0 + SEG[e.seg1].dur - e.t0; });
   const mmss = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
   const entLabel = e => (e.label ? e.label + '　' : '') + e.zh;
@@ -35,7 +54,7 @@
 
   /* ---- 狀態 ---- */
   let built = false, pos = 0, u = 0, playing = false, raf = 0, last = 0, shotNow = null, entNow = null, ended = false;
-  let wake = null, idleT = 0, speaking = false, voice = null, saveT = 0;
+  let wake = null, idleT = 0, speaking = false, voice = null, saveT = 0, holding = false;
   const E = {};
   const set = () => A.Settings.get();
   const synth = window.speechSynthesis || null;
@@ -43,12 +62,21 @@
   function paint() {
     const s = SEG[pos], cv = E.cv; if (!Plates.fit(cv)) return;
     const c = cv.getContext('2d'), W = cv.width, H = cv.height, U = Math.sqrt(W * H) / 100;
-    const t = s.type === 'cue' ? (s.t0 - SEG[s.head].t0) + u : u;
-    const k = s.type === 'cue' ? Math.min(s.n - 0.001, s.ci + K.clamp(u / s.dur, 0, 0.999)) : 0;
+    const t = s.type === 'cue' ? s.s0 + u : u;                                   // 這個鏡頭已經過了幾秒
+    const k = s.type === 'cue' && u >= s.pre ? s.oi + K.clamp((t - s.o0) / s.oD, 0, 0.999) : 0;   // 旁白講到第幾句
+    const still = K.rm(), q = still ? 0 : K.clamp(t / Math.min(Math.max(s.sd, 1), 60), 0, 1), z = 1.035 + 0.03 * q;
+    const dx = Math.sin(s.sx * 1.7) * W * 0.012 * (q - 0.5), dy = Math.cos(s.sx * 2.3) * H * 0.008 * (q - 0.5);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.shadowBlur = 0; c.setLineDash([]);
     c.fillStyle = '#090d12'; c.fillRect(0, 0, W, H); c.save();
-    try { (P[s.shot.p] || P.rain)(c, K.rm() ? 5 : t, W, H, U, s.shot.a || {}, k); } catch (e) { /* 單一畫面出錯不中斷放映 */ }
+    c.translate(W / 2 + dx, H / 2 + dy); c.scale(z, z); c.translate(-W / 2, -H / 2);   // 每個鏡頭都很慢地推近一點
+    try { (P[s.shot.p] || P.rain)(c, still ? 5 : t, W, H, U, s.shot.a || {}, k); } catch (e) { /* 單一畫面出錯不中斷放映 */ }
     c.restore(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.shadowBlur = 0; c.shadowColor = 'transparent'; c.setLineDash([]);
+    subTick();
+  }
+  /* 字幕只在它自己的時間內出現：鏡頭開頭的空白和兩句之間的間隙都不顯示 */
+  function subTick() {
+    const s = SEG[pos], on = s.type === 'cue' && u >= s.pre - 0.001 && u < s.show;
+    if (E.sub) E.sub.classList.toggle('off', !on);
   }
   function crossfade() {
     const p = E.prev, cv = E.cv; if (K.rm() || !cv.width) return;
@@ -86,12 +114,14 @@
     }
     if (o.natural && from && from.ent !== s.ent && from.ent.kind === 'ch') { fm().done[from.ent.id] = 1; }
     overlays(s); paint(); barPaint();
+    if (!o.natural) A.Score.apply(true);      // 時間被人動過：配樂重新對齊
+    A.Score.onSeg(s);
     if (playing) speak(s);
     clearTimeout(saveT); saveT = setTimeout(() => { fm().pos = pos; Case.save(); }, 600);
   }
   function finish() {
     const s = SEG[pos]; if (s.ent.kind === 'ch') fm().done[s.ent.id] = 1;
-    pause(); ended = true; fm().fin = Date.now(); fm().pos = 0; Case.save();
+    A.Score.finish(); pause(); ended = true; fm().fin = Date.now(); fm().pos = 0; Case.save();
     E.end.hidden = false; E.big.hidden = true; listPaint();
     A.emit('filmEnd');
   }
@@ -103,20 +133,23 @@
     if (document.hidden) { last = now; return; }
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     u += dt * (+set().rate || 1);
-    const s = SEG[pos], hold = speaking && u < s.dur * 2.4;
-    if (u >= s.dur && !hold) { if (pos >= SEG.length - 1) { finish(); return; } go(pos + 1, 0, { natural: true }); return; }
-    paint(); barPaint();
+    const s = SEG[pos], hold = speaking && u >= s.dur && u < s.dur * 2.4;
+    if (hold !== holding) { holding = hold; A.Score.apply(); }     // 朗讀還沒唸完：影片等它，配樂也跟著停一下
+    if (hold) { paint(); return; }
+    if (u >= s.dur) { if (pos >= SEG.length - 1) { finish(); return; } go(pos + 1, 0, { natural: true }); return; }
+    paint(); barPaint(); A.Score.tick(now);
   }
   function play() {
     if (playing) return; if (ended) { go(0, 0, { cut: true }); }
     playing = true; last = performance.now(); E.big.hidden = true; E.stage.classList.add('playing'); E.pp.textContent = '暫停'; E.pp.setAttribute('aria-label', '暫停');
-    speak(SEG[pos]); raf = requestAnimationFrame(frame); poke(); frameStage();
+    speak(SEG[pos]); raf = requestAnimationFrame(frame); poke(); frameStage(); A.Score.apply();
     try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { wake = w; }).catch(() => {}); } catch (e) { /* 沒有也沒關係 */ }
   }
   function pause() {
     if (!playing) return; playing = false; cancelAnimationFrame(raf); E.stage.classList.remove('playing', 'idle'); E.pp.textContent = '播放'; E.pp.setAttribute('aria-label', '播放');
     if (synth) { synth.cancel(); speaking = false; }
     if (wake) { try { wake.release(); } catch (e) { /* 忽略 */ } wake = null; }
+    holding = false; A.Score.apply();
     fm().pos = pos; Case.save(); bigPaint();
   }
   /* 開始放映時把銀幕和控制列一起捲進畫面 */
@@ -126,7 +159,7 @@
     window.scrollTo({ top: Math.max(0, scrollY + r.top - top), behavior: K.rm() ? 'auto' : 'smooth' });
   }
   const toggle = () => { if (playing) pause(); else play(); };
-  function step(d) { const p = pos + d; if (p < 0 || p >= SEG.length) return; go(p, 0); if (!playing) bigPaint(); }
+  function step(d) { const p = pos + d; if (p < 0 || p >= SEG.length) return; go(p, SEG[p].pre || 0); if (!playing) bigPaint(); }
   function stepEnt(d) {
     const cur = SEG[pos].ent, i = ENT.indexOf(cur);
     if (d < 0 && (pos > cur.seg0 || u > 2)) { go(cur.seg0, 0, { cut: true }); return; }
@@ -172,7 +205,7 @@
     for (let i = e.seg0; i <= e.seg1; i++) {
       const s = SEG[i]; if (s.type !== 'cue') continue;
       const li = K.h('li', { 'data-i': i, tabindex: '0', role: 'button', 'aria-current': 'false' }, K.h('span.t', { text: mmss(s.t0) }), K.h('p', { text: s.text }));
-      const hit = () => { go(i, 0); if (!playing) bigPaint(); };
+      const hit = () => { go(i, s.pre || 0); if (!playing) bigPaint(); };
       li.onclick = hit; li.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); hit(); } };
       E.script.append(li);
     }
@@ -189,7 +222,7 @@
   }
   function tog(btn, key, label) {
     const paintB = () => { btn.setAttribute('aria-pressed', set()[key] ? 'true' : 'false'); btn.textContent = label + (set()[key] ? ' 開' : ' 關'); };
-    btn.onclick = () => { A.Settings.set(key, !set()[key]); paintB(); if (key === 'sub') overlays(SEG[pos], true); if (key === 'voice') { if (set().voice && playing) speak(SEG[pos]); else if (synth) { synth.cancel(); speaking = false; } } };
+    btn.onclick = () => { A.Settings.set(key, !set()[key]); paintB(); if (key === 'sub') { overlays(SEG[pos], true); subTick(); } if (key === 'voice') { if (set().voice && playing) speak(SEG[pos]); else if (synth) { synth.cancel(); speaking = false; } } };
     paintB();
   }
 
@@ -213,12 +246,16 @@
     const B = (t, f, lab) => K.h('button.fbtn', { type: 'button', text: t, onclick: f, 'aria-label': lab || t });
     E.pp = B('播放', toggle); E.pp.classList.add('pp');
     E.time = K.h('span.time', { text: '0:00 ／ ' + mmss(TOTAL) });
-    E.rate = B('1×', () => { const R = [0.75, 1, 1.25, 1.5], i = (R.indexOf(+set().rate || 1) + 1) % R.length; A.Settings.set('rate', R[i]); E.rate.textContent = R[i] + '×'; }, '播放速度');
+    E.rate = B('1×', () => { const R = [0.75, 1, 1.25, 1.5], i = (R.indexOf(+set().rate || 1) + 1) % R.length; A.Settings.set('rate', R[i]); E.rate.textContent = R[i] + '×'; A.Score.apply(); }, '播放速度');
     E.rate.textContent = (+set().rate || 1) + '×';
+    E.mus = B('配樂', () => A.Score.toggle(), '配樂');
+    const musPaint = () => { E.mus.textContent = A.Score.label(); E.mus.setAttribute('aria-pressed', set().mus !== false ? 'true' : 'false'); };
+    A.Score.attach({ now: () => SEG[pos].t0 + Math.min(u, SEG[pos].dur), playing: () => playing && !holding, rate: () => +set().rate || 1 }, musPaint);
+    musPaint();
     E.subB = B('字幕', null); tog(E.subB, 'sub', '字幕');
     E.voice = B('朗讀', null); tog(E.voice, 'voice', '朗讀'); E.voice.hidden = true;
     E.fs = B('全螢幕', fullscreen);
-    const row = K.h('div.film-row', B('上一段', () => stepEnt(-1)), B('上一句', () => step(-1)), E.pp, B('下一句', () => step(1)), B('下一段', () => stepEnt(1)), E.time, K.h('span.sp'), E.rate, E.subB, E.voice, E.fs);
+    const row = K.h('div.film-row', B('上一段', () => stepEnt(-1)), B('上一句', () => step(-1)), E.pp, B('下一句', () => step(1)), B('下一段', () => stepEnt(1)), E.time, K.h('span.sp'), E.rate, E.mus, E.subB, E.voice, E.fs);
     E.stage = K.h('div.film-stage', { id: 'film-stage' }, screen, K.h('div.film-ctl', E.bar, row));
     E.list = K.h('ol.film-list'); E.script = K.h('ol.film-script'); E.scriptH = K.h('b');
     const below = K.h('div.wrap.film-below',
@@ -252,7 +289,7 @@
   });
   /* 第一次進來時房間還沒建好：路由要先找得到 section。 */
   A.on('ready', () => { if (!built) build(); });
-  A.on('leave', n => { if (n === 'film') { pause(); if (A.Snd) A.Snd.setMood(1); if (E.stage) { E.stage.classList.remove('fs'); document.documentElement.classList.remove('film-fs'); } if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } });
+  A.on('leave', n => { if (n === 'film') { pause(); A.Score.leave(); if (A.Snd) A.Snd.setMood(1); if (E.stage) { E.stage.classList.remove('fs'); document.documentElement.classList.remove('film-fs'); } if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden && playing && synth) { synth.cancel(); speaking = false; } });
   A.on('status', o => { if (o.id === 'film') { const f = fm(); o.s = f.fin ? '已看完' : f.pos > 0 ? '放映到 ' + mmss(SEG[K.clamp(f.pos, 0, SEG.length - 1)].t0) : ''; } });
 
@@ -263,6 +300,7 @@
   K.key((e, t) => inFilm(e, t) && e.key === ']', () => stepEnt(1));
   K.key((e, t) => inFilm(e, t) && e.key === '[', () => stepEnt(-1));
   K.key((e, t) => inFilm(e, t) && (e.key === 'f' || e.key === 'F'), () => fullscreen());
+  K.key((e, t) => inFilm(e, t) && (e.key === 'b' || e.key === 'B'), () => A.Score.toggle());
 
   A.Cinema = {
     total: TOTAL, segs: SEG.length,
