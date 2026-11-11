@@ -1,0 +1,6 @@
+# 部署時用不到的東西，不必上傳（lib/ 是後端的程式，不能列在這裡）
+/dev
+/test
+/docs
+/README.md
+/.data
