@@ -156,7 +156,12 @@ async function main() {
     await dl.goto(BASE + '/#c3/2'); await dl.waitForTimeout(900);
     ok(!(await dl.$('.gd-intro')) && await dl.evaluate(() => document.querySelector('.gd-bar').hidden && !document.querySelector('.gd-fab').hidden), '拿著連結直接進展間：不演入館，導覽收在角落');
 
-    /* 八、標頭 */
+    /* 八、字型：逆雨載入了；關於本館和頁尾都連到原創字體頁 */
+    await p.goto(BASE + '/'); await p.waitForTimeout(600);
+    ok(await p.evaluate(() => document.fonts.ready.then(() => document.fonts.check('40px NiYu', '逆雨檔案館'))), '逆雨字型應該載入');
+    ok(await p.evaluate(() => [...document.querySelectorAll('a[href="https://01460421.github.io/niyu/"]')].filter(a => a.target === '_blank' && /noopener/.test(a.rel)).length === 2 && typeof FONT_PAGE === 'string'), '關於本館和頁尾都應該連到原創字體頁（另開分頁）');
+
+    /* 九、標頭 */
     const res = await p.request.get(BASE + '/');
     ok(/script-src 'self'/.test(res.headers()['content-security-policy'] || ''), '首頁應該帶內容安全政策');
     const health = await (await p.request.get(BASE + '/api/health')).json();

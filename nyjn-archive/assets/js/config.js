@@ -15,5 +15,8 @@ const FILM_URL='';
    留空就用 assets/audio/score.mp4。載不到時會改用即時合成的環境音。 */
 const SCORE_URL='';
 
+/* 原創字體頁：本館用的「逆雨」（NiYu）字型的樣張與下載。 */
+const FONT_PAGE='https://01460421.github.io/niyu/';
+
 /* 版本：改了檔案之後把它往上加，瀏覽器和離線快取才會換新。 */
-const SITE_VERSION='2.2.4';
+const SITE_VERSION='2.2.5';

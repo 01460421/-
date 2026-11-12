@@ -18,6 +18,7 @@
     SD.forEach((s, i) => add('暴雨', ORD[i] + '暴雨　' + s.f + ' → ' + s.t, s.note, () => { A.setEra(i, true); location.hash = 'chronicle'; if (A.cur === 'chronicle') A.stormPaint(); }, 1));
     add('動作', '館內設定', '外觀 字級 動態 雨聲', () => A.Settings.open());
     add('動作', '鍵盤快捷鍵', '', () => A.Settings.shortcuts());
+    add('動作', '原創字體頁：逆雨 NiYu', '字型 字體 樣張 下載 font', () => window.open(FONT_PAGE, '_blank', 'noopener'));
     add('動作', '雨聲：開／關', '環境音', () => A.Settings.set('snd', !A.Settings.get().snd));
     add('動作', '外觀：白晝', '淺色', () => A.Settings.set('theme', 'light'));
     add('動作', '外觀：暗房', '深色', () => A.Settings.set('theme', 'dark'));
