@@ -477,13 +477,19 @@ def render_year(year, ents, qinfo_all):
         missing = sorted(set(range(1, total + 1)) - set(nos))
         err(f'{year}: 題號不完整，缺 {missing}') if missing else None
     qinfo_all.extend(qinfo)
+    try:
+        fs = sum(float(score_of(meta, q['no']) or 0) for q in qinfo)
+        full = int(fs) if fs == int(fs) else fs
+    except ValueError:
+        full = 100
+    full = full or 100
     # 章名頁
     opener = (f'<section class="opener" id="y{year}"><div class="op-in">'
               f'<div class="op-kicker">{"特別收錄・" if meta.get("bonus") else ""}國立嘉義高級中學・科學班甄選入學</div>'
               f'<div class="op-year">{year}</div><div class="op-sub">學年度</div>'
               f'<h1 class="op-title">{inline(meta.get("examname", "科學能力檢定｜國文科能力檢定")).replace("｜", "<br>")}<br>試題詳解</h1>'
               f'<div class="op-meta"><span>單選 {len(qinfo)} 題</span><span>{esc(meta.get("scoretext", ""))}</span>'
-              f'<span>滿分 100 分</span></div>'
+              f'<span>滿分 {full} 分</span></div>'
               f'<div class="op-hw hw">先自己寫一遍，<br>再對照筆記版原題！</div>'
               f'</div></section>')
     # 總覽頁
