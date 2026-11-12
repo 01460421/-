@@ -1,0 +1,14 @@
+{
+  "name": "guowen-book",
+  "version": "1.0.0",
+  "private": true,
+  "description": "科學班國文歷屆試題詳解集（嘉義高中）排版專案",
+  "scripts": {
+    "build": "python3 make.py"
+  },
+  "dependencies": {
+    "@fontsource/iansui": "^5.3.1",
+    "@fontsource/lxgw-wenkai-tc": "^5.3.1",
+    "@free-fonts/tw-kai": "^1.0.0"
+  }
+}

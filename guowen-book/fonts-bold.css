@@ -1,0 +1,17 @@
+/* 芫荽（Iansui）沒有粗體字重：以同源的霞鶩文楷 TC Bold 作為粗體，避免瀏覽器合成假粗體（會讓 PDF 暴增三倍） */
+/* lxgw-wenkai-tc-chinese-traditional-700-normal */
+@font-face {
+  font-family: 'Iansui';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(node_modules/@fontsource/lxgw-wenkai-tc/files/lxgw-wenkai-tc-chinese-traditional-700-normal.woff2) format('woff2'), url(node_modules/@fontsource/lxgw-wenkai-tc/files/lxgw-wenkai-tc-chinese-traditional-700-normal.woff) format('woff');
+}
+/* lxgw-wenkai-tc-latin-700-normal */
+@font-face {
+  font-family: 'Iansui';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(node_modules/@fontsource/lxgw-wenkai-tc/files/lxgw-wenkai-tc-latin-700-normal.woff2) format('woff2'), url(node_modules/@fontsource/lxgw-wenkai-tc/files/lxgw-wenkai-tc-latin-700-normal.woff) format('woff');
+}
