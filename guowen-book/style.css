@@ -298,3 +298,4 @@ table.stat td:first-child{text-align:left;white-space:nowrap}
 .cv-hw1{top:66mm !important}
 table.sets td{padding:1.2mm 2.4mm} table.sets tr.cur td{background:#FFF3C4;font-weight:700}
 .ans b.multi{font-size:15pt;letter-spacing:.02em}
+table.qlist a{color:inherit;text-decoration:none}

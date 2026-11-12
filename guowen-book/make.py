@@ -3,6 +3,7 @@
 用法：
   python3 make.py        產出三冊
   python3 make.py 3      只產出第三冊
+  python3 make.py --year 115   只產出單一年度樣張
 成品：dist/科學班國文歷屆試題詳解集_第X冊_起-迄.pdf
 """
 import subprocess, re, os, sys
@@ -20,17 +21,8 @@ def run(*a):
     return r.stdout
 
 
-def make(vol):
-    build.ERRORS.clear()
-    out, qinfo = build.build(vol=vol)
-    if not qinfo:
-        print(f'{vol["name"]}：尚無內容，略過')
-        return
-    for e in build.ERRORS:
-        print('  ⚠', e)
-    yrs = sorted(vol['years'])
-    pdf = f'dist/科學班國文歷屆試題詳解集_{vol["name"]}_{yrs[0]}-{yrs[-1]}.pdf'
-    tmp = f'dist/pass1-v{vol["no"]}.pdf'
+def two_pass(out, pdf, tmp):
+    """排版兩次：第一次取得各錨點頁碼，回填後再排一次"""
     run('node', 'render.js', out, tmp)
     ref = {}
     for m in re.finditer(r'^\s*(\d+)\s+\[.*?\]\s+"([^"]+)"', run('pdfinfo', '-dests', tmp), re.M):
@@ -54,11 +46,38 @@ def make(vol):
     run('node', 'render.js', out, pdf)
     n2 = int(re.search(r'Pages:\s+(\d+)', run('pdfinfo', pdf)).group(1))
     os.remove(tmp)
-    ok = '頁數一致 ✓' if n1 == n2 else '⚠ 頁數不同，請再執行一次'
+    return n2, ('頁數一致 ✓' if n1 == n2 else '⚠ 頁數不同，請再執行一次')
+
+
+def make(vol):
+    build.ERRORS.clear()
+    out, qinfo = build.build(vol=vol)
+    if not qinfo:
+        print(f'{vol["name"]}：尚無內容，略過')
+        return
+    for e in build.ERRORS:
+        print('  ⚠', e)
+    yrs = sorted(vol['years'])
+    pdf = f'dist/科學班國文歷屆試題詳解集_{vol["name"]}_{yrs[0]}-{yrs[-1]}.pdf'
+    n2, ok = two_pass(out, pdf, f'dist/pass1-v{vol["no"]}.pdf')
     print(f'{vol["name"]}：{len(qinfo)} 題、{n2} 頁（{ok}）→ {pdf}')
 
 
+def make_year(y):
+    """單一年度樣張（不含封面、目錄、附錄）"""
+    build.ERRORS.clear()
+    out, qinfo = build.build(years=[y], sample=True)
+    for e in build.ERRORS:
+        print('  ⚠', e)
+    pdf = f'dist/科學班國文詳解_{y}學年度_單年樣張.pdf'
+    n2, ok = two_pass(out, pdf, f'dist/pass1-y{y}.pdf')
+    print(f'{y} 學年度：{len(qinfo)} 題、{n2} 頁（{ok}）→ {pdf}')
+
+
 if __name__ == '__main__':
+    if len(sys.argv) > 2 and sys.argv[1] == '--year':
+        make_year(sys.argv[2])
+        sys.exit(0)
     only = sys.argv[1] if len(sys.argv) > 1 else None
     for v in build.VOLUMES:
         if only and str(v['no']) != only:

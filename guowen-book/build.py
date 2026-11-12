@@ -504,7 +504,7 @@ def render_year(year, ents, qinfo_all):
     # 題目一覽
     ov += '<div class="ov-card wide qlist-card"><h4>題目一覽</h4><table class="qlist"><thead><tr><th>題號</th><th>考點</th><th>類別</th><th>難度</th><th>答案</th><th>頁碼</th></tr></thead><tbody>'
     for q in sorted(qinfo, key=lambda x: x['no']):
-        ov += (f'<tr><td>{q["no"]:02d}</td><td>{inline(q["type"])}</td><td><span class="dot" style="background:{CAT_COLOR.get(q["cat"], "#444")}"></span>{q["cat"]}</td>'
+        ov += (f'<tr><td>{q["no"]:02d}</td><td><a href="#q{q["id"]}">{inline(q["type"])}</a></td><td><span class="dot" style="background:{CAT_COLOR.get(q["cat"], "#444")}"></span>{q["cat"]}</td>'
                f'<td>{stars(q["diff"])}</td><td><b>{q["ans"]}</b></td><td class="pg" data-ref="{q["id"]}">—</td></tr>')
     ov += '</tbody></table></div></section>'
     return (f'<div class="year-wrap y{year}">' + opener + f'<div class="year-body" style="page:y{year}">' + ov + body + '</div></div>'), meta
