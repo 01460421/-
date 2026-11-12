@@ -76,7 +76,7 @@
       g.append(K.h('p.hint', { text: '取回之後，這台裝置上的箱子會換成雲端那一只。' }));
     } else {
       g.append(K.h('span.lab', { text: '你的同步碼' }), K.h('code.sync-code', { text: pretty(s.code) }),
-        K.h('p.hint', { text: (s.t ? '上次同步　' + K.ago(s.t) + '。' : '') + '同步碼就是鑰匙，請自己記下來。後端只存加密過的內容，沒有同步碼就打不開。' }));
+        K.h('p.hint', { text: (s.t ? '上次同步　' + K.ago(s.t) + '。' : '') + '同步碼就是鑰匙，自己記牢。雲端只收上了鎖的箱子，沒有碼，誰也打不開。' }));
       const up = K.h('button.btn.pri', { type: 'button', text: '上傳這台的手提箱', disabled: busy, onclick: () => upload(false) });
       const dn = K.h('button.btn', { type: 'button', text: '換成雲端的那一份', disabled: busy, onclick: () => download() });
       const cp = K.h('button.btn', { type: 'button', text: '複製同步碼', onclick: () => A.copyText(pretty(s.code)) });

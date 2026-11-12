@@ -72,7 +72,7 @@
             li.append(b); li.onclick = () => pick(it); li.onmousemove = () => choose(i, true);
             list.append(li);
           });
-          note.textContent = q ? (rows.length ? '找到 ' + rows.length + (rows.length >= 40 ? '+' : '') + ' 筆　↑↓ 選擇　Enter 前往' : '沒有符合的內容，換個字試試。') : '輸入關鍵字；也可以直接選一個房間。';
+          note.textContent = q ? (rows.length ? '找到 ' + rows.length + (rows.length >= 40 ? '+' : '') + ' 筆　↑↓ 選擇　Enter 前往' : '館裡沒有這個。換個字試試。') : '打幾個字。或者，直接挑一個房間。';
           inp.setAttribute('aria-activedescendant', rows.length ? 'find-0' : '');
         };
         const choose = (i, quiet) => {
