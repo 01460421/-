@@ -15,15 +15,15 @@
   const plateNo = s => (A.Story ? A.Story.at(s.id) : 0) + 1;
   const saveSoon = K.debounce(() => Case.save(), 600);
   /* 和她重疊幾次，換成一句話。門檻：至少這麼多次 */
-  const KIND = [[7, '同一把傘', '七次都和她走了同一條路。換成你站在那裡，你也會這麼做。'], [5, '並肩的人', '大多數時候你們並肩。岔開的那一兩步，是你自己的。'], [3, '另一位司辰', '一半的路和她重疊，一半沒有。同一把傘底下，站得下不同的人。'],
-    [1, '走另一邊的人', '你多半走了另一條路。主線只寫了其中一種走法，另一種在你這裡。'], [0, '相反的紀錄', '七次都和她不一樣。把你的紀錄和她的放在一起，剛好是完整的兩面。']];
+  const KIND = [[7, '同一把傘', '七次，同一條路。換你站在那裡，你也會這麼做。'], [5, '並肩的人', '大多數時候你們並肩。岔開的那一兩步，是你自己的。'], [3, '另一位司辰', '一半的路和她重疊，一半沒有。同一把傘底下，站得下不同的人。'],
+    [1, '走另一邊的人', '你多半走了另一條路。主線只寫了其中一種走法，另一種在你這裡。'], [0, '相反的紀錄', '七次，沒有一次相同。兩份紀錄擺在一起，才是一整張底片。']];
   const kind = () => KIND.find(k => sameN() >= k[0]);
 
   /* 揭曉之後：寫一句理由；回到故事裡那一刻 */
   A.on('reveal', ({ s, rv }) => {
-    const inp = K.h('input.inp', { type: 'text', maxlength: '60', placeholder: '可以不寫', value: fa().why[s.id] || '', autocomplete: 'off', id: 'why-' + s.id });
+    const inp = K.h('input.inp', { type: 'text', maxlength: '60', placeholder: '不寫也行', value: fa().why[s.id] || '', autocomplete: 'off', id: 'why-' + s.id });
     inp.addEventListener('input', () => { const v = inp.value.trim().slice(0, 60); if (v) fa().why[s.id] = v; else delete fa().why[s.id]; saveSoon(); });
-    rv.append(K.h('label.fa-why', { for: 'why-' + s.id }, K.h('span.lab', { text: '為什麼這樣選？只存在這台裝置' }), inp), K.h('a.tiny', { href: '#story/' + s.ch + '/' + plateNo(s), text: '回到故事裡的這一刻' }));
+    rv.append(K.h('label.fa-why', { for: 'why-' + s.id }, K.h('span.lab', { text: '為什麼。只留在這台裝置上' }), inp), K.h('a.tiny', { href: '#story/' + s.ch + '/' + plateNo(s), text: '回到故事裡的這一刻' }));
   });
 
   /* 八題選完：你和她的路 */
@@ -36,8 +36,8 @@
   A.on('tally', ({ tl }) => {
     if (tl.querySelector('.fa-res')) return; const k = kind(), last = SC.find(s => !s.canon), head = tl.querySelector('b');
     const res = K.h('div.fa-res', K.h('div.fa-kind', K.h('span.lab', { text: '你走的那條路' }), K.h('b', { text: k[1] }), K.h('p', { text: k[2] + (last && pickOf(last) ? '沒有答案的那一題，你選了：' + text(last, pickOf(last)) + '。' : '') })),
-      path(), K.h('p.fa-legend', { text: '橫線是主線裡她走的路。往下岔開的，是你走了另一條路的時刻；第八個時刻沒有可以對照的答案。這一段解讀是本館寫的，不是遊戲設定。' }),
-      K.h('div.save-row', K.h('a.btn.pri', { href: '#journal', text: '看我的紀年' }), K.h('a.btn', { href: '#story/' + SC[0].ch + '/' + plateNo(SC[0]), text: '從第一個時刻親歷一次' })));
+      path(), K.h('p.fa-legend', { text: '橫線是她走的路。往下岔開的，是你走開的那幾步。第八個時刻沒有答案可對。以上是本館的讀法，不是遊戲設定。' }),
+      K.h('div.save-row', K.h('a.btn.pri', { href: '#journal', text: '看我的紀年' }), K.h('a.btn', { href: '#story/' + SC[0].ch + '/' + plateNo(SC[0]), text: '從第一個時刻走一遍' })));
     if (head) head.after(res); else tl.prepend(res);
   });
 
@@ -46,7 +46,7 @@
     const d = Case.d;
     return CH.map(c => {
       const picks = SC.filter(s => s.ch === c.id).map(s => {
-        const p = pickOf(s); if (!p) return { s, t: s.when + '。這裡有一個抉擇，你還沒有選。', none: true };
+        const p = pickOf(s); if (!p) return { s, t: s.when + '。這裡有一個時刻，你還沒有選。', none: true };
         const cmp = !s.canon ? '這一題沒有可以對照的答案。' : p === s.canon ? '主線裡，她也是。' : '主線裡，她選的是：' + text(s, s.canon) + '。';
         return { s, t: s.when + '。你選了：' + text(s, p) + '。' + cmp, why: fa().why[s.id] || '' };
       });
@@ -62,7 +62,7 @@
     const d = Case.d, n = Object.keys(d.read).length, done = SC.every(pickOf), parts = [];
     parts.push((d.name || '無名的記錄員') + '，' + fmtDate(d.since) + ' 到任。');
     parts.push('十四章裡蓋了 ' + n + ' 枚戳記' + (A.Story ? '，親歷過 ' + A.Story.done() + ' 章' : '') + '。');
-    if (done) parts.push('八個時刻都選完了：七次可以對照的抉擇裡，' + sameN() + ' 次和她走了同一條路（' + kind()[1] + '）。');
+    if (done) parts.push('八個時刻都選了。能對照的七次裡，' + sameN() + ' 次和她同路（' + kind()[1] + '）。');
     else parts.push('八個時刻選了 ' + SC.filter(pickOf).length + ' 個。');
     if (d.mine) parts.push('你的暴雨是' + ORD[d.mine.storm] + '暴雨（' + SD[d.mine.storm].f + ' → ' + SD[d.mine.storm].t + '）。');
     return parts;
@@ -79,14 +79,14 @@
       K.h('div.save-row', K.h('button.btn.pri', { type: 'button', text: '複製全文', onclick: () => A.copyText(asText()) }), K.h('button.btn', { type: 'button', text: '下載文字檔', onclick: () => K.download('nyjn-journal.txt', new Blob([asText()], { type: 'text/plain;charset=utf-8' })) }),
         A.Share ? K.h('button.btn', { type: 'button', text: '下載圖卡', onclick: () => A.Share.card({ kicker: 'MY CHRONICLE — 我的紀年', title: Case.d.name || '無名的記錄員', lead: true, lines: summary().slice(1), shot: Case.d.mine ? A.stormShot(Case.d.mine.storm) : { p: 'umbrella', a: {}, cues: [] }, name: 'nyjn-journal' }) }) : null,
         K.h('a.btn', { href: '#choices', text: '司辰的抉擇' }))));
-    if (blankAll) box.append(K.h('p.empty', { text: '這一頁還是空的。讀一章、蓋一枚戳記、做一個抉擇或寫一段手記，它們就會照章節排在這裡。' }));
+    if (blankAll) box.append(K.h('p.empty', { text: '這一頁還是白的。讀一章，蓋一枚戳記，選一次，寫一行。它們會自己排到這裡來。' }));
     const list = K.h('div.jr-list');
     es.forEach(e => {
       const body = K.h('div.jr-body');
       if (e.st.length) body.append(K.h('div.jr-st', e.st.map(t => K.h('span', { text: t }))));
       e.picks.forEach(p => { body.append(K.h('div.jr-pick' + (p.none ? '.none' : ''), K.h('p', { text: p.t }), p.why ? K.h('p.jr-why', { text: '理由：' + p.why }) : null, K.h('a.tiny', { href: '#story/' + p.s.ch + '/' + plateNo(p.s), text: p.none ? '到那一刻去選' : '回到這一刻' }))); });
       if (e.note) body.append(K.h('p.jr-note', { text: e.note }));
-      if (e.blank) body.append(K.h('p.jr-none', { text: '還沒有留下紀錄。' }));
+      if (e.blank) body.append(K.h('p.jr-none', { text: '這一章，你還沒留下什麼。' }));
       body.append(K.h('div.save-row', K.h('a.tiny', { href: '#story/' + e.c.id, text: '親歷這一章' }), K.h('a.tiny', { href: '#' + e.c.id, text: '到展間' })));
       list.append(K.h('article.jr-ch' + (e.blank ? '.blank' : ''), K.h('div.jr-h', K.h('span.lab', { text: e.c.no }), K.h('b', { text: e.c.zh }), K.h('span.jr-m', { text: e.c.meta })), body));
     });
@@ -94,10 +94,10 @@
   }
   function build() {
     built = true; box = K.h('div.jr', { id: 'journal-box' });
-    $('main').append(K.h('section.room', { id: 'r-journal', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'My Chronicle', text: '我的紀年' }), K.h('p.sub', { text: '你留下的戳記、抉擇、理由和手記，照章節排成一份紀錄。只存在這台裝置。' })), K.h('div.no', { text: '19' })), box)));
+    $('main').append(K.h('section.room', { id: 'r-journal', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'My Chronicle', text: '我的紀年' }), K.h('p.sub', { text: '她的那一份在放映廳。這一份是你的，只留在這台裝置上。' })), K.h('div.no', { text: '19' })), box)));
   }
-  if (A.Game) A.Game.room('journal', '我的紀年', '你留下的戳記、抉擇與手記，照章節排成一份紀錄。');
-  else A.ROOMS.splice(Math.max(0, A.ROOMS.length - 1), 0, ['journal', '我的紀年', '你留下的戳記、抉擇與手記，照章節排成一份紀錄。']);
+  if (A.Game) A.Game.room('journal', '我的紀年', '她的那一份在放映廳。這一份是你的。');
+  else A.ROOMS.splice(Math.max(0, A.ROOMS.length - 1), 0, ['journal', '我的紀年', '她的那一份在放映廳。這一份是你的。']);
   A.addRoom('journal', 'r-journal', () => { if (!built) build(); paint(); });
   A.on('ready', () => { if (!built) build(); });
   A.on('import', () => { if (A.cur === 'journal') paint(); });

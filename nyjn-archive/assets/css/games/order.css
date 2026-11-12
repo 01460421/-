@@ -27,7 +27,7 @@
 .g-order .mv{display:flex;border-left:1px solid var(--hair)}
 .g-order .mv button{min-width:48px;min-height:46px;padding:0 10px;font-family:var(--f-ui);font-size:12px;font-weight:500;letter-spacing:.1em;white-space:nowrap;transition:background .18s}
 .g-order .mv button+button{border-left:1px solid var(--hair)}
-.g-order .mv button:hover{background:var(--paper-2)}
+@media (hover:hover){.g-order .mv button:hover{background:var(--paper-2)}}
 .g-order .mv button:focus-visible{outline-offset:-4px}
 .g-order .mv button[disabled]{opacity:.3;cursor:default}
 

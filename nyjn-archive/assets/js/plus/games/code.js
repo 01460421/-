@@ -12,15 +12,16 @@
     const rows = [], body = K.h('tbody'), left = K.h('span.cd-left'), lab = K.h('span.lab'), msg = K.h('p.cd-msg', { role: 'status', text: '輸入四個不重複的數字，再按送出。' });
     for (let i = 0; i < MAX; i++) { const tr = K.h('tr', K.h('th', { scope: 'row', text: A.pad(i + 1) }), K.h('td.g'), K.h('td'), K.h('td')); rows.push(tr); body.append(tr); }
     const slots = Array.from({ length: LEN }, () => K.h('b')), keys = '1234567890'.split('').map(d => K.h('button', { type: 'button', text: d, onclick: () => put(d) }));
-    const pad = K.h('div.cd-pad', keys, K.h('button.btn', { type: 'button', text: '刪除', onclick: del }), K.h('button.btn.pri', { type: 'button', text: '送出', onclick: send }));
+    const pad = K.h('div.cd-pad', keys, K.h('button.btn.pri', { type: 'button', text: '送出', onclick: send }), K.h('button.btn', { type: 'button', text: '刪除', onclick: del }));
     pad.addEventListener('mousedown', e => e.preventDefault());   // 滑鼠點過的鍵不留焦點，接著按 Enter 才會是「送出」而不是再點一次那個數字
-    const play = K.h('div.cd-play', lab, K.h('div.cd-slots', { 'aria-hidden': 'true' }, slots), msg, pad);
+    const box = K.h('div.cd-slots', { role: 'img' }, slots), play = K.h('div.cd-play', lab, box, msg, pad);
     root.append(K.h('div', K.h('div.cd-head', K.h('span.lab', { text: '紀錄' }), left),
       K.h('table.cd-log', K.h('thead', K.h('tr', K.h('th', { scope: 'col', text: '次' }), K.h('th', { scope: 'col', text: '猜的數字' }), K.h('th', { scope: 'col', text: '位置對' }), K.h('th', { scope: 'col', text: '數字對、位置不對' }))), body)), play);
 
     const say = (t, bad) => { msg.textContent = t; msg.classList.toggle('bad', !!bad); if (bad) api.sfx('wrong'); };
     function paint() {
       slots.forEach((b, i) => { b.textContent = (over ? code : cur)[i] || ''; b.classList.toggle('at', !over && i === cur.length); });
+      box.setAttribute('aria-label', over ? '暗號 ' + code.join(' ') : cur ? '已經輸入 ' + cur.split('').join(' ') : '還沒輸入');
       keys.forEach(b => b.classList.toggle('in', cur.indexOf(b.textContent) >= 0));
       rows.forEach((tr, i) => tr.classList.toggle('now', !over && i === used));
       lab.textContent = over ? '暗號' : '第 ' + (used + 1) + ' 次'; left.textContent = '還剩 ' + (MAX - used) + ' 次';
@@ -50,7 +51,7 @@
     };
     document.addEventListener('keydown', key);
     paint();
-    if (root.getBoundingClientRect().bottom + scrollY > innerHeight) root.scrollIntoView({ block: 'start', behavior: 'instant' });   // 手機上紀錄加數字鍵比一個畫面長一點，先捲到剛好放得下
+    if (root.getBoundingClientRect().bottom + scrollY > innerHeight) root.scrollIntoView();   // 手機上紀錄加數字鍵比一個畫面長一點，先捲到剛好放得下
     return { stop() { over = true; document.removeEventListener('keydown', key); } };
   }
 

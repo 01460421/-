@@ -67,13 +67,13 @@
     const sec = $('sync-sec'), box = $('sync-box'); if (!sec) return; sec.hidden = !ok(); if (!ok()) return;
     const s = sy(); box.textContent = ''; const g = K.h('div.sync-grid');
     if (!valid(s.code)) {
-      g.append(K.h('p.hint', { text: '建立一組同步碼，把手提箱加密後放到雲端。在另一台裝置輸入同一組碼，就能把它取回來。' }));
+      g.append(K.h('p.hint', { text: '一組同步碼，就是一把鑰匙。箱子先上鎖，再寄去雲端；到了另一台裝置，用同一組碼開箱。' }));
       const mk = K.h('button.btn', { type: 'button', text: '建立同步碼並上傳', disabled: busy });
       mk.onclick = () => { sy().code = newCode(); sy().rev = 0; Case.flush(); upload(); };
       const inp = K.h('input.inp', { type: 'text', id: 'sync-in', placeholder: 'ABCD-EFGH-JKLM-NPQR', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', maxlength: '24', 'aria-label': '同步碼' });
       const go = K.h('button.btn', { type: 'button', text: '用同步碼取回', disabled: busy }); go.onclick = () => download(norm(inp.value));
       g.append(K.h('div.save-row', mk), K.h('label.lab', { for: 'sync-in', text: '已經有同步碼' }), inp, K.h('div.save-row', go));
-      g.append(K.h('p.hint', { text: '取回會把這台裝置上的手提箱換成雲端那一份。' }));
+      g.append(K.h('p.hint', { text: '取回之後，這台裝置上的箱子會換成雲端那一只。' }));
     } else {
       g.append(K.h('span.lab', { text: '你的同步碼' }), K.h('code.sync-code', { text: pretty(s.code) }),
         K.h('p.hint', { text: (s.t ? '上次同步　' + K.ago(s.t) + '。' : '') + '同步碼就是鑰匙，請自己記下來。後端只存加密過的內容，沒有同步碼就打不開。' }));

@@ -241,7 +241,7 @@
   function build() {
     built = true;
     const sec = K.h('section.room.film', { id: 'r-film', hidden: true });
-    const head = K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'Screening Room', text: '放映廳' }), K.h('p.sub', { text: '紀錄片《逆雨紀年》。畫面是即時繪製的底片，旁白一句一句浮現。可以暫停、跳到任何一章，或點逐字稿裡的一句話直接放到那裡。' })), K.h('div.no', { text: '10' })));
+    const head = K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'Screening Room', text: '放映廳' }), K.h('p.sub', { text: '紀錄片《逆雨紀年》，二十七分鐘。燈暗了就開始。想停、想跳、想從哪一句看起，都隨你。' })), K.h('div.no', { text: '10' })));
     E.cv = K.h('canvas', { id: 'film-cv', width: '1280', height: '720', 'aria-label': '放映中的底片' });
     E.prev = K.h('canvas.prev', { 'aria-hidden': 'true' });
     E.loc = K.h('span'); E.ch = K.h('span');

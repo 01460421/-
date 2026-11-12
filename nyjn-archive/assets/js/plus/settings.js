@@ -38,7 +38,7 @@
         const vol = K.h('input', { type: 'range', min: '0', max: '100', step: '5', value: String(Math.round(S.v.vol * 100)), 'aria-label': '音量' });
         vol.oninput = () => set('vol', K.clamp(+vol.value / 100, 0, 1));
         body.append(K.h('div.set-row', K.h('span.lab', { text: '音量' }), vol));
-        body.append(K.h('p.hint', { text: '雨聲是程式即時合成的。配樂只在放映廳響，是原版紀錄片的音軌，開始放映時才會下載（約 19 MB）。設定存在這台裝置的手提箱裡。' }));
+        body.append(K.h('p.hint', { text: '雨聲是現場合成的，沒有音檔。配樂只在放映廳響，開始放映才下載（約 19 MB）。設定只留在這台裝置的箱子裡。' }));
         const keys = K.h('button.tiny', { type: 'button', text: '鍵盤快捷鍵' }); keys.onclick = shortcuts;
         body.append(keys);
       }

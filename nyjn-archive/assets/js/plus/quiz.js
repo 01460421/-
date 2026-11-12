@@ -54,7 +54,7 @@
   };
   const PLAN = ['plate', 'stormTo', 'term', 'canon', 'meta', 'plate', 'stormWhich', 'term', 'en', 'order'];
   function makeRound() { const seen = new Set(), out = []; PLAN.forEach(k => { let q, n = 0; do { q = GEN[k](); n++; } while (seen.has(q.q + '|' + q.opts[q.ans] + '|' + (q.ctx || '')) && n < 12); seen.add(q.q + '|' + q.opts[q.ans] + '|' + (q.ctx || '')); out.push(q); }); return out; }
-  const GRADE = [[10, '司辰', '十題全對。時間交給你來記。'], [8, '資深記錄員', '只差一點。漏掉的那幾題，底下有連結可以回去看。'], [5, '記錄員', '大方向都記得。細節還可以再翻一次底片。'], [0, '見習生', '雨帶走了不少東西。從章節檔案或放映廳重新走一遍吧。']];
+  const GRADE = [[10, '司辰', '十題全對。時間交給你來記。'], [8, '資深記錄員', '只差一點。漏掉的那幾題，底下有路回去。'], [5, '記錄員', '大處都記得。細處，再翻一次底片。'], [0, '見習生', '雨帶走了不少。從章節檔案或放映廳，重新走一遍。']];
 
   let R = null, box = null;   // R: {qs, at, picks[]}
   function intro() {
@@ -62,7 +62,7 @@
     const fig = K.h('figure.plate'), cv = el('canvas'); cv.width = 960; cv.height = 600; fig.append(cv);
     const right = K.h('div',
       K.h('h3', { text: '十道題，考你還記得多少' }),
-      K.h('ul', K.h('li', { text: '題目從年表、章節、底片、名詞索引和抉擇裡即時抽出，每一輪都不一樣。' }), K.h('li', { text: '答完會立刻揭曉，並附上可以回去查證的連結。' }), K.h('li', { text: '可以用鍵盤 1–4 作答，Enter 到下一題。' })),
+      K.h('ul', K.h('li', { text: '題目從年表、底片、索引和抉擇裡現抽。每一輪都不同卷。' }), K.h('li', { text: '答完當場對答案。錯的那幾題，附上回去翻的路。' }), K.h('li', { text: '鍵盤 1–4 作答，Enter 換題。' })),
       b.plays ? K.h('dl.quiz-best', K.h('div', K.h('dt', { text: '最高分' }), K.h('dd', { text: b.best + ' ／ 10' })), K.h('div', K.h('dt', { text: '考過' }), K.h('dd', { text: b.plays + ' 輪' })), K.h('div', K.h('dt', { text: '平均' }), K.h('dd', { text: (b.sum / b.plays).toFixed(1) }))) : null,
       K.h('div.save-row', K.h('button.btn.pri', { type: 'button', text: b.plays ? '再考一輪' : '開始考核', onclick: start, 'data-auto': '1' })));
     box.append(K.h('div.quiz-intro', fig, right));
@@ -119,7 +119,7 @@
   function build() {
     built = true;
     box = K.h('div.quiz', { id: 'quiz-box' });
-    const sec = K.h('section.room', { id: 'r-quiz', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'Examination', text: '入館考核' }), K.h('p.sub', { text: '第一防線學校的規矩：先考試，再發證。十道題，全部出自館內的年表、底片、索引和抉擇。' })), K.h('div.no', { text: '11' })), box));
+    const sec = K.h('section.room', { id: 'r-quiz', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'Examination', text: '入館考核' }), K.h('p.sub', { text: '第一防線學校的規矩：先考試，再發證。十題，題題出自館內。' })), K.h('div.no', { text: '11' })), box));
     $('main').append(sec);
   }
   A.on('ready', () => { if (!built) build(); });

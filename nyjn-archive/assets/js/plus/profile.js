@@ -28,11 +28,11 @@
     const name = K.h('input.inp', { id: 'pf-name', type: 'text', maxlength: '16', placeholder: '記錄員的名字', autocomplete: 'off', value: d.name });
     name.addEventListener('input', () => { Case.d.name = name.value.trim().slice(0, 16); Case.save(); fig.querySelector('figcaption b').textContent = Case.d.name || '無名的記錄員'; });
     const side = K.h('div.pf-side', G.strip(),
-      K.h('label.pf-name', { for: 'pf-name' }, K.h('span.lab', { text: '姓名（和手提箱的記錄員證是同一個）' }), name),
-      K.h('p.pf-cv', { text: c ? '封面：' + D.label(c) + '〈' + c.c.zh + '〉' : '封面還是預設的那一張。在底片冊點開任何一張持有的底片，可以設為封面。' }),
+      K.h('label.pf-name', { for: 'pf-name' }, K.h('span.lab', { text: '姓名（和記錄員證上的是同一個）' }), name),
+      K.h('p.pf-cv', { text: c ? '封面：' + D.label(c) + '〈' + c.c.zh + '〉' : '封面還是館方給的那一張。底片冊裡隨便哪一張，都能換上來。' }),
       K.h('div.save-row', K.h('button.btn.pri', { type: 'button', text: '下載檔案圖卡', onclick: download }), K.h('a.btn', { href: '#album', text: '換封面' }), K.h('a.btn', { href: '#shop', text: '換稱號' }), K.h('a.btn', { href: '#case', text: '手提箱' })));
     box.append(K.h('div.pf-top', fig, side));
-    box.append(K.h('section.pf-sec', K.h('div.q-h', K.h('h3', { text: '紀錄' }), K.h('span.lab', { text: '都存在這台裝置的手提箱裡' })), K.h('dl.pf-stats', stats().map(s => K.h('div', K.h('dt', { text: s[0] }), K.h('dd', { text: s[1] }))))));
+    box.append(K.h('section.pf-sec', K.h('div.q-h', K.h('h3', { text: '紀錄' }), K.h('span.lab', { text: '都在這台裝置的手提箱裡' })), K.h('dl.pf-stats', stats().map(s => K.h('div', K.h('dt', { text: s[0] }), K.h('dd', { text: s[1] }))))));
     if (A.Arcade) {
       const rows = A.Arcade.games().map(g => { const b = A.Arcade.best(g.id); return K.h('tr', K.h('th', { scope: 'row' }, K.h('a.lnk', { href: '#arcade/' + g.id, text: g.name })), K.h('td', { text: b == null ? '—' : String(b) }), K.h('td', { text: b == null ? '還沒玩過' : A.Arcade.grade(b)[1] }), K.h('td', { text: G.stat('arc_' + g.id) + ' 場' })); });
       box.append(K.h('section.pf-sec', K.h('div.q-h', K.h('h3', { text: '遊藝室' }), K.h('span.lab', { text: '最高分' })), K.h('div.pf-scroll', K.h('table.pf-arc', K.h('thead', K.h('tr', K.h('th', { text: '遊戲' }), K.h('th', { text: '最高分' }), K.h('th', { text: '評等' }), K.h('th', { text: '場次' }))), K.h('tbody', rows)))));
@@ -41,12 +41,12 @@
   }
   function build() {
     built = true; box = K.h('div.pf', { id: 'profile-box' });
-    $('main').append(K.h('section.room', { id: 'r-profile', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'Personnel File', text: '記錄員檔案' }), K.h('p.sub', { text: '等級、稱號，和這位記錄員到任以來做過的事。' })), K.h('div.no', { text: '18' })), box)));
+    $('main').append(K.h('section.room', { id: 'r-profile', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'Personnel File', text: '記錄員檔案' }), K.h('p.sub', { text: '館方替每一位記錄員建一份。這是你的。' })), K.h('div.no', { text: '18' })), box)));
   }
-  G.room('profile', '記錄員檔案', '等級、稱號，和到任以來的紀錄。');
+  G.room('profile', '記錄員檔案', '館方替每一位記錄員建一份。這是你的。');
   A.addRoom('profile', 'r-profile', () => { if (!built) build(); paint(); });
   A.on('ready', () => { if (!built) build(); });
   A.on('import', () => { if (A.cur === 'profile') paint(); });
   A.on('status', o => { if (o.id === 'profile') o.s = 'Lv.' + G.level().lv; });
-  G.menu({ id: 'profile', name: '記錄員檔案', en: 'Personnel File', desc: '等級、稱號，和到任以來做過的事。', shot: { p: 'school', a: {}, cues: [] }, status: () => 'Lv.' + G.level().lv + (A.Shop && A.Shop.title() ? '　' + A.Shop.title() : '') });
+  G.menu({ id: 'profile', name: '記錄員檔案', en: 'Personnel File', desc: '館方替你建的那一份。', shot: { p: 'school', a: {}, cues: [] }, status: () => 'Lv.' + G.level().lv + (A.Shop && A.Shop.title() ? '　' + A.Shop.title() : '') });
 })();

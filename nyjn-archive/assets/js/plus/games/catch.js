@@ -5,10 +5,11 @@
    難度也不跟著螢幕大小變。 */
 (function () {
   const A = window.__A, K = A.K, PI = Math.PI, rnd = Math.random, mix = (a, b, p) => a + (b - a) * p;
-  /* TARGET 是「淨得幾個算滿分」。用模擬的玩家試出來的：仔細玩的淨得 40 上下，隨手玩的 25 上下。 */
-  const SEC = 45, TARGET = 44, LINE = .2, STUN = .5, VMAX = 2.4, VKEY = 1.3;
+  /* TARGET 是「淨得（接到的 − 2 × 碰到的症候）幾個算滿分」，用模擬的玩家各跑幾十場試出來的：
+     看得仔細、手也穩的淨得 49–57（85 分以上），隨手玩的 37 上下（65 分左右），站著不動是 0–5。改下面的節奏要重新試。 */
+  const SEC = 45, TARGET = 56, LINE = .2, STUN = .5, VMAX = 2.4, VKEY = 1.3;
   /* 開場 → 終場：隔幾秒出一個、每秒升幾個畫面高、單獨出現的症候佔幾成、好東西旁邊黏著症候的機率 */
-  const RAMP = { gap: [.9, .42], v: [.3, .6], bad: [.16, .34], tag: [0, 0] };
+  const RAMP = { gap: [.78, .29], v: [.33, .76], bad: [.15, .3], tag: [.12, .52] };
 
   /* 留得住的東西：畫在 ±1 的方格裡，亮色實心，bg 拿來挖洞 */
   const GOOD = [
@@ -21,12 +22,13 @@
   function mount(root, api) {
     const cv = K.h('canvas', { role: 'img', 'aria-label': '遊戲畫面：手提箱在上方的線上，東西從底下往上飄。' }), c = cv.getContext('2d'), field = K.h('div.ct-field.plate', cv);
     const tEl = K.h('dd', { text: String(SEC) }), nEl = K.h('dd', { text: '0' }), xEl = K.h('dd', { text: '0' }), bar = K.h('i');
-    root.append(K.h('dl.ct-hud', K.h('div', K.h('dt', { text: '倒數' }), tEl), K.h('div', { 'aria-live': 'polite', 'aria-atomic': 'true' }, K.h('dt', { text: '收進' }), nEl), K.h('div', K.h('dt', { text: '症候' }), xEl)),
+    root.append(K.h('dl.ct-hud', K.h('div', K.h('dt', { text: '倒數' }), tEl), K.h('div', { 'aria-live': 'polite', 'aria-atomic': 'true' }, K.h('dt', { text: '手提箱裡' }), nEl), K.h('div', K.h('dt', { text: '症候' }), xEl)),
       K.h('div.ct-time', bar), field, K.h('p.ct-tip', { text: '滑鼠或手指左右移動，也可以按 ← →。' }));
 
     const S = { t: 0, x: .5, to: .5, got: 0, hit: 0, miss: 0, stun: 0, next: .5, items: [], pops: [] }, held = {};
     const rain = Array.from({ length: 44 }, () => [rnd(), rnd() * 1.2, .2 + rnd() * .5]);
     let W = 0, H = 0, r = 16, hw = 40, col = {}, raf = 0, last = 0, dir = 0, over = false, shown = SEC;
+    const net = () => Math.max(0, S.got - 2 * S.hit);
 
     /* 顏色從樣式表讀，不寫死在這裡；每秒重讀一次，玩到一半換主題也跟得上 */
     const tint = () => { const s = getComputedStyle(cv), v = n => s.getPropertyValue(n).trim(); col = { on: v('--on'), mark: v('--mark'), bg: v('--plate') }; };
@@ -46,7 +48,8 @@
       S.next = S.t + at('gap') * (.8 + rnd() * .4);
     }
     function take(o) {
-      if (o.bad) { S.hit++; S.stun = STUN; xEl.textContent = S.hit; } else { S.got++; nEl.textContent = S.got; }
+      if (o.bad) { S.hit++; S.stun = STUN; xEl.textContent = S.hit; } else S.got++;
+      nEl.textContent = net();   // 讀數顯示的是淨得：碰到症候，箱子裡當場少兩個
       S.pops.push({ x: S.x, s: o.bad ? '−2' : '+1', t: S.t }); api.sfx(o.bad ? 'wrong' : 'right');
     }
     function step(dt) {
@@ -68,7 +71,7 @@
       S.pops = S.pops.filter(q => S.t - q.t < .7);
       const left = Math.max(0, Math.ceil(SEC - S.t));
       if (left !== shown) { shown = left; tEl.textContent = left; bar.style.width = left / SEC * 100 + '%'; tint(); }
-      if (S.t >= SEC) { over = true; const net = Math.max(0, S.got - 2 * S.hit); api.finish({ score: K.clamp(Math.round(100 * net / TARGET), 0, 100), detail: [['收進手提箱', S.got], ['碰到症候', S.hit], ['沒接到', S.miss]] }); }
+      if (S.t >= SEC) { over = true; api.finish({ score: K.clamp(Math.round(100 * net() / TARGET), 0, 100), detail: [['收進手提箱', S.got], ['碰到症候', S.hit], ['沒接到', S.miss]] }); }
     }
 
     function thing(o) {
@@ -117,8 +120,8 @@
     const on = [[window, 'pointermove', aim], [cv, 'pointerdown', aim], [window, 'blur', calm], [document, 'keydown', key], [document, 'keyup', key], [document, 'visibilitychange', vis]];
     on.forEach(([t, n, f]) => t.addEventListener(n, f));
     const ro = new ResizeObserver(size); ro.observe(field);
-    size(); root.peek = () => ({ t: S.t, x: S.x, half: hw / W, rad: r / W, line: LINE, items: S.items });   // 給測試看場上的位置
-    if (root.getBoundingClientRect().bottom + scrollY > innerHeight) root.scrollIntoView({ block: 'start', behavior: 'instant' });   // 整塊畫布要一次看得到
+    size(); root.peek = () => ({ t: S.t, x: S.x, half: hw / W, rad: r / W, band: r / H, line: LINE, items: S.items });   // 給測試看場上的位置
+    if (root.getBoundingClientRect().bottom + scrollY > innerHeight) root.scrollIntoView();   // 整塊畫布要一次看得到
     if (!document.hidden) raf = requestAnimationFrame(frame);
     return { stop() { over = true; cancelAnimationFrame(raf); raf = 0; ro.disconnect(); on.forEach(([t, n, f]) => t.removeEventListener(n, f)); } };
   }

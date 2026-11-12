@@ -41,7 +41,7 @@
   }
   function pull(n) {
     const cost = n >= 10 ? TEN : ONE * n;
-    if (!G.spend('dev', cost)) { toast('顯影劑不夠。這一次要 ' + G.DEV + ' ' + G.fmt(cost) + '。'); return null; }
+    if (!G.spend('dev', cost)) { toast('顯影劑不夠。這一盤要 ' + G.DEV + ' ' + G.fmt(cost) + '。'); return null; }
     const b = dk(), f = feat(), out = []; let shard = 0;
     for (let i = 0; i < n; i++) { const p = one(b, f), isNew = add(b, p), s = isNew ? 0 : DUPE[p.star]; shard += s; out.push({ p, isNew, shard: s }); b.log.unshift([p.key, Date.now()]); }
     b.log.length = Math.min(b.log.length, 60); b.n += n; Case.save();
@@ -76,7 +76,7 @@
     const grid = K.h('div.dk-out' + (n === 1 ? '.one' : '')), cards = out.map(card), rm = K.rm();
     cards.forEach(c => grid.append(c));
     const fresh = out.filter(r => r.isNew).length, shard = out.reduce((s, r) => s + r.shard, 0), top = out.reduce((m, r) => Math.max(m, r.p.star), 0);
-    const sum = K.h('p.dk-sum', { hidden: true, 'aria-live': 'polite', text: '新的底片 ' + fresh + ' 張' + (out.length - fresh ? '；重複 ' + (out.length - fresh) + ' 張，折成 ' + G.SHD + ' ' + shard : '') + '。' });
+    const sum = K.h('p.dk-sum', { hidden: true, 'aria-live': 'polite', text: '新到 ' + fresh + ' 張。' + (out.length - fresh ? '重複 ' + (out.length - fresh) + ' 張，裁成 ' + G.SHD + ' ' + shard + '。' : '') });
     const skip = K.h('button.btn.sm', { type: 'button', text: '全部顯影' });
     stage.append(grid, K.h('div.save-row', skip), sum);
     let shown = 0, timer = 0;
@@ -97,12 +97,12 @@
           K.h('li', { text: '連續 ' + (HARD6 - 1) + ' 張沒有六星，下一張一定是六星。' }),
           K.h('li', { text: '本週特寫的那一章，底片在同星等裡出現的機會是其他章的三倍。' }),
           K.h('li', { text: '同一張星等裡，其餘每一張的機會相同。' }),
-          K.h('li', { text: '顯影劑只能在館裡做事拿到。這裡沒有、也不會有付費的入口。' })));
+          K.h('li', { text: '顯影劑只在館裡掙得到。這裡不收錢，以後也不收。' })));
     } });
   }
   function history() {
     K.dialog({ title: '沖洗紀錄', cls: 'dlg-set', build(body) {
-      const b = dk(); if (!b.log.length) { body.append(K.h('p.empty', { text: '還沒有沖洗過。' })); return; }
+      const b = dk(); if (!b.log.length) { body.append(K.h('p.empty', { text: '盤子還是乾的。' })); return; }
       body.append(K.h('p.lab', { text: '最近 ' + b.log.length + ' 張，共沖洗 ' + b.n + ' 張' }), K.h('ol.dk-log', b.log.map(x => { const p = BY[x[0]]; return p ? K.h('li.s' + p.star, K.h('span', { text: stars(p.star) }), K.h('span', { text: label(p) + '　〈' + p.c.zh + '〉' }), K.h('time', { text: K.ago(x[1]) })) : null; })));
     } });
   }
@@ -112,27 +112,27 @@
     const b1 = K.h('button.btn.pri', { type: 'button', disabled: busy, onclick: () => run(1) }, '沖洗一張　', K.h('small', { text: G.DEV + ' ' + ONE }));
     const b10 = K.h('button.btn', { type: 'button', disabled: busy, onclick: () => run(10) }, '沖洗十張　', K.h('small', { text: G.DEV + ' ' + G.fmt(TEN) }));
     box.append(K.h('div.dk-top',
-      K.h('div.dk-feat', K.h('span.lab', { text: 'THIS WEEK — 本週特寫' }), K.h('b', { text: f.no + '〈' + f.zh + '〉' }), K.h('span', { text: '這一章的底片比較容易出現。每週一換一章。' })),
+      K.h('div.dk-feat', K.h('span.lab', { text: 'THIS WEEK — 本週特寫' }), K.h('b', { text: f.no + '〈' + f.zh + '〉' }), K.h('span', { text: '這一週，這一章的底片浮得快些。星期一換。' })),
       K.h('dl.g-wallet', K.h('div', K.h('dt', { text: G.DEV + ' 顯影劑' }), K.h('dd', { text: G.fmt(g.dev) })), K.h('div', K.h('dt', { text: G.SHD + ' 碎片' }), K.h('dd', { text: G.fmt(g.shard) })), K.h('div', K.h('dt', { text: '底片冊' }), K.h('dd', { text: count() + '／' + POOL.length })))));
     if (stage) box.append(stage);
     else {
       const cv = document.createElement('canvas'); cv.width = 960; cv.height = 600;
-      box.append(K.h('div.dk-stage', { id: 'dk-stage' }, K.h('div.dk-idle', K.h('figure.plate', cv), K.h('p', { text: '相紙放進顯影盤，影像會自己浮上來。沖到重複的會折成碎片。' }))));
+      box.append(K.h('div.dk-stage', { id: 'dk-stage' }, K.h('div.dk-idle', K.h('figure.plate', cv), K.h('p', { text: '相紙放進顯影盤，影像會自己浮上來。重複的，裁成碎片還你。' }))));
       Plates.mount(cv, { p: f.bg[0], a: f.bg[1] || {}, cues: [] }, 14);
     }
     box.append(K.h('div.save-row.dk-act', b1, b10, K.h('button.tiny', { type: 'button', text: '機率與規則', onclick: rates }), K.h('button.tiny', { type: 'button', text: '沖洗紀錄', onclick: history }), K.h('a.tiny', { href: '#album', text: '打開底片冊' })),
-      K.h('p.dk-pity', { text: '再 ' + (HARD5 - b.pity5) + ' 張內一定有五星以上；再 ' + (HARD6 - b.pity6) + ' 張內一定有六星。' }));
+      K.h('p.dk-pity', { text: '五星以上：' + (HARD5 - b.pity5) + ' 張之內必有。六星：' + (HARD6 - b.pity6) + ' 張之內必有。' }));
   }
   function build() {
     built = true; box = K.h('div.dk', { id: 'dark-box' });
-    $('main').append(K.h('section.room', { id: 'r-darkroom', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'The Darkroom', text: '暗房' }), K.h('p.sub', { text: '用顯影劑沖洗底片。沖出哪一張是隨機的，機率和保底都寫在「機率與規則」裡。' })), K.h('div.no', { text: '14' })), box)));
+    $('main').append(K.h('section.room', { id: 'r-darkroom', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'The Darkroom', text: '暗房' }), K.h('p.sub', { text: '紅燈亮著。沖出哪一張，由不得你；規矩都貼在牆上。' })), K.h('div.no', { text: '14' })), box)));
   }
-  G.room('darkroom', '暗房', '用顯影劑沖洗底片，收進底片冊。');
+  G.room('darkroom', '暗房', '相紙下水，影像自己浮上來。');
   A.addRoom('darkroom', 'r-darkroom', () => { if (!built) build(); busy = false; paint(); });
   A.on('ready', () => { if (!built) build(); });
   A.on('gain', () => { if (A.cur === 'darkroom' && !busy) paint(true); });
   A.on('status', o => { if (o.id === 'darkroom') o.s = dk().n ? '沖洗過 ' + dk().n + ' 張' : ''; });
-  G.menu({ id: 'darkroom', name: '暗房', en: 'The Darkroom', desc: '用顯影劑沖洗底片。每十張至少一張五星以上。', shot: { p: 'gallery', a: {}, cues: [] }, status: () => '可以沖 ' + Math.floor(G.gm().dev / ONE) + ' 張' });
+  G.menu({ id: 'darkroom', name: '暗房', en: 'The Darkroom', desc: '相紙下水，影像自己浮上來。', shot: { p: 'gallery', a: {}, cues: [] }, status: () => '可以沖 ' + Math.floor(G.gm().dev / ONE) + ' 張' });
 
   A.Dark = { POOL, BY, NAME, DUPE, CRAFT, ONE, stars, label, feat, count, total: POOL.length, own: k => dk().own[k] || 0, at: k => dk().at[k] || 0, bag: dk, pull, craft };
 })();

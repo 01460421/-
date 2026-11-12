@@ -34,7 +34,7 @@
       if (c.ok) c.b.setAttribute('aria-disabled', 'true');   // 不用 disabled：焦點正停在這張上，停用會把焦點弄丟
     };
     const nMoves = K.h('dd', { text: '0' }), nTime = K.h('dd', { text: '0:00' }), nFound = K.h('dd', { text: '0 ／ ' + PAIRS });
-    const say = K.h('p.m-say', { 'aria-live': 'polite', text: '翻開兩張一樣的底片。' });
+    const say = K.h('p.m-say', { 'aria-live': 'polite', text: '翻兩張。一樣的，留下。' });
     const grid = K.h('div.m-grid', { role: 'group', 'aria-label': '十六張底片' }, cards.map(c => c.b));
     root.append(K.h('dl.m-hud', K.h('div', K.h('dt', { text: '步數' }), nMoves), K.h('div', K.h('dt', { text: '時間' }), nTime), K.h('div', K.h('dt', { text: '配對' }), nFound)), grid, say);
     cards.forEach(face);
@@ -55,8 +55,9 @@
 
     function shut() { clearTimeout(back); tms.delete(back); open.forEach(c => { c.up = false; face(c); }); open = []; }
     function flip(c) {
-      if (over || c.up) return;
-      if (open.length === 2) shut();   // 上一組還沒蓋回去就翻下一張：直接蓋，不讓人乾等
+      if (over || c.ok) return;
+      if (open.length === 2) shut();   // 上一組還沒蓋回去就翻下一張：直接蓋，不讓人乾等（點的是那兩張之一也一樣，它會留著當下一步的第一張）
+      if (c.up) return;
       if (!t0) { t0 = Date.now(); tick = setInterval(() => { nTime.textContent = clock((Date.now() - t0) / 1000); }, 500); }   // 翻第一張才開始計時
       paint(c.k); c.up = true; face(c); open.push(c);
       if (open.length < 2) { api.sfx('page'); return; }
@@ -82,8 +83,8 @@
   }
 
   A.Arcade.add({
-    id: 'match', name: '翻底片', en: 'Pairs', desc: '十六張蓋著的底片，兩兩成對，把八對都找出來。',
-    how: ['一次翻兩張。一樣就留著，不一樣會蓋回去。', '步數越少分數越高，時間只算一點點。', '鍵盤可以用方向鍵移動，Enter 翻開。'],
+    id: 'match', name: '翻底片', en: 'Pairs', desc: '十六張蓋著的底片，八對。記性好的人先下班。',
+    how: ['一次翻兩張。一樣就留著，不一樣就蓋回去。', '翻得越少，分數越高。時間只算一點點。', '鍵盤：方向鍵移動，Enter 翻開。'],
     shot: { p: 'gallery', a: {}, cues: [] }, mount
   });
 })();

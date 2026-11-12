@@ -11,7 +11,7 @@ const path = require('node:path');
 const PORT = String(18000 + Math.floor(Math.random() * 2000));
 const BASE = 'http://127.0.0.1:' + PORT;
 const ROOMS = ['hall', 'chronicle', 'chapters', 'c0', 'c7/3', 'c13', 'film', 'choices', 'rain', 'relay', 'studio', 'studio/wall', 'quiz', 'index', 'index/手提箱', 'questions', 'case', 'about',
-  'play', 'quests', 'darkroom', 'album', 'arcade', 'arcade/order', 'arcade/match', 'arcade/catch', 'arcade/code', 'shop', 'profile', 'journal'];
+  'play', 'quests', 'darkroom', 'album', 'arcade', 'arcade/order', 'arcade/match', 'arcade/catch', 'arcade/code', 'shop', 'profile', 'journal', 'guide'];
 
 async function main() {
   let chromium;
@@ -141,7 +141,22 @@ async function main() {
     await t.goto(BASE + '/#journal'); await t.waitForTimeout(500);
     ok((await t.$$('.jr-ch')).length === 14 && (await t.$$('.jr-pick')).length === 8, '我的紀年應該有十四章和八個抉擇');
 
-    /* 七、標頭 */
+    /* 七、導覽：全新的訪客從大廳進來會演入館；選了帶路，導覽條跟著走；拿連結直接進房間的不演 */
+    const n = await visitor('戊');
+    await n.goto(BASE + '/'); await n.waitForTimeout(1200);
+    ok(!!(await n.$('.gd-intro')), '全新的訪客從大廳進來，應該看到入館');
+    await n.click('.gd-card .btn.pri'); await n.waitForTimeout(300); await n.click('.gd-card .btn:not(.pri)'); await n.waitForTimeout(300); await n.click('.gd-card .btn.pri'); await n.waitForTimeout(500);
+    ok(!(await n.$('.gd-intro')) && await n.evaluate(() => { const b = document.querySelector('.gd-bar'); return !b.hidden && b.textContent.includes('第 1 站') && !document.documentElement.classList.contains('gd-intro-on'); }), '選了帶路：入館收掉，導覽條停在第一站');
+    ok(!!(await n.$('.gd-hall')), '大廳應該多一塊「下一站」');
+    await n.evaluate(() => { window.__A.Case.d.read.c0 = Date.now(); window.__A.Case.save(); }); await n.waitForTimeout(900);
+    ok(await n.evaluate(() => window.__A.Guide.at() === 2), '手提箱裡有了序幕的戳記：前兩站自己記上，輪到第三站');
+    await n.goto(BASE + '/#guide'); await n.waitForTimeout(500);
+    ok(await n.evaluate(() => document.querySelectorAll('.gd-route li').length === 8 && document.querySelectorAll('.gd-zone li').length === 20 && document.querySelector('.gd-bar').hidden), '導覽頁：八站、平面圖二十個房間；這一頁不重複顯示導覽條');
+    const dl = await visitor('己');
+    await dl.goto(BASE + '/#c3/2'); await dl.waitForTimeout(900);
+    ok(!(await dl.$('.gd-intro')) && await dl.evaluate(() => document.querySelector('.gd-bar').hidden && !document.querySelector('.gd-fab').hidden), '拿著連結直接進展間：不演入館，導覽收在角落');
+
+    /* 八、標頭 */
     const res = await p.request.get(BASE + '/');
     ok(/script-src 'self'/.test(res.headers()['content-security-policy'] || ''), '首頁應該帶內容安全政策');
     const health = await (await p.request.get(BASE + '/api/health')).json();
