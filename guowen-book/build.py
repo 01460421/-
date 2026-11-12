@@ -14,6 +14,11 @@ CAT_COLOR = {'形音義': '#C8553D', '詞語成語': '#D08C2F', '語文應用': 
              '白話閱讀': '#3B6FB6', '文言閱讀': '#6B4FA3', '詩詞曲賞析': '#B5477A'}
 PEN = {'red': 'red', 'blue': 'blue', 'green': 'green', 'purple': 'purple', 'orange': 'orange'}
 ERRORS = []
+VOLUMES = [
+    {'no': 1, 'name': '第一冊', 'years': ['105', '104', '103', '102', '101'], 'bonus': ['100']},
+    {'no': 2, 'name': '第二冊', 'years': ['110', '109', '108', '107', '106'], 'bonus': []},
+    {'no': 3, 'name': '第三冊', 'years': ['115', '114', '113', '112', '111'], 'bonus': []},
+]
 
 
 def err(msg):
@@ -299,7 +304,9 @@ def render_question(year, e, meta, qinfo):
     cat = first(e, 'cat')
     tags = [t.strip() for t in re.split(r'[,，、]', first(e, 'tags')) if t.strip()]
     diff = int(first(e, 'diff', '3') or 3)
-    ans = first(e, 'answer').strip()
+    ans = first(e, 'answer').strip().replace('或', '/')
+    ansset = set(ans.split('/'))
+    ans_disp = ans.replace('/', '或')
     off = meta.get('answers', {}).get(no)
     if cat not in CATS:
         err(f'{year} Q{no}: @cat「{cat}」不在允許清單 {CATS}')
@@ -318,7 +325,7 @@ def render_question(year, e, meta, qinfo):
     if not [f for f in e['fields'] if f['name'] == 'know']:
         err(f'{year} Q{no}: 缺少 @know')
     qid = f'{year}-{no:02d}'
-    qinfo.append({'year': year, 'no': no, 'id': qid, 'type': qtype, 'cat': cat, 'diff': diff, 'ans': ans,
+    qinfo.append({'year': year, 'no': no, 'id': qid, 'type': qtype, 'cat': cat, 'diff': diff, 'ans': ans_disp,
                   'know': [f['arg'] for f in e['fields'] if f['name'] == 'know']})
     color = CAT_COLOR.get(cat, '#444')
 
@@ -351,7 +358,7 @@ def render_question(year, e, meta, qinfo):
 
     def opt_html(o):
         k = o['arg'].strip()[:1]
-        ok = (k == ans)
+        ok = (k in ansset)
         mark = '<span class="hw tick">✓</span>' if ok else ''
         return (f'<div class="opt{" ok" if ok else ""}"><span class="ok-wrap">{mark}<span class="olab">({k})</span></span>'
                 f'<span class="otxt">{text_lines(o["body"])}</span></div>')
@@ -366,7 +373,7 @@ def render_question(year, e, meta, qinfo):
     h += '</div>'  # paper
     # 答案列
     key = body_of(e, 'key') or []
-    h += (f'<div class="ansbar"><div class="ans"><small>答案</small><b>{esc(ans)}</b></div>'
+    h += (f'<div class="ansbar"><div class="ans"><small>答案</small><b class="{'multi' if len(ansset) > 1 else ''}">{esc(ans_disp)}</b></div>'
           f'<div class="keyline"><span class="klabel">一句破題</span>{inline(" ".join(x.strip() for x in key))}</div></div>')
     h += '</div>'  # qtop
     # 語譯
@@ -398,7 +405,7 @@ def render_question(year, e, meta, qinfo):
         parts = f['arg'].split()
         k = parts[0] if parts else '?'
         flag = parts[1] if len(parts) > 1 else ''
-        is_ans = (k == ans)
+        is_ans = (k in ansset)
         cls = 'pick' if is_ans else 'drop'
         sym = '✓' if flag == 'o' else '✗'
         verdict = ('正解' if is_ans else '不選')
@@ -429,8 +436,8 @@ def parse_meta(ents, year):
                 for m in re.finditer(r'(\d+)-(\d+)=([\d.]+)', v):
                     meta['scoring'].append((int(m.group(1)), int(m.group(2)), m.group(3)))
             elif f['name'] == 'answers':
-                s = re.sub(r'[^A-D]', '', v)
-                meta['answers'] = {i + 1: c for i, c in enumerate(s)}
+                toks = re.findall(r'[A-D](?:/[A-D])*', v)
+                meta['answers'] = {i + 1: c for i, c in enumerate(toks)}
             elif f['name'] in ('trend', 'tips', 'fixnote'):
                 meta[f['name']] = f['body']
             else:
@@ -455,9 +462,9 @@ def render_year(year, ents, qinfo_all):
     qinfo_all.extend(qinfo)
     # 章名頁
     opener = (f'<section class="opener" id="y{year}"><div class="op-in">'
-              f'<div class="op-kicker">國立嘉義高級中學・科學班甄選入學</div>'
+              f'<div class="op-kicker">{"特別收錄・" if meta.get("bonus") else ""}國立嘉義高級中學・科學班甄選入學</div>'
               f'<div class="op-year">{year}</div><div class="op-sub">學年度</div>'
-              f'<h1 class="op-title">科學能力檢定<br>國文科能力檢定試題詳解</h1>'
+              f'<h1 class="op-title">{inline(meta.get("examname", "科學能力檢定｜國文科能力檢定")).replace("｜", "<br>")}<br>試題詳解</h1>'
               f'<div class="op-meta"><span>單選 {len(qinfo)} 題</span><span>{esc(meta.get("scoretext", ""))}</span>'
               f'<span>滿分 100 分</span></div>'
               f'<div class="op-hw hw">先自己寫一遍，<br>再對照筆記版原題！</div>'
@@ -504,44 +511,49 @@ def render_year(year, ents, qinfo_all):
 
 
 # ---------------------------------------------------------------- 全書
-def page_css(years):
+def page_css(years, vol=None):
     css = ''
+    if vol:
+        css += f'@page {{ @top-left {{ content: "科學班國文歷屆試題詳解集｜嘉義高中　{vol["name"]}"; }} }}\n'
     for y in years:
-        css += (f'@page y{y} {{ @top-right {{ content: "{y} 學年度　國文科能力檢定"; }} }}\n')
+        css += (f'@page y{y} {{ @top-right {{ content: "{y} 學年度　國文科試題詳解"; }} }}\n')
     return css
 
 
-def build(years=None, sample=False):
-    files = sorted(glob.glob(os.path.join(ROOT, 'content', '*.txt')))
-    data = {}
-    for f in files:
-        y, ents = parse_file(f)
-        if years and y not in years:
-            continue
-        data[y] = ents
-    order = sorted(data.keys(), reverse=True)
-    qinfo = []
-    chapters = ''
-    metas = {}
+FONT_CSS = ['@fontsource/iansui/chinese-traditional-400.css', '@fontsource/iansui/latin-400.css',
+            '@fontsource/lxgw-wenkai-tc/chinese-traditional-400.css', '@fontsource/lxgw-wenkai-tc/latin-400.css']
+
+
+def build(years=None, sample=False, vol=None):
+    """years：樣張模式指定年度；vol：VOLUMES 中的一冊"""
+    files = {os.path.basename(f).split('.')[0]: f for f in glob.glob(os.path.join(ROOT, 'content', '*.txt'))}
+    if vol:
+        order = [y for y in vol['years'] + vol['bonus'] if y in files]
+        missing = [y for y in vol['years'] + vol['bonus'] if y not in files]
+        if missing:
+            err(f'{vol["name"]} 缺少內容檔：{missing}')
+    else:
+        order = sorted([y for y in files if (not years or y in years)], reverse=True)
+    qinfo, chapters, metas = [], '', {}
     for y in order:
-        hy, meta = render_year(y, data[y], qinfo)
+        _, ents = parse_file(files[y])
+        hy, meta = render_year(y, ents, qinfo)
         chapters += hy
         metas[y] = meta
     front = back = ''
+    title = '科學班國文歷屆試題詳解集'
     if not sample:
         import frontmatter
-        front = frontmatter.front(order, qinfo, metas)
+        front = frontmatter.front(order, qinfo, metas, vol)
         back = frontmatter.back(order, qinfo, metas, CATS, CAT_COLOR)
-    fonts = ''.join(f'<link rel="stylesheet" href="../node_modules/{p}">' for p in [
-        '@fontsource/iansui/chinese-traditional-400.css', '@fontsource/iansui/latin-400.css',
-        '@fontsource/lxgw-wenkai-tc/chinese-traditional-400.css', '@fontsource/lxgw-wenkai-tc/latin-400.css'])
-    doc = (f'<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>科學班國文歷屆試題詳解集｜嘉義高中 {order[-1]}–{order[0]} 學年度</title>'
-           f'{fonts}<link rel="stylesheet" href="../style.css"><style>{page_css(order)}</style></head><body>'
+        title += f'　{vol["name"]}' if vol else ''
+    fonts = ''.join(f'<link rel="stylesheet" href="../node_modules/{p}">' for p in FONT_CSS)
+    doc = (f'<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>{title}｜嘉義高中</title>'
+           f'{fonts}<link rel="stylesheet" href="../style.css"><style>{page_css(order, vol)}</style></head><body>'
            f'{front}{chapters}{back}</body></html>')
-    out = os.path.join(ROOT, 'dist', f'sample-{order[0]}.html' if sample else 'book.html')
+    name = f'sample-{order[0]}.html' if sample else (f'book-v{vol["no"]}.html' if vol else 'book.html')
+    out = os.path.join(ROOT, 'dist', name)
     open(out, 'w', encoding='utf-8').write(doc)
-    if not sample:
-        json.dump(qinfo, open(os.path.join(ROOT, 'dist', 'qinfo.json'), 'w'), ensure_ascii=False)
     return out, qinfo
 
 
@@ -555,7 +567,10 @@ if __name__ == '__main__':
     if '--check' in args:
         years = [args[args.index('--check') + 1]]
         sample = True
-    out, qinfo = build(years, sample)
+    vol = None
+    if '--vol' in args:
+        vol = next(v for v in VOLUMES if str(v['no']) == args[args.index('--vol') + 1])
+    out, qinfo = build(years, sample, vol)
     print(f'輸出 {out}｜共 {len(qinfo)} 題')
     if ERRORS:
         print(f'\n⚠ 發現 {len(ERRORS)} 個問題：')

@@ -15,17 +15,32 @@ def _inline(s):
     return build.inline(s)
 
 
-def front(order, qinfo, metas):
-    y0, y1 = order[-1], order[0]
+def front(order, qinfo, metas, vol=None):
+    bonus = [y for y in order if metas[y].get('bonus')]
+    main = [y for y in order if y not in bonus]
+    y0, y1 = (min(main), max(main)) if main else (order[-1], order[0])
     n = len(qinfo)
+    volname = vol['name'] if vol else ''
+    bonus_txt = f'（特別收錄 {"、".join(bonus)} 學年度）' if bonus else ''
+    sets = ''
+    if vol:
+        import build
+        rows = ''
+        for v in build.VOLUMES:
+            yrs = sorted(v['years'])
+            extra = f'，特別收錄 {"、".join(v["bonus"])} 學年度' if v['bonus'] else ''
+            cur = ' class="cur"' if v['no'] == vol['no'] else ''
+            rows += f'<tr{cur}><td>{v["name"]}</td><td>{yrs[0]}–{yrs[-1]} 學年度{extra}</td></tr>'
+        sets = f'<h4>全套三冊</h4><table class="kt sets"><tbody>{rows}</tbody></table>'
     h = ''
     # ---------- 封面 ----------
     stamps = ''.join(f'<span>{y}</span>' for y in sorted(order))
     h += f'''<section class="cover"><div class="cv-grid"></div>
 <div class="cv-tape">嘉義高中科學班・甄選入學</div>
 <div class="cv-kicker">科學能力檢定 國文科</div>
+{f'<div class="cv-vol"><b>{volname}</b><span>{y0}–{y1}</span></div>' if vol else ''}
 <h1 class="cv-title"><span>科學班</span><span>國文歷屆試題</span><span><mark class="hl hl-y">詳解集</mark></span></h1>
-<div class="cv-sub">{y0}–{y1} 學年度・{len(order)} 份試卷・{n} 題完整解析</div>
+<div class="cv-sub">{y0}–{y1} 學年度{bonus_txt}・{len(order)} 份試卷・{n} 題完整解析</div>
 <div class="cv-years">{stamps}</div>
 <div class="cv-hw cv-hw1 hw pen-red">原題完整重現<br>＋彩色筆記畫重點！</div>
 <div class="cv-hw cv-hw2 hw pen-blue">解題邏輯 → 選項詳解<br>→ 延伸知識點</div>
@@ -49,7 +64,8 @@ def front(order, qinfo, metas):
     h += f'''<section class="fm-sec"><h2 class="fm-h"><i>壹</i>編輯說明</h2>
 <div class="fm-cols"><div>
 <h4>這本書收錄什麼？</h4>
-<p>本書收錄國立嘉義高級中學科學班甄選入學「科學能力檢定」國文科 {y0} 至 {y1} 學年度共 {len(order)} 份試卷、{n} 道試題。所有試題與參考答案皆取自嘉義高中官方網站「科學班—歷屆甄選試題」專區公開之檔案。</p>
+<p>本書{f'為全套三冊中的{volname}，' if vol else ''}收錄國立嘉義高級中學科學班甄選國文科 {y0} 至 {y1} 學年度{bonus_txt}共 {len(order)} 份試卷、{n} 道試題。試題與參考答案為嘉義高中公布之歷屆甄選試題（官方網站「科學班—歷屆甄選試題」專區）。</p>
+{sets}
 <h4>答案與詳解的來源</h4>
 <ul>
 <li><b>答案</b>：一律採用嘉義高中公布之官方參考答案；官方曾公告修正者，採修正後版本，並於該年度「試卷總覽」註明。</li>

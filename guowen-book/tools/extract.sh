@@ -6,6 +6,8 @@ cd "$(dirname "$0")/.." && mkdir -p source/text source/img
 y=$1; f=source/pdf/${y}_q.pdf
 n=$(pdfinfo $f | awk '/Pages/{print $2}')
 read w h < <(pdfinfo $f | awk '/Page size/{print int($3), int($5)}')
+rot=$(pdfinfo $f | awk '/Page rot/{print $3}')
+if [ "$rot" = "90" ] || [ "$rot" = "270" ]; then t=$w; w=$h; h=$t; fi
 half=$((w/2)); : > source/text/$y.txt
 for p in $(seq 1 $n); do
   echo "########## 第 $p 頁 左欄 ##########" >> source/text/$y.txt

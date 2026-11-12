@@ -12,6 +12,9 @@ info = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True).stdout
 import re
 m = re.search(r'Page size:\s+([\d.]+) x ([\d.]+)', info)
 W, H = float(m.group(1)), float(m.group(2))
+r = re.search(r'Page rot:\s+(\d+)', info)
+if r and r.group(1) in ('90', '270'):
+    W, H = H, W
 R = 300
 s = R / 72
 x0, y0, x1, y1 = map(float, (x0, y0, x1, y1))
