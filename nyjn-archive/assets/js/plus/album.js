@@ -23,7 +23,7 @@
       const act = K.h('div.save-row');
       if (have) {
         const fav = K.h('button.btn', { type: 'button', text: D.bag().fav === key ? '已經是檔案封面' : '設為檔案封面', disabled: D.bag().fav === key });
-        fav.onclick = () => { D.bag().fav = key; Case.save(); fav.textContent = '已經是檔案封面'; fav.disabled = true; A.toast('檔案的封面，換上這一張了。'); };
+        fav.onclick = () => { D.bag().fav = key; Case.save(); fav.textContent = '已經是檔案封面'; fav.disabled = true; A.toast('檔案的封面換成這一張了。'); };
         act.append(K.h('a.btn.pri', { href: '#' + p.c.id + '/' + (p.i + 1), text: '到展間看這一張', onclick: () => api.close() }), fav);
       } else {
         const cost = D.CRAFT[p.star], b = K.h('button.btn.pri', { type: 'button', text: '指定顯影　' + G.SHD + ' ' + cost, disabled: G.gm().shard < cost });
@@ -31,7 +31,7 @@
         act.append(b, K.h('a.btn', { href: '#darkroom', text: '去暗房碰運氣', onclick: () => api.close() }));
         if (G.gm().shard < cost) act.append(K.h('span.lab', { text: '碎片還差 ' + (cost - G.gm().shard) }));
       }
-      body.append(K.h('div.al-detail', fig, K.h('div', rows, have && p.shot.cues[0] ? K.h('p.al-cue', { text: p.shot.cues[0] }) : K.h('p.al-cue.dim', { text: '還沒沖出來。拍的是什麼，沒有人知道。' }), act)));
+      body.append(K.h('div.al-detail', fig, K.h('div', rows, have && p.shot.cues[0] ? K.h('p.al-cue', { text: p.shot.cues[0] }) : K.h('p.al-cue.dim', { text: '沖洗出來之後，才看得到這一張拍的是什麼。' }), act)));
       if (have) Plates.mount(cv, p.shot); else Plates.still(cv, { p: 'rain', a: {}, cues: [] });
     } });
     return dlg;
@@ -51,7 +51,7 @@
       const all = ofCh(c), list = all.filter(p => b.show === 'all' || (b.show === 'have') === (D.own(p.key) > 0)); if (!list.length) return;
       const have = all.filter(p => D.own(p.key) > 0).length, full = have === all.length, claimed = !!b.set[c.id];
       const head = K.h('div.al-h', K.h('h3', { text: c.no + '　' + c.zh }), K.h('span.lab', { text: have + ' ／ ' + all.length }));
-      if (full && !claimed) head.append(K.h('button.btn.sm.pri', { type: 'button', text: '這一章齊了，簽收', onclick: () => { if (al().set[c.id]) return; al().set[c.id] = Date.now(); G.give(SET, c.no + '收齊'); paint(); G.repaint(); } }));
+      if (full && !claimed) head.append(K.h('button.btn.sm.pri', { type: 'button', text: '領取收齊獎勵', onclick: () => { if (al().set[c.id]) return; al().set[c.id] = Date.now(); G.give(SET, c.no + '收齊'); paint(); G.repaint(); } }));
       else if (claimed) head.append(K.h('span.al-done', { text: '已收齊' }));
       const grid = K.h('div.al-grid');
       list.forEach(p => {
@@ -63,19 +63,19 @@
       });
       box.append(K.h('section.al-ch', head, grid));
     });
-    if (!box.querySelector('.al-ch')) box.append(K.h('p.empty', { text: b.show === 'have' ? '冊子還是空的。暗房在隔壁。' : '一張都不缺了。' }));
+    if (!box.querySelector('.al-ch')) box.append(K.h('p.empty', { text: b.show === 'have' ? '還沒有底片。到暗房沖洗第一張。' : '一張都不缺了。' }));
   }
   function build() {
     built = true; box = K.h('div.al', { id: 'album-box' });
-    $('main').append(K.h('section.room', { id: 'r-album', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'The Album', text: '底片冊' }), K.h('p.sub', { text: '七十八格，照章節排。空著的那幾格，雨還沒還回來。' })), K.h('div.no', { text: '15' })), box)));
+    $('main').append(K.h('section.room', { id: 'r-album', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'The Album', text: '底片冊' }), K.h('p.sub', { text: '七十八張底片，照章節排。沖洗出來的才看得到畫面；一章收齊有一份獎勵。' })), K.h('div.no', { text: '15' })), box)));
   }
-  G.room('album', '底片冊', '七十八格。空著的那幾格，雨還沒還回來。');
+  G.room('album', '底片冊', '沖洗出來的底片收在這裡，照章節排。');
   A.addRoom('album', 'r-album', arg => { if (!built) build(); paint(); if (arg && D.BY[arg]) open(arg); });
   A.on('ready', () => { if (!built) build(); });
   A.on('pulled', () => { if (A.cur === 'album') paint(); });
   A.on('import', () => { if (A.cur === 'album') paint(); });
   A.on('status', o => { if (o.id === 'album') o.s = D.count() ? D.count() + '／' + D.total : ''; });
-  G.menu({ id: 'album', name: '底片冊', en: 'The Album', desc: '七十八格。空著的那幾格，雨還沒還回來。', shot: { p: 'pages', a: {}, cues: [] }, status: () => '已收 ' + D.count() + ' ／ ' + D.total, dot: claimable });
+  G.menu({ id: 'album', name: '底片冊', en: 'The Album', desc: '七十八張底片，照章節排。缺的可以用碎片指定顯影。', shot: { p: 'pages', a: {}, cues: [] }, status: () => '已收 ' + D.count() + ' ／ ' + D.total, dot: claimable });
   G.claims('album', claimable);
 
   A.Album = { open, claimable, done };

@@ -21,12 +21,12 @@
 
   function hub() {
     stop(); const b = today(); box.textContent = '';
-    box.append(K.h('p.arc-note', K.h('span.lab', { text: '今日酬勞' }), K.h('span', { text: G.DEV + ' ' + b.earned + ' ／ ' + CAP + '。一場給 ' + PAY.a + '、' + PAY.b + ' 或 ' + PAY.c + '，看評等。領滿了照樣能玩，分數照記。' })));
+    box.append(K.h('p.arc-note', K.h('span.lab', { text: '今日報酬' }), K.h('span', { text: G.DEV + ' ' + b.earned + ' ／ ' + CAP + '。每場依評等給 ' + PAY.a + '、' + PAY.b + '、' + PAY.c + '；到了上限還是可以玩，最高分照樣記。' })));
     const grid = K.h('div.arc-grid');
     GAMES.forEach((g, i) => {
       const cv = document.createElement('canvas'); cv.width = 520; cv.height = 320; const best = b.best[g.id];
       grid.append(K.h('a.arc-card', { href: '#arcade/' + g.id }, cv, K.h('span.n', { text: pad(i + 1) }),
-        K.h('span.tx', K.h('span.kick', { text: g.en }), K.h('b', { text: g.name }), K.h('span.d', { text: g.desc }), K.h('span.s', { text: best == null ? '這張桌子還沒坐過' : '最高 ' + best + '　' + grade(best)[1] + '　玩過 ' + (b.plays[g.id] || 0) + ' 場' }))));
+        K.h('span.tx', K.h('span.kick', { text: g.en }), K.h('b', { text: g.name }), K.h('span.d', { text: g.desc }), K.h('span.s', { text: best == null ? '還沒玩過' : '最高 ' + best + '　' + grade(best)[1] + '　玩過 ' + (b.plays[g.id] || 0) + ' 場' }))));
       setTimeout(() => Plates.still(cv, g.shot), 40 + 60 * i);
     });
     box.append(grid);
@@ -49,7 +49,7 @@
     window.scrollTo(0, 0);
     let ended = false;
     const api = { best: today().best[g.id] || 0, rm: K.rm(), sfx: n => { if (A.Snd) A.Snd.cue(n); }, finish: r => { if (ended) return; ended = true; done(g, r || {}); } };
-    try { live = g.mount(root, api) || {}; } catch (e) { live = null; root.append(K.h('p.empty', { text: '這張桌子今天不開。' })); }
+    try { live = g.mount(root, api) || {}; } catch (e) { live = null; root.append(K.h('p.empty', { text: '這個遊戲現在開不起來。' })); }
   }
   function done(g, r) {
     stop(); const b = today(), score = K.clamp(Math.round(+r.score || 0), 0, 100), gr = grade(score), old = b.best[g.id], isBest = old == null || score > old;
@@ -59,7 +59,7 @@
     G.give({ dev: pay, xp: 15 }, g.name + '　' + gr[1]);
     box.textContent = '';
     const res = K.h('div.arc-res', K.h('span.lab', { text: g.name + (isBest && old != null ? '　新的最高分' : '') }), K.h('div.quiz-score', { text: String(score) }, K.h('small', { text: ' ／ 100' })), K.h('h3', { text: '評等　' + gr[1] }),
-      K.h('p', { text: pay ? '酬勞 ' + G.DEV + ' ' + pay + '　資歷 +15' : '今天的酬勞領滿了（' + CAP + '）。這一場只記分數。資歷 +15' }));
+      K.h('p', { text: pay ? '報酬 ' + G.DEV + ' ' + pay + '　資歷 +15' : '今天的報酬已經到上限（' + CAP + '），這一場只記分數。資歷 +15' }));
     if (r.detail && r.detail.length) res.append(K.h('dl.arc-detail', r.detail.map(d => K.h('div', K.h('dt', { text: d[0] }), K.h('dd', { text: String(d[1]) })))));
     const again = K.h('button.btn.pri', { type: 'button', text: '再玩一場', onclick: () => play(g) });
     res.append(K.h('div.save-row', again, K.h('a.btn', { href: '#arcade', text: '回遊藝室' }), K.h('a.btn', { href: '#play', text: '回值勤台' })));
@@ -69,14 +69,14 @@
 
   function build() {
     built = true; box = K.h('div.arc', { id: 'arcade-box' });
-    $('main').append(K.h('section.room', { id: 'r-arcade', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'The Arcade', text: '遊藝室' }), K.h('p.sub', { text: '值勤的空檔。四張桌子，題目都是館裡現成的。' })), K.h('div.no', { text: '16' })), box)));
+    $('main').append(K.h('section.room', { id: 'r-arcade', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'The Arcade', text: '遊藝室' }), K.h('p.sub', { text: '值勤空檔的小遊戲。題目都從館裡的年表、章節和底片來。' })), K.h('div.no', { text: '16' })), box)));
   }
-  G.room('arcade', '遊藝室', '值勤的空檔。四張桌子，四種消磨法。');
+  G.room('arcade', '遊藝室', '四個小遊戲：排年代、翻底片、收進手提箱、數字之島。');
   A.addRoom('arcade', 'r-arcade', arg => { if (!built) build(); const g = GAMES.find(x => x.id === arg); if (g) intro(g); else hub(); });
   A.on('ready', () => { if (!built) build(); });
   A.on('leave', n => { if (n === 'arcade') stop(); });
   A.on('status', o => { if (o.id === 'arcade') { const n = Object.keys(ar().best).length; o.s = n ? '玩過 ' + n + ' ／ ' + GAMES.length : ''; } });
-  G.menu({ id: 'arcade', name: '遊藝室', en: 'The Arcade', desc: '值勤的空檔。四張桌子，四種消磨法。', shot: { p: 'wheel', a: {}, cues: [] }, status: () => { const b = today(); return '今日 ' + G.DEV + ' ' + b.earned + ' ／ ' + CAP; } });
+  G.menu({ id: 'arcade', name: '遊藝室', en: 'The Arcade', desc: '排年代、翻底片、收進手提箱、數字之島。', shot: { p: 'wheel', a: {}, cues: [] }, status: () => { const b = today(); return '今日 ' + G.DEV + ' ' + b.earned + ' ／ ' + CAP; } });
 
   A.Arcade = { add(g) { if (g && g.id && typeof g.mount === 'function' && !GAMES.some(x => x.id === g.id)) GAMES.push(g); }, games: () => GAMES.slice(), best: id => ar().best[id], grade, playing: () => !!live };
 })();

@@ -27,7 +27,7 @@
     const after = level(g.xp).lv, up = after > before, bonus = up ? (after - before) * LVUP : 0;
     g.dev += bonus; Case.save();
     const parts = []; if (r.dev) parts.push(DEV + ' ' + fmt(r.dev)); if (r.shard) parts.push(SHD + ' ' + fmt(r.shard)); if (r.xp) parts.push('資歷 +' + r.xp);
-    if (!quiet || up) toast([why, parts.join('　'), up ? '升上 Lv.' + after + '（' + DEV + ' ' + bonus + '）' : ''].filter(Boolean).join('　'));
+    if (!quiet || up) toast([why, parts.join('　'), up ? '升到 Lv.' + after + '（' + DEV + ' ' + bonus + '）' : ''].filter(Boolean).join('　'));
     if (up && A.Snd) A.Snd.cue('chime');
     A.emit('gain', { r, why, lv: after, up }); hud();
     return up;
@@ -51,7 +51,7 @@
     if (!hudEl) return; const g = gm(), n = dots();
     hudEl.textContent = ''; hudEl.append(K.h('b', { text: 'Lv.' + level().lv }), K.h('span', { text: DEV + ' ' + fmt(g.dev) }));
     if (n) hudEl.append(K.h('i.g-dot', { text: String(n) }));
-    hudEl.setAttribute('aria-label', '值勤台：等級 ' + level().lv + '，顯影劑 ' + fmt(g.dev) + (n ? '，' + n + ' 件東西等你簽收' : ''));
+    hudEl.setAttribute('aria-label', '值勤台：等級 ' + level().lv + '，顯影劑 ' + fmt(g.dev) + (n ? '，' + n + ' 項可以領取' : ''));
   }
   const hudSoon = K.debounce(hud, 200);
 
@@ -68,16 +68,16 @@
 
   /* ---- 值勤台：主選單 ---- */
   const MENU = [];
-  const TIPS = ['午夜，委託單換一批。星期一，換一整疊。', '沖到重複的，暗房會裁成碎片還你。缺哪一張，拿碎片去底片冊指名。', '遊藝室的酬勞一天只發到三百。分數倒是沒人攔。', '十張之內必有一張五星。七十張之內，必有一場暴雨。',
-    '這張桌上的東西也收在手提箱裡。換了地方，箱子帶著走。', '蓋過的章、看完的片、選過的路，長期委託那一頁都替你記著。', '交換所的顏料只有一個用處：把館裡的藍印換成別的顏色。', '按 G，回到這張桌子。'];
+  const TIPS = ['每天的委託在本地時間午夜換新，每週的在星期一。', '重複沖到的底片會折成碎片，可以在底片冊指定顯影還缺的那一張。', '遊藝室的報酬一天有上限，但最高分沒有。', '暗房每十張至少有一張五星以上；七十張內一定有一張暴雨。',
+    '這一層的紀錄也收在手提箱裡，雲端同步會一起帶走。', '在展間蓋章、看完紀錄片、做完抉擇，長期委託都會記得。', '交換所的主題色會換掉全館的強調色。', '按 G 回到值勤台。'];
   let box = null, built = false;
   function paint() {
     if (!box) return; const g = gm(); box.textContent = '';
     box.append(strip());
     if (!g.gift) {
-      const b = K.h('button.btn.pri', { type: 'button', text: '拆開' });
+      const b = K.h('button.btn.pri', { type: 'button', text: '領取到職禮' });
       b.onclick = () => { if (gm().gift) return; gm().gift = Date.now(); give({ dev: GIFT, xp: 40 }, '到職禮'); if (A.Snd) A.Snd.cue('chime'); paint(); };
-      box.append(K.h('div.g-gift', K.h('div', K.h('span.lab', { text: 'WELCOME — 到職禮' }), K.h('b', { text: '桌上有一只沒拆的紙盒，寫著你的名字' }), K.h('p', { text: '裡面是顯影劑，' + DEV + ' ' + fmt(GIFT) + '。夠沖十張。' })), b));
+      box.append(K.h('div.g-gift', K.h('div', K.h('span.lab', { text: 'WELCOME — 到職禮' }), K.h('b', { text: '新來的記錄員，先領一份顯影劑' }), K.h('p', { text: DEV + ' ' + fmt(GIFT) + '，夠你在暗房沖洗十張底片。' })), b));
     }
     const grid = K.h('div.g-menu');
     MENU.forEach((m, i) => {
@@ -90,7 +90,7 @@
   }
   function build() {
     built = true; box = K.h('div.g-hub', { id: 'play-box' });
-    $('main').append(K.h('section.room', { id: 'r-play', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'On Duty', text: '值勤台' }), K.h('p.sub', { text: '鐘敲過了。今天的差事都在這張桌上。' })), K.h('div.no', { text: '12' })), box)));
+    $('main').append(K.h('section.room', { id: 'r-play', hidden: true }, K.h('div.wrap', K.h('div.room-head', K.h('div', K.h('h2', { 'data-en': 'On Duty', text: '值勤台' }), K.h('p.sub', { text: '記錄員的日常：接委託、沖底片、補齊底片冊。做過的事會變成資歷。' })), K.h('div.no', { text: '12' })), box)));
     hudEl = K.h('a.nav-btn.g-hud', { href: '#play', id: 'b-game' });
     const end = document.querySelector('.bar-end'); if (end) end.prepend(hudEl);
     const nav = $('nav-links'); if (nav) { const x = K.h('a', { href: '#play', text: '值勤' }); x.dataset.k = 'play'; nav.append(x); }
@@ -98,7 +98,7 @@
   }
   /* 這一層的房間排在手提箱前面；選單、搜尋、分頁標題都從 ROOMS 來 */
   function room(id, name, desc) { const R = A.ROOMS, at = R.findIndex(r => r[0] === 'case'); R.splice(at < 0 ? R.length : at, 0, [id, name, desc]); }
-  room('play', '值勤台', '鐘敲過了。今天的差事都在這張桌上。');
+  room('play', '值勤台', '委託、暗房、底片冊、遊藝室：記錄員的日常。');
   A.addRoom('play', 'r-play', () => { if (!built) build(); paint(); });
   A.on('ready', () => { if (!built) build(); roll(); hud(); });
   A.on('import', () => { hud(); if (A.cur === 'play') paint(); });
@@ -112,7 +112,7 @@
     const t = document.querySelector('#r-hall .today'); if (!t) return;
     if (!band) { band = K.h('a.g-band', { href: '#play' }); t.after(band); }
     const g = gm(), n = dots(); band.textContent = '';
-    band.append(K.h('span.kick', { text: 'On Duty — 值勤台' }), K.h('b', { text: 'Lv.' + level().lv + '　' + DEV + ' ' + fmt(g.dev) }), K.h('span.d', { text: n ? '有 ' + n + ' 件東西等你簽收' : '今天的差事在桌上' }), K.h('span.go', { text: '進入 ›' }));
+    band.append(K.h('span.kick', { text: 'On Duty — 值勤台' }), K.h('b', { text: 'Lv.' + level().lv + '　' + DEV + ' ' + fmt(g.dev) }), K.h('span.d', { text: n ? n + ' 項可以領取' : '委託、暗房、底片冊、遊藝室' }), K.h('span.go', { text: '進入 ›' }));
   });
 
   /* 館裡原本的動作，在這裡換成計數和一點資歷 */

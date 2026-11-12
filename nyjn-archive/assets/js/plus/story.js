@@ -31,7 +31,7 @@
     stopType(); stopAuto();
     [...E.lines.children].forEach(p => p.classList.add('old'));
     const p = K.h('p'); E.lines.append(p);
-    const done = () => { stopType(); p.textContent = text; if (A.Gloss) A.Gloss.linkAll([p]); hint(S.phase === 'lines' ? '點一下，或按空白鍵' : ''); if (sy().auto && S.phase === 'lines') S.autoT = setTimeout(next, (A.Reader ? A.Reader.cueSec(text) : 5) * 520 + 500); };
+    const done = () => { stopType(); p.textContent = text; if (A.Gloss) A.Gloss.linkAll([p]); hint(S.phase === 'lines' ? '點一下，或按空白鍵繼續' : ''); if (sy().auto && S.phase === 'lines') S.autoT = setTimeout(next, (A.Reader ? A.Reader.cueSec(text) : 5) * 520 + 500); };
     if (K.rm()) { done(); return; }
     let i = 0; hint('');
     S.type = { done, t: setInterval(() => { i += 1; p.textContent = text.slice(0, i); if (i >= text.length) done(); }, 30) };
@@ -73,18 +73,18 @@
     S.P[S.pi].cues.slice(0, S.li + 1).forEach(t => E.lines.append(K.h('p.old', { text: t })));
     if (A.Gloss) A.Gloss.linkAll([...E.lines.children]);
     const last = E.lines.lastElementChild; if (last) last.classList.remove('old');
-    hint('點一下，或按空白鍵'); save(); bar();
+    hint('點一下，或按空白鍵繼續'); save(); bar();
   }
 
   /* 按住才算數的選項。鍵盤沒辦法「按住」得很自然，所以改成按兩次 */
   function holdBtn(tag, text, onDone) {
     const b = K.h('button.sty-opt', { type: 'button' }, K.h('i', { text: tag }), K.h('span', { text }), K.h('em.sty-fill', { 'aria-hidden': 'true' }));
     let t0 = 0, raf = 0, armed = false; const born = performance.now();
-    const arm = () => { armed = true; b.classList.add('armed'); hint('再按一次 Enter，就定了。'); };
+    const arm = () => { armed = true; b.classList.add('armed'); hint('再按一次 Enter 確認。'); };
     const stop = () => { cancelAnimationFrame(raf); t0 = 0; b.style.setProperty('--p', '0'); b.classList.remove('holding'); };
     const tick = () => { const p = Math.min(1, (performance.now() - t0) / HOLD); b.style.setProperty('--p', String(p)); if (p >= 1) { stop(); onDone(); } else raf = requestAnimationFrame(tick); };
     b.addEventListener('pointerdown', e => { if (e.button || t0) return; t0 = performance.now(); b.classList.add('holding'); raf = requestAnimationFrame(tick); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(n => b.addEventListener(n, () => { if (!t0) return; stop(); hint('按住，別鬆手。'); }));
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(n => b.addEventListener(n, () => { if (!t0) return; stop(); hint('按住不放，直到整條填滿。'); }));
     b.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); e.stopPropagation(); if (e.repeat || performance.now() - born < 450) return; if (armed) onDone(); else arm(); });
     b.addEventListener('blur', () => { armed = false; b.classList.remove('armed'); });
     b.addEventListener('contextmenu', e => e.preventDefault());
@@ -97,10 +97,10 @@
     E.act.textContent = ''; E.act.hidden = false;
     const a = holdBtn('甲', m.a, () => decide(m, 'a')), b = holdBtn('乙', m.b, () => decide(m, 'b'));
     if (had) (had === 'a' ? a : b).classList.add('was');
-    put(E.act, K.h('span.lab', { text: '這一刻，換你　' + m.when }), m.setup.map(t => K.h('p.sty-setup', { text: t })), K.h('div.sty-opts', a, b),
-      had ? K.h('p.sty-note', { text: '上一次，你選了' + (had === 'a' ? '甲' : '乙') + '。這一次不必一樣。' }) : null);
+    put(E.act, K.h('span.lab', { text: '這一刻換你決定　' + m.when }), m.setup.map(t => K.h('p.sty-setup', { text: t })), K.h('div.sty-opts', a, b),
+      had ? K.h('p.sty-note', { text: '你上次選的是' + (had === 'a' ? '甲' : '乙') + '。可以維持，也可以改。' }) : null);
     /* 不把焦點放到選項上：一路按空白鍵過來的人，會不小心替自己選了甲 */
-    S.opts = [a, b]; hint('按住，直到它記下。鍵盤：1 或 2，再 Enter'); bar();
+    S.opts = [a, b]; hint('按住其中一個選項。鍵盤：按 1 或 2，再按 Enter'); bar();
     E.stage.focus({ preventScroll: true }); E.stage.scrollTop = E.stage.scrollHeight;
   }
   function decide(m, pick) {
@@ -111,7 +111,7 @@
     E.act.textContent = '';
     const same = m.canon ? (pick === m.canon ? '這一次，你和她走了同一條路。' : '這一次，你走了另一條路。') : '';
     const rv = K.h('p.sty-reveal', { text: m.reveal });
-    const inp = K.h('input.inp', { type: 'text', maxlength: '60', placeholder: '為什麼。寫給自己看的，不寫也行', value: why()[m.id] || '', 'aria-label': '為什麼這樣選', autocomplete: 'off' });
+    const inp = K.h('input.inp', { type: 'text', maxlength: '60', placeholder: '為什麼這樣選？寫給自己看（可以不寫）', value: why()[m.id] || '', 'aria-label': '為什麼這樣選', autocomplete: 'off' });
     inp.addEventListener('input', () => { const v = inp.value.trim().slice(0, 60); if (v) why()[m.id] = v; else delete why()[m.id]; saveSoon(); });
     inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { inp.blur(); next(); } });
     const go = K.h('button.btn.sm', { type: 'button', text: '繼續 ›', onclick: e => { e.stopPropagation(); next(); } });
@@ -139,7 +139,7 @@
     const nav = K.h('div.save-row');
     if (ix < CH.length - 1) nav.append(K.h('a.btn.pri', { href: '#story/' + CH[ix + 1].id, text: '走下一章：' + CH[ix + 1].no + '〈' + CH[ix + 1].zh + '〉 ›' }));
     nav.append(K.h('a.btn', { href: '#' + c.id, text: '回展間' }), K.h('a.btn', { href: '#journal', text: '我的紀年' }), K.h('button.btn', { type: 'button', text: '從頭再走一次', onclick: () => open(c.id, 1) }));
-    put(E.act, K.h('span.lab', { text: '這一章，走到底了' }), K.h('h3', { text: c.no + '〈' + c.zh + '〉' }), K.h('p.sty-setup', { text: c.epi }),
+    put(E.act, K.h('span.lab', { text: '這一章走完了' }), K.h('h3', { text: c.no + '〈' + c.zh + '〉' }), K.h('p.sty-setup', { text: c.epi }),
       K.h('dl.sty-sum', K.h('div', K.h('dt', { text: '舞台' }), K.h('dd', { text: c.meta })), K.h('div', K.h('dt', { text: '底片' }), K.h('dd', { text: S.P.length + ' 張' })),
         mine.map(s => { const p = Case.d.choices[s.id]; return K.h('div', K.h('dt', { text: '你的抉擇' }), K.h('dd', { text: p ? (p === 'a' ? s.a : s.b) + (s.canon ? (p === s.canon ? '（同一條路）' : '（另一條路）') : '') : '這一次沒有選' })); })),
       rec, ta, nav);
@@ -210,13 +210,13 @@
   A.on('chapter', ({ id, c, box }) => {
     const head = box.querySelector('.ch-head'); if (!head || box.querySelector('.sty-enter')) return;
     const b = sy(), at = b.at[id], done = b.done[id];
-    head.after(K.h('div.sty-enter', K.h('div', K.h('span.lab', { text: 'IN HER PLACE — 親歷' }), K.h('p', { text: '站到她站過的地方去。走到該選的那一刻，沒有人替你開口。' })),
+    head.after(K.h('div.sty-enter', K.h('div', K.h('span.lab', { text: 'IN HER PLACE — 親歷' }), K.h('p', { text: '把這一章當成現場走一遍：旁白一句一句出來，走到抉擇的那一刻，故事會停下來等你。' })),
       K.h('div.save-row', K.h('a.btn.pri', { href: '#story/' + id, text: at ? '從上次的地方繼續' : done ? '再走一次' : '親歷這一章' }), done ? K.h('span.lab', { text: '走過　' + fmtDate(done) }) : null)));
   });
   A.on('plate', ({ id, at, narr }) => {
     const m = MOMENT[id + ':' + at]; if (!m) return; const p = Case.d.choices[m.id];
-    narr.append(K.h('div.sty-moment', K.h('span.lab', { text: '八個時刻之一　' + m.when }), K.h('p', { text: p ? '你在這裡選了：' + (p === 'a' ? m.a : m.b) + '。' : '這張底片上有一個時刻。還沒有人替你選。' }),
-      K.h('a.lnk', { href: '#story/' + id + '/' + (at + 1), text: p ? '回到這一刻' : '站到這一刻去' })));
+    narr.append(K.h('div.sty-moment', K.h('span.lab', { text: '八個時刻之一　' + m.when }), K.h('p', { text: p ? '你在這裡選了：' + (p === 'a' ? m.a : m.b) + '。' : '這張底片上有一個抉擇，還沒有人替你選。' }),
+      K.h('a.lnk', { href: '#story/' + id + '/' + (at + 1), text: p ? '回到這一刻' : '在這裡做抉擇' })));
   });
 
   A.Story = { open, at: id => AT[id], moments: MOMENT, done: () => Object.keys(sy().done).length, doneAt: id => sy().done[id] || 0, why: id => why()[id] || '' };

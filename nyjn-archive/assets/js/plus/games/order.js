@@ -17,9 +17,9 @@
   function mount(root, api) {
     const ten = shuffle(CH).slice(0, N * 2);   // 兩輪章節從同一疊發，不會抽到同一章
     const rounds = [
-      { lab: '章節', ask: '這五章，誰先誰後。', cards: ten.slice(0, N).map(chCard) },
-      { lab: '暴雨', ask: '這五場雨，哪一場先落下。', cards: shuffle(SD.map((s, i) => i)).slice(0, N).map(stCard) },
-      { lab: '章節', ask: '這五章，誰先誰後。', cards: ten.slice(N).map(chCard) }
+      { lab: '章節', ask: '把這五章排回故事的順序。', cards: ten.slice(0, N).map(chCard) },
+      { lab: '暴雨', ask: '把這五場暴雨排回落下的順序。', cards: shuffle(SD.map((s, i) => i)).slice(0, N).map(stCard) },
+      { lab: '章節', ask: '把這五章排回故事的順序。', cards: ten.slice(N).map(chCard) }
     ];
     const got = [], of = new Map(), say = K.h('p.o-say', { 'aria-live': 'polite' });
     let at = 0, list = null, foot = null, drag = null, locked = false, tm = 0;
@@ -87,7 +87,7 @@
       list.addEventListener('pointerdown', down); list.addEventListener('pointermove', track);
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => list.addEventListener(n, drop));
       foot = K.h('div.save-row', K.h('button.btn.pri', { type: 'button', text: '確認', onclick: check }), K.h('span.o-hint', { text: (coarse ? '拖左邊的把手' : '拖曳卡片') + '，或按上移、下移。' }));
-      root.append(K.h('div.o-head', K.h('span.lab', { text: '第' + ZH[at] + '輪 ／ 共三輪　' + r.lab }), K.h('h3', { text: r.ask }), K.h('p', { text: '最早的放最上面。排定了，按確認。' })), list, foot, say);
+      root.append(K.h('div.o-head', K.h('span.lab', { text: '第' + ZH[at] + '輪 ／ 共三輪　' + r.lab }), K.h('h3', { text: r.ask }), K.h('p', { text: '最早的排最上面，排好按確認。' })), list, foot, say);
       sync(); settle(); say.textContent = r.ask;
       focusSoon(of.get(list.firstElementChild).dn);
     }
@@ -116,8 +116,8 @@
   }
 
   A.Arcade.add({
-    id: 'order', name: '排年代', en: 'In Order', desc: '雨把順序弄亂了。五張卡，排回原本的先後。',
-    how: ['三輪，每輪五張。兩輪排章節，一輪排暴雨。', '最早的放最上面。拖曳，或按卡片上的上移、下移。', '按確認才揭曉。十五個位置，排對幾個算幾個。'],
+    id: 'order', name: '排年代', en: 'In Order', desc: '把章節和暴雨排回原本的先後。',
+    how: ['共三輪，每輪五張卡：兩輪排章節，一輪排暴雨。', '最早的排最上面。可以拖曳，也可以按卡片上的上移、下移。', '按確認後揭曉。十五個位置排對越多，分數越高。'],
     shot: { p: 'pages', a: {}, cues: [] }, mount
   });
 })();
