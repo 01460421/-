@@ -20,6 +20,13 @@
 - **設定**：白晝／暗房、字級、減少動態。
 - **離線**：裝過一次之後，沒有網路也能讀（service worker）。
 
+**館內配樂（v2.2.6）**
+
+- 〈逆雨〉主題與八段變奏，九段同一個旋律，每個房間配一段：大廳是主題，年表、展間、抉擇、你的暴雨、值勤、暗房、遊藝室、手提箱各一段變奏。
+- 預設是關的。頁首的「配樂」、手機選單、設定、全館搜尋或按 `P` 都可以開關；音量和放映廳共用設定裡的那一條。
+- 換房間時上一段淡出、下一段淡入；同一段涵蓋的幾個房間之間走動不會重頭播，離開再回來會從剛才停下的地方接著。進放映廳時讓位給紀錄片自己的配樂。
+- 音檔打開之後才下載（每段約 3 MB），不進離線快取。
+
 **導覽（v2.2）**
 
 - **入館**：全新的訪客從大廳進來，會先看到三張卡——開場、留名字、要不要人帶路。按 `Esc` 或「略過」就直接進館；拿著別人給的連結直接進某個房間的人不會被擋。
@@ -71,6 +78,8 @@ assets/css/game.css     遊戲層的樣式
 assets/css/story.css    劇情互動的樣式（親歷、抉擇之後、我的紀年）
 assets/css/guide.css    導覽的樣式（入館、導覽條、導覽頁）
 assets/audio/score.mp4  放映廳的配樂（原版紀錄片的音軌）
+assets/audio/theme/     館內配樂：〈逆雨〉主題與八段變奏，九個 m4a（共約 30 MB）
+assets/js/plus/music.js 館內配樂的播放：哪個房間配哪一段、淡入淡出、讓位給放映廳
 assets/fonts/           逆雨（NiYu）字型的網頁版：niyu-core.woff2（館內用到的字）、niyu-rest.woff2（其餘的字，用到才下載）
 assets/css/fonts.css    字型的宣告，由 dev/fonts.py 產生
 assets/js/boot.js       最後才開機
@@ -132,6 +141,7 @@ npm run live -- https://你的網域   # 部署後的實機檢查（32 項，會
 - **放映廳的配樂**：音檔在 `assets/audio/score.mp4`，要換檔案就改 `config.js` 的 `SCORE_URL`。配樂是照影片的時間軸剪的，而時間軸的算法寫在 `assets/js/plus/cinema.js` 開頭（每句幾秒、長句怎麼拆、鏡頭前後留多少空白）。這兩樣是一對：改了旁白或算法，音軌就會對不上章節。播放時是影片跟著配樂的時間走，音軌只在跳轉時定位一次（每定位一次就會聽到一次斷點），改這一段之後請跑 `npm run score`。
 - **展間自動翻頁的節奏**：`assets/js/plus/reader.js` 的 `cueSec`。
 - **徽記**：`assets/js/plus/rank.js` 的 `ACH`。
+- **館內配樂**：哪個房間配哪一段，寫在 `assets/js/plus/music.js` 的 `ROOM`（各章展間一律用〈展間〉）。換音檔就覆蓋 `assets/audio/theme/` 裡同名的檔案；九段的響度要對齊（現在都是 −17 LUFS），不然換房間時會忽大忽小。提示詞和來源檔的對應在 `docs/SCORE-SUNO.md`。
 - **字型**：標題、內文和英文標題都用「逆雨」（NiYu），原始檔在 `dev/fonts/NiYu-Regular.otf`。字型自己的樣張與下載頁在 https://01460421.github.io/niyu/ ，館內的「關於本館」、頁尾和搜尋都有連結（網址寫在 `config.js` 的 `FONT_PAGE` 和 `index.html`）。換了字型檔，或館內的文字多了新的字，跑一次 `npm run fonts`；`python3 dev/fonts.py --check` 會列出館內用到、但字型裡還沒有的字。小標籤和按鈕仍然用 Jost。
 - **導覽的八站**：`assets/js/plus/guide.js` 的 `STOPS`（每一站去哪裡、說什麼、怎樣算到了）和 `MAP`（平面圖）。
 - **委託的內容與報酬**：`assets/js/plus/quests.js` 開頭的 `DAILY`、`WEEKLY`、`MAIN`、`SIGN`。

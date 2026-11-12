@@ -19,4 +19,4 @@ const SCORE_URL='';
 const FONT_PAGE='https://01460421.github.io/niyu/';
 
 /* 版本：改了檔案之後把它往上加，瀏覽器和離線快取才會換新。 */
-const SITE_VERSION='2.2.5';
+const SITE_VERSION='2.2.6';

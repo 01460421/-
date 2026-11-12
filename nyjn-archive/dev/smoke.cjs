@@ -161,7 +161,26 @@ async function main() {
     ok(await p.evaluate(() => document.fonts.ready.then(() => document.fonts.check('40px NiYu', '逆雨檔案館'))), '逆雨字型應該載入');
     ok(await p.evaluate(() => [...document.querySelectorAll('a[href="https://01460421.github.io/niyu/"]')].filter(a => a.target === '_blank' && /noopener/.test(a.rel)).length === 2 && typeof FONT_PAGE === 'string'), '關於本館和頁尾都應該連到原創字體頁（另開分頁）');
 
-    /* 九、標頭 */
+    /* 九、館內配樂：預設關；打開之後跟著房間換段；同一段不重頭；放映廳讓位；回到原來那段時接著播 */
+    const mu = await visitor('庚');
+    await mu.goto(BASE + '/#chronicle'); await mu.waitForTimeout(900);
+    ok(await mu.evaluate(() => { const s = window.__A.Music.state(); return !s.on && !s.playing.length && document.getElementById('b-mus').getAttribute('aria-pressed') === 'false'; }), '館內配樂預設應該是關的');
+    await mu.click('#b-mus'); await mu.waitForTimeout(2600);
+    ok(await mu.evaluate(() => { const s = window.__A.Music.state(); return s.on && s.id === 'chronicle' && s.playing.join() === 'chronicle' && s.at > .5 && document.getElementById('b-mus').getAttribute('aria-pressed') === 'true'; }), '在暴雨年表打開配樂，應該播〈年表〉那一段', await mu.evaluate(() => window.__A.Music.state()));
+    await mu.evaluate(() => { location.hash = 'darkroom'; }); await mu.waitForTimeout(2800);
+    const d1 = await mu.evaluate(() => window.__A.Music.state());
+    ok(d1.id === 'darkroom' && d1.playing.join() === 'darkroom', '走到暗房，應該換成〈暗房〉，上一段淡出後停下', d1);
+    await mu.evaluate(() => { location.hash = 'album'; }); await mu.waitForTimeout(1200);
+    const d2 = await mu.evaluate(() => window.__A.Music.state());
+    ok(d2.id === 'darkroom' && d2.at > d1.at, '暗房走到底片冊是同一段，不應該重頭播', [d1.at, d2.at]);
+    await mu.evaluate(() => { location.hash = 'film'; }); await mu.waitForTimeout(2400);
+    ok(await mu.evaluate(() => { const s = window.__A.Music.state(); return s.on && !s.id && !s.playing.length; }), '進放映廳，館內配樂應該讓位');
+    await mu.evaluate(() => { location.hash = 'chronicle'; }); await mu.waitForTimeout(1500);
+    ok(await mu.evaluate(() => { const s = window.__A.Music.state(); return s.id === 'chronicle' && s.at > 2; }), '回到暴雨年表，應該從剛才停下的地方接著播');
+    await mu.keyboard.press('p'); await mu.waitForTimeout(2200);
+    ok(await mu.evaluate(() => { const s = window.__A.Music.state(); return !s.on && !s.playing.length; }), '按 P 應該關掉配樂');
+
+    /* 十、標頭 */
     const res = await p.request.get(BASE + '/');
     ok(/script-src 'self'/.test(res.headers()['content-security-policy'] || ''), '首頁應該帶內容安全政策');
     const health = await (await p.request.get(BASE + '/api/health')).json();

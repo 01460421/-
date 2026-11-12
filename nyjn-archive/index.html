@@ -25,17 +25,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400&family=Noto+Sans+TC:wght@400;500&family=Bodoni+Moda:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@400;500&family=IM+Fell+English:ital@0;1&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <link rel="preload" href="assets/fonts/niyu-core.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fonts.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/base.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/plus.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/game.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/story.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/guide.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/games/order.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/games/match.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/games/catch.css?v=2.2.5">
-<link rel="stylesheet" href="assets/css/games/code.css?v=2.2.5">
-<script src="assets/js/theme.js?v=2.2.5"></script>
+<link rel="stylesheet" href="assets/css/fonts.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/base.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/plus.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/game.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/story.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/guide.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/games/order.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/games/match.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/games/catch.css?v=2.2.6">
+<link rel="stylesheet" href="assets/css/games/code.css?v=2.2.6">
+<script src="assets/js/theme.js?v=2.2.6"></script>
 </head>
 <body>
 <a class="skip" href="#main">跳到內容</a>
@@ -47,6 +47,7 @@
   <div class="bar-end">
     <button class="nav-btn ico" id="b-find" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /">搜尋</button>
     <button class="nav-btn ico" id="b-snd" aria-pressed="false" title="環境音">雨聲 <span id="snd-st">關</span></button>
+    <button class="nav-btn ico" id="b-mus" aria-pressed="false" title="館內配樂">配樂 <span id="mus-st">關</span></button>
     <button class="nav-btn ico" id="b-set" aria-haspopup="dialog">設定</button>
     <a class="bag" id="b-case" href="#case">手提箱 <span class="cnt" id="case-cnt">0</span></a>
   </div>
@@ -132,6 +133,8 @@
         <p style="margin-top:10px">文字是重新撰寫的劇情摘要，沒有引用遊戲原文。底片全部由程式繪製，是原創的氛圍美術，沒有使用官方立繪、截圖或標誌。主線仍有官方刻意留白的地方，本館依目前呈現的內容敘述。</p>
         <h3 style="margin-top:22px">權利聲明</h3>
         <p>《重返未來：1999》及其角色、名稱與世界觀，著作權與商標屬深藍互動（Bluepoch）所有。本館與官方無關，僅供同好回顧劇情。</p>
+        <h3 style="margin-top:22px">配樂</h3>
+        <p>館內配樂是〈逆雨〉主題與八段變奏，每個房間各配一段，以 Suno 製作，預設是關的，可以從上方的「配樂」打開。放映廳的配樂是原版紀錄片的音軌。</p>
         <h3 style="margin-top:22px">字型</h3>
         <p>本館的標題與內文用的是原創字體「逆雨」（NiYu）。骨架保守，細節放肆：雨滴一律朝天，細筆在碰到粗筆之前留一道縫，所有的點都是菱形。字型免費，可商用（SIL OFL 1.1）。</p>
         <p style="margin-top:10px"><a class="lnk" id="font-page" href="https://01460421.github.io/niyu/" target="_blank" rel="noopener">原創字體頁：逆雨 NiYu 的樣張與下載</a></p>
@@ -291,44 +294,45 @@
 </footer>
 
 <div class="toc" id="toc" hidden role="dialog" aria-modal="true" aria-label="目錄"><div class="wrap">
-  <div class="top"><span class="brand" style="justify-self:start;padding-left:0">選單</span><div class="toc-acts"><button class="btn sm" id="toc-find">搜尋</button><button class="btn sm" id="toc-set">設定</button><button class="btn sm" id="toc-x">關閉</button></div></div>
+  <div class="top"><span class="brand" style="justify-self:start;padding-left:0">選單</span><div class="toc-acts"><button class="btn sm" id="toc-find">搜尋</button><button class="btn sm" id="toc-mus" aria-pressed="false">配樂 <span id="toc-mus-st">關</span></button><button class="btn sm" id="toc-set">設定</button><button class="btn sm" id="toc-x">關閉</button></div></div>
   <ol id="toc-list"></ol>
 </div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 <noscript><p style="padding:24px;font-family:serif">逆雨檔案館需要開啟 JavaScript 才能顯示底片與互動內容。</p></noscript>
-<script defer src="assets/js/config.js?v=2.2.5"></script>
-<script defer src="assets/js/paint.js?v=2.2.5"></script>
-<script defer src="assets/js/film.js?v=2.2.5"></script>
-<script defer src="assets/js/data.js?v=2.2.5"></script>
-<script defer src="assets/js/app.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/kit.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/settings.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/sound.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/gloss.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/palette.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/reader.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/score.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/cinema.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/quiz.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/rank.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/social.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/sync.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/admin.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/game.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/quests.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/darkroom.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/album.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/arcade.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/games/order.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/games/match.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/games/catch.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/games/code.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/shop.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/profile.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/story.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/fate.js?v=2.2.5"></script>
-<script defer src="assets/js/plus/guide.js?v=2.2.5"></script>
-<script defer src="assets/js/boot.js?v=2.2.5"></script>
+<script defer src="assets/js/config.js?v=2.2.6"></script>
+<script defer src="assets/js/paint.js?v=2.2.6"></script>
+<script defer src="assets/js/film.js?v=2.2.6"></script>
+<script defer src="assets/js/data.js?v=2.2.6"></script>
+<script defer src="assets/js/app.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/kit.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/settings.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/sound.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/gloss.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/palette.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/reader.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/score.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/cinema.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/quiz.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/rank.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/social.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/sync.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/admin.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/game.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/quests.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/darkroom.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/album.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/arcade.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/games/order.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/games/match.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/games/catch.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/games/code.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/shop.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/profile.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/story.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/fate.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/guide.js?v=2.2.6"></script>
+<script defer src="assets/js/plus/music.js?v=2.2.6"></script>
+<script defer src="assets/js/boot.js?v=2.2.6"></script>
 </body>
 </html>
