@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@fontsource/iansui": "^5.3.1",
-    "@fontsource/lxgw-wenkai-tc": "^5.3.1"
+    "@fontsource/lxgw-wenkai-tc": "^5.3.1",
+    "@free-fonts/tw-kai": "^1.0.0"
   }
 }

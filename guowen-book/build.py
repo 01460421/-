@@ -544,7 +544,8 @@ def page_css(years, vol=None):
 
 
 FONT_CSS = ['@fontsource/iansui/chinese-traditional-400.css', '@fontsource/iansui/latin-400.css',
-            '@fontsource/lxgw-wenkai-tc/chinese-traditional-400.css', '@fontsource/lxgw-wenkai-tc/latin-400.css']
+            '@fontsource/lxgw-wenkai-tc/chinese-traditional-400.css', '@fontsource/lxgw-wenkai-tc/latin-400.css',
+            '@free-fonts/tw-kai/tw-kai.css']  # 全字庫正楷體：補罕用字
 
 
 def build(years=None, sample=False, vol=None):

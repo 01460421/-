@@ -2,8 +2,8 @@
 :root{
   --ink:#1F2430; --ink2:#4A5160; --ink3:#8A90A0; --line:#D9D5CA; --paper:#FFFDF7; --cream:#F6F1E4;
   --navy:#1B2A49; --navy2:#2C4270; --gold:#C9A227; --red:#D7263D; --blue:#1D5FBF; --green:#1B8A5A; --purple:#7A3FB0; --orange:#E07A1F;
-  --serif:'Iansui','LXGW WenKai TC','Noto Serif TC',serif; --sans:'Iansui','LXGW WenKai TC','Noto Sans TC',sans-serif;
-  --kai:'Iansui','LXGW WenKai TC',serif; --hand:'Iansui','LXGW WenKai TC',cursive;
+  --serif:'Iansui','LXGW WenKai TC','TW-Kai',serif; --sans:'Iansui','LXGW WenKai TC','TW-Kai',sans-serif;
+  --kai:'Iansui','LXGW WenKai TC','TW-Kai',serif; --hand:'Iansui','LXGW WenKai TC','TW-Kai',cursive;
 }
 @page{ size:A4; margin:17mm 13mm 16mm 13mm;
   @top-left{ content:"科學班國文歷屆試題詳解集｜嘉義高中"; font-family:'Iansui','LXGW WenKai TC'; font-size:7.5pt; color:#8A90A0; letter-spacing:.08em; padding-bottom:3mm; }
@@ -312,3 +312,9 @@ table.qlist a{color:inherit;text-decoration:none}
 .acard .bd blockquote{border-left-color:#2F7F86;background:#EAF4F4}
 .blank{display:inline-block;border-bottom:1px solid currentColor;height:1em;vertical-align:-.15em;margin:0 .1em}
 .bd h5{break-after:avoid;break-inside:avoid}
+.cv-feat{top:194mm;font-size:11pt} .cv-feat li{padding:1.3mm 0}
+.cv-foot{bottom:12mm}
+.guide-sec .lg-card{padding:2mm 3.6mm} .guide-sec .lg-table td{padding:.5mm 1.5mm;line-height:1.62}
+.guide-sec p,.guide-sec li{line-height:1.6} .guide-sec .legend{gap:3mm} .guide-sec .lead{padding:1.8mm 4mm;margin-bottom:2.4mm}
+.guide-sec .howto{margin-top:2.4mm;padding:1.6mm 4mm} .guide-sec .fm-h{margin-bottom:3.4mm}
+.cv-sub{font-size:12pt;letter-spacing:.05em;white-space:nowrap}

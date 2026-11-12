@@ -28,7 +28,7 @@ def front(order, qinfo, metas, vol=None):
     y0, y1 = (min(main), max(main)) if main else (order[-1], order[0])
     n = len(qinfo)
     volname = vol['name'] if vol else ''
-    bonus_txt = f'（特別收錄 {"、".join(bonus)} 學年度）' if bonus else ''
+    bonus_txt = f'（特別收錄 {"、".join(bonus)}）' if bonus else ''
     sets = ''
     if vol:
         import build
@@ -50,14 +50,15 @@ def front(order, qinfo, metas, vol=None):
 <div class="cv-sub">{y0}–{y1} 學年度{bonus_txt}・{len(order)} 份試卷・{n} 題完整解析</div>
 <div class="cv-years">{stamps}</div>
 <div class="cv-hw cv-hw1 hw pen-red">原題完整重現<br>＋彩色筆記畫重點！</div>
-<div class="cv-hw cv-hw2 hw pen-blue">解題邏輯 → 選項詳解<br>→ 延伸知識點</div>
+<div class="cv-hw cv-hw2 hw pen-blue">解題邏輯 → 選項詳解<br>→ 延伸知識 → 接軌學測</div>
 <div class="cv-hw cv-hw3 hw pen-green">答案依官方公布 ✓</div>
 <ul class="cv-feat">
 <li><b>原題重現</b>題幹、引文、選項一字不漏</li>
 <li><b>筆記版</b>螢光筆、圈點、手寫眉批，示範怎麼畫重點</li>
 <li><b>解題邏輯</b>一步一步寫出「怎麼想」</li>
 <li><b>選項詳解</b>四個選項逐一說明錯在哪裡</li>
-<li><b>延伸知識點</b>比較表、典故、文學常識一次帶走</li>
+<li><b>延伸知識點</b>完整成體系的知識表、典故、文學常識</li>
+<li><b>加深加廣</b>高中課文連結、學測考法、自編進階演練</li>
 </ul>
 <div class="cv-foot">試題取自國立嘉義高級中學官方網站公開之歷屆甄選試題</div>
 </section>'''
@@ -76,7 +77,8 @@ def front(order, qinfo, metas, vol=None):
 <h4>答案與詳解的來源</h4>
 <ul>
 <li><b>答案</b>：一律採用嘉義高中公布之官方參考答案；官方曾公告修正者，採修正後版本，並於該年度「試卷總覽」註明。</li>
-<li><b>詳解、筆記、延伸知識</b>：為本書另行編寫，並非官方解答。字音、字義與成語釋義以教育部《重編國語辭典修訂本》為主要依據。</li>
+<li><b>詳解、筆記、延伸知識、加深加廣</b>：為本書另行編寫，並非官方解答。字音、字義與成語釋義以教育部《重編國語辭典修訂本》為主要依據。</li>
+<li><b>進階演練</b>：標示「本書自編」的題目為本書自行命題，並非任何考試的試題。</li>
 <li><b>疑義說明</b>：少數試題的官方答案在學理上有討論空間，本書仍依官方答案作答，並在該題「易錯提醒」中客觀說明。</li>
 <li><b>原卷誤植</b>：原試卷若有錯字或題號誤植，本書照原樣收錄，並以手寫筆記標示。</li>
 </ul>
@@ -89,7 +91,7 @@ def front(order, qinfo, metas, vol=None):
 </div></div></section>'''
     # ---------- 使用說明 ----------
     h += '''<section class="fm-sec guide-sec"><h2 class="fm-h"><i>貳</i>本書使用說明</h2>
-<p class="lead">每一題都依照「<b>原題重現（筆記版）→ 答案 → 解題邏輯 → 選項詳解 → 易錯提醒 → 延伸知識點</b>」的順序編排；文言文與詩詞另附「語譯」，題組另附「文本導讀」。</p>
+<p class="lead">每一題都依照「<b>原題重現（筆記版）→ 答案 → 解題邏輯 → 選項詳解 → 易錯提醒 → 延伸知識點 → 加深加廣</b>」的順序編排；文言文與詩詞另附「語譯」，題組另附「文本導讀」。</p>
 <div class="legend">
 <div class="lg-card"><h4>① 題頭資訊</h4>
 <div class="lg-demo"><span class="qno-mini">07</span><b>考點名稱</b><span class="chip cat" style="--cat:#B5477A">類別</span><span class="chip">標籤</span><span class="stars">★★★<i>★★</i></span></div>
@@ -120,7 +122,8 @@ def front(order, qinfo, metas, vol=None):
 <li><b>解題邏輯</b>：審題 → 定位 → 刪去 → 結論，學的是「怎麼想」。</li>
 <li><b>選項詳解</b>：綠框為正解；每個選項標示該敘述正確（✓）或錯誤（✗）。請注意「選錯誤的」題型，正解會是標 ✗ 的選項。</li>
 <li><b>易錯提醒</b>：常見誤判與官方答案的疑義說明。</li>
-<li><b>延伸知識點</b>：與考點直接相關的比較表、典故與文學常識。</li>
+<li><b>延伸知識點</b>：與考點直接相關、完整成體系的知識表（如年齡代稱、題辭、六書、修辭）。</li>
+<li><b>加深加廣・接軌學測</b>：高中課文連結、學測常見考法、進階辨析、文學史脈絡，以及本書自編的進階演練。</li>
 </ul></div>
 </div>
 <div class="howto"><h4>建議的使用步驟</h4>
@@ -136,7 +139,7 @@ def front(order, qinfo, metas, vol=None):
             h += (f'<a href="#q{q["id"]}"><b>{q["no"]:02d}</b><span>{_inline(q["type"])}</span><i></i>'
                   f'<em class="pg" data-ref="{q["id"]}">—</em></a>')
         h += '</div></div>'
-    h += ('<div class="toc-ch"><a class="toc-chh" href="#appendix"><b>附錄</b><span>答案總表・題型統計・延伸知識點索引</span><i></i>'
+    h += ('<div class="toc-ch"><a class="toc-chh" href="#appendix"><b>附錄</b><span>答案總表・題型統計・知識點索引</span><i></i>'
           '<em class="pg" data-ref="appendix">—</em></a></div>')
     h += '</section></div>'
     return h
@@ -192,7 +195,7 @@ def back(order, qinfo, metas, CATS, CAT_COLOR):
           f'形音義與詞語成語等基礎題合計 {base} 題，占 {base / tot * 100:.0f}%。備考時基礎題求「全對」，閱讀題求「速度與穩定」。</div>')
     h += '</section>'
     # 附錄三 知識點索引
-    h += '<section class="fm-sec"><h2 class="fm-h"><i>附</i>附錄三　延伸知識點索引</h2><p class="small">依類別整理全書各題的延伸知識點，括號內為「年度-題號」，後為頁碼。</p>'
+    h += '<section class="fm-sec"><h2 class="fm-h"><i>附</i>附錄三　延伸知識點與加深加廣索引</h2><p class="small">依類別整理全書各題的延伸知識點與加深加廣卡片，括號內為「年度-題號」，後為頁碼。</p>'
     for c in CATS:
         items = [(k, q) for q in qinfo if q['cat'] == c for k in q['know']]
         if not items:
