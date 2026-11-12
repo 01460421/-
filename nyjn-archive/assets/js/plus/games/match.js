@@ -38,9 +38,10 @@
     const grid = K.h('div.m-grid', { role: 'group', 'aria-label': '十六張底片' }, cards.map(c => c.b));
     root.append(K.h('dl.m-hud', K.h('div', K.h('dt', { text: '步數' }), nMoves), K.h('div', K.h('dt', { text: '時間' }), nTime), K.h('div', K.h('dt', { text: '配對' }), nFound)), grid, say);
     cards.forEach(face);
-    /* 進場時框架把頁面捲回最上面，可是房間的大標題就佔掉半個畫面；十六張要一次看全，裝不下就把遊戲這一列捲到頂列正下方。 */
-    const bar = document.querySelector('.bar'), y = (root.previousElementSibling || root).getBoundingClientRect().top;
-    if (root.getBoundingClientRect().bottom > window.innerHeight) window.scrollBy(0, y - (bar ? bar.offsetHeight : 0) - 10);
+    /* 進場時框架把頁面捲回最上面，可是房間的大標題就佔掉半個畫面。十六張要一次看全，
+       所以頁面在最上面時裝不下的話，改把遊戲這一列捲到頂列正下方。位置用整頁的座標算：框架那一下捲動可能還在半路。 */
+    const bar = document.querySelector('.bar'), y = window.scrollY, top = (root.previousElementSibling || root).getBoundingClientRect().top + y - (bar ? bar.offsetHeight : 0) - 10;
+    if (root.getBoundingClientRect().bottom + y > window.innerHeight) window.scrollTo(0, Math.max(0, top));
 
     /* 畫布照卡片實際的大小開（手機是方的，桌機是 16:10），底片才不會糊。每一對只畫一次，另一張直接複製。 */
     const r = cards[0].b.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);

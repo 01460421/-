@@ -50,7 +50,7 @@
     };
     document.addEventListener('keydown', key);
     paint();
-    if (root.getBoundingClientRect().bottom > innerHeight) root.scrollIntoView({ block: 'start', behavior: 'instant' });   // 手機上紀錄加數字鍵比一個畫面長一點，先捲到剛好放得下
+    if (root.getBoundingClientRect().bottom + scrollY > innerHeight) root.scrollIntoView({ block: 'start', behavior: 'instant' });   // 手機上紀錄加數字鍵比一個畫面長一點，先捲到剛好放得下
     return { stop() { over = true; document.removeEventListener('keydown', key); } };
   }
 

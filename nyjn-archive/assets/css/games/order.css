@@ -34,17 +34,24 @@
 /* 揭曉 */
 .g-order .done .oc,.g-order .done .grip{cursor:default}
 .g-order .done .grip::after{display:none}
-.g-order .tx .lab{color:var(--slate)}
-.g-order .vd{display:grid;place-content:center;min-width:96px;padding:0 12px;border-left:1px solid var(--hair);font-family:var(--f-ui);font-size:12px;font-weight:500;letter-spacing:.1em;color:var(--slate);text-align:center;white-space:nowrap}
+.g-order .vd{display:grid;align-content:center;justify-items:center;gap:1px;min-width:124px;padding:6px 12px;border-left:1px solid var(--hair);text-align:center;white-space:nowrap}
+.g-order .vd b{font-family:var(--f-display);font-weight:900;font-size:15px;letter-spacing:.08em;line-height:1.5}
+.g-order .vd span{font-family:var(--f-ui);font-size:11.5px;font-weight:500;letter-spacing:.1em;line-height:1.5;color:var(--slate)}
 .g-order .oc.no{border-color:var(--hair)}
 .g-order .oc.ok{border-color:var(--mark);box-shadow:inset 3px 0 0 var(--mark)}
-.g-order .oc.ok .vd,.g-order .oc.ok .tx .lab{color:var(--mark)}
+.g-order .oc.ok .vd b,.g-order .oc.ok .vd span{color:var(--mark)}
 
+/* 手機：收緊一點，五張卡加確認鈕才塞得進一個畫面；揭曉那一格和按鈕那一格一樣寬，文字不會重新折行 */
 @media (max-width:480px){
+  .g-order{gap:14px}
   .g-order .oc{grid-template-columns:42px minmax(0,1fr) auto}
-  .g-order .tx{padding:9px 11px}
+  .g-order .tx{padding:7px 11px}
   .g-order .tx b{font-size:17px;letter-spacing:.03em}
+  .g-order .oc.st .tx b{font-size:20px}
+  .g-order .oc.st .tx .s{line-height:1.6}
   .g-order .mv button{min-width:44px;padding:0 6px;letter-spacing:.04em}
-  .g-order .vd{min-width:84px;padding:0 8px;letter-spacing:.04em}
+  .g-order .vd{min-width:89px;padding:6px 5px}
+  .g-order .vd b{font-size:13px;letter-spacing:0}
+  .g-order .vd span{font-size:11px;letter-spacing:.04em}
 }
 @media (prefers-reduced-motion:reduce){.g-order .oc,.g-order .mv button{transition:none}}

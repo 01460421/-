@@ -7,6 +7,8 @@
   const A = window.__A, K = A.K, PI = Math.PI, rnd = Math.random, mix = (a, b, p) => a + (b - a) * p;
   /* TARGET 是「淨得幾個算滿分」。用模擬的玩家試出來的：仔細玩的淨得 40 上下，隨手玩的 25 上下。 */
   const SEC = 45, TARGET = 44, LINE = .2, STUN = .5, VMAX = 2.4, VKEY = 1.3;
+  /* 開場 → 終場：隔幾秒出一個、每秒升幾個畫面高、單獨出現的症候佔幾成、好東西旁邊黏著症候的機率 */
+  const RAMP = { gap: [.9, .42], v: [.3, .6], bad: [.16, .34], tag: [0, 0] };
 
   /* 留得住的東西：畫在 ±1 的方格裡，亮色實心，bg 拿來挖洞 */
   const GOOD = [
@@ -19,7 +21,7 @@
   function mount(root, api) {
     const cv = K.h('canvas', { role: 'img', 'aria-label': '遊戲畫面：手提箱在上方的線上，東西從底下往上飄。' }), c = cv.getContext('2d'), field = K.h('div.ct-field.plate', cv);
     const tEl = K.h('dd', { text: String(SEC) }), nEl = K.h('dd', { text: '0' }), xEl = K.h('dd', { text: '0' }), bar = K.h('i');
-    root.append(K.h('dl.ct-hud', K.h('div', K.h('dt', { text: '剩下幾秒' }), tEl), K.h('div', { 'aria-live': 'polite', 'aria-atomic': 'true' }, K.h('dt', { text: '收進' }), nEl), K.h('div', K.h('dt', { text: '症候' }), xEl)),
+    root.append(K.h('dl.ct-hud', K.h('div', K.h('dt', { text: '倒數' }), tEl), K.h('div', { 'aria-live': 'polite', 'aria-atomic': 'true' }, K.h('dt', { text: '收進' }), nEl), K.h('div', K.h('dt', { text: '症候' }), xEl)),
       K.h('div.ct-time', bar), field, K.h('p.ct-tip', { text: '滑鼠或手指左右移動，也可以按 ← →。' }));
 
     const S = { t: 0, x: .5, to: .5, got: 0, hit: 0, miss: 0, stun: 0, next: .5, items: [], pops: [] }, held = {};
@@ -34,15 +36,18 @@
       r = K.clamp(Math.min(W, H) * .042, 13, 26); hw = Math.max(34, W * .07); tint(); draw();
     }
 
+    const add = (x, v, bad) => S.items.push({ x, y: 1 + 2 * r / H, v, bad, k: Math.floor(rnd() * GOOD.length), a: (rnd() - .5) * .5, w: (rnd() - .5) * 3,
+      j: bad ? Array.from({ length: 14 }, (_, i) => i % 2 ? .3 + rnd() * .22 : .72 + rnd() * .5) : null });
     function spawn() {
-      const p = S.t / SEC, m = hw / W, bad = rnd() < mix(.16, .34, p);
-      S.items.push({ x: mix(m, 1 - m, rnd()), y: 1 + 2 * r / H, v: mix(.3, .6, p) * (.85 + rnd() * .3), bad, k: Math.floor(rnd() * GOOD.length), a: (rnd() - .5) * .5, w: (rnd() - .5) * 3,
-        j: bad ? Array.from({ length: 14 }, (_, i) => i % 2 ? .36 + rnd() * .2 : .85 + rnd() * .35) : null });
-      S.next = S.t + mix(.9, .42, p) * (.8 + rnd() * .4);
+      const p = S.t / SEC, at = k => mix(RAMP[k][0], RAMP[k][1], p), m = hw / W, x = mix(m, 1 - m, rnd()), v = at('v') * (.85 + rnd() * .3), bad = rnd() < at('bad');
+      add(x, v, bad);
+      /* 症候愛黏在留得住的東西旁邊：同一個速度一起上來，隔不到一個箱子寬，要偏一點才接得乾淨 */
+      if (!bad && rnd() < at('tag')) { const d = (1.05 + rnd() * .55) * m, side = x + d > 1 - m * .4 || (x - d >= m * .4 && rnd() < .5) ? -1 : 1; add(x + side * d, v, true); }
+      S.next = S.t + at('gap') * (.8 + rnd() * .4);
     }
     function take(o) {
       if (o.bad) { S.hit++; S.stun = STUN; xEl.textContent = S.hit; } else { S.got++; nEl.textContent = S.got; }
-      S.pops.push({ x: o.x, s: o.bad ? '−2' : '+1', t: S.t }); api.sfx(o.bad ? 'wrong' : 'right');
+      S.pops.push({ x: S.x, s: o.bad ? '−2' : '+1', t: S.t }); api.sfx(o.bad ? 'wrong' : 'right');
     }
     function step(dt) {
       S.t += dt; const m = hw / W, band = r / H;
@@ -112,8 +117,8 @@
     const on = [[window, 'pointermove', aim], [cv, 'pointerdown', aim], [window, 'blur', calm], [document, 'keydown', key], [document, 'keyup', key], [document, 'visibilitychange', vis]];
     on.forEach(([t, n, f]) => t.addEventListener(n, f));
     const ro = new ResizeObserver(size); ro.observe(field);
-    size(); root.peek = () => ({ t: S.t, x: S.x, half: hw / W, line: LINE, items: S.items });   // 給測試看場上的位置
-    if (root.getBoundingClientRect().bottom > innerHeight) root.scrollIntoView({ block: 'start', behavior: 'instant' });   // 整塊畫布要一次看得到
+    size(); root.peek = () => ({ t: S.t, x: S.x, half: hw / W, rad: r / W, line: LINE, items: S.items });   // 給測試看場上的位置
+    if (root.getBoundingClientRect().bottom + scrollY > innerHeight) root.scrollIntoView({ block: 'start', behavior: 'instant' });   // 整塊畫布要一次看得到
     if (!document.hidden) raf = requestAnimationFrame(frame);
     return { stop() { over = true; cancelAnimationFrame(raf); raf = 0; ro.disconnect(); on.forEach(([t, n, f]) => t.removeEventListener(n, f)); } };
   }

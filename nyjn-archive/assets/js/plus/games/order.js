@@ -24,13 +24,14 @@
     const got = [], of = new Map(), say = K.h('p.o-say', { 'aria-live': 'polite' });
     let at = 0, list = null, foot = null, drag = null, locked = false, tm = 0;
     root.classList.toggle('still', !!api.rm);
+    const coarse = !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches);
     const focusSoon = el => { clearTimeout(tm); tm = setTimeout(() => el.focus({ preventScroll: true }), 40); };
     const sync = () => [...list.children].forEach((li, i) => { const o = of.get(li); o.up.disabled = i === 0; o.dn.disabled = i === N - 1; });
     /* 進場時框架把頁面捲回最上面，可是房間的大標題就佔掉半個畫面。五張卡和確認鈕要能一次看全，
-       所以畫面裝不下、或標題被頂列蓋住的時候，把遊戲這一列捲到頂列正下方。 */
+       所以頁面在最上面時裝不下的話，改把遊戲這一列捲到頂列正下方。位置用整頁的座標算：框架那一下捲動可能還在半路。 */
     function settle() {
-      const bar = document.querySelector('.bar'), min = bar ? bar.offsetHeight : 0, y = (root.previousElementSibling || root).getBoundingClientRect().top;
-      if (root.getBoundingClientRect().bottom > window.innerHeight || y < min) window.scrollBy(0, y - min - 10);
+      const bar = document.querySelector('.bar'), y = window.scrollY, top = (root.previousElementSibling || root).getBoundingClientRect().top + y - (bar ? bar.offsetHeight : 0) - 10;
+      if (root.getBoundingClientRect().bottom + y > window.innerHeight) window.scrollTo(0, Math.max(0, top));
     }
 
     /* 往上或往下挪一格。搬的是隔壁那張，不是自己：自己一離開文件，鍵盤焦點和拖曳中的指標捕捉都會掉。
@@ -61,16 +62,16 @@
     }
     function track(e) {
       if (!drag || e.pointerId !== drag.id) return;
-      const li = drag.li, h = li.offsetHeight, top = K.clamp(e.clientY - drag.off - list.getBoundingClientRect().top, 0, list.offsetHeight - h), mid = top + h / 2;
-      let n;
-      while ((n = li.nextElementSibling) && mid > n.offsetTop + n.offsetHeight / 2) step(li, 1);
-      while ((n = li.previousElementSibling) && mid < n.offsetTop + n.offsetHeight / 2) step(li, -1);
+      const li = drag.li, h = li.offsetHeight, top = K.clamp(e.clientY - drag.off - list.getBoundingClientRect().top, 0, list.offsetHeight - h);
+      let n;   // 手上這張的邊緣越過隔壁的中線就換位。卡片被限制在清單裡，用邊緣比才到得了頭尾兩格
+      while ((n = li.nextElementSibling) && top + h > n.offsetTop + n.offsetHeight / 2) step(li, 1);
+      while ((n = li.previousElementSibling) && top < n.offsetTop + n.offsetHeight / 2) step(li, -1);
       li.style.transform = 'translateY(' + (top - li.offsetTop) + 'px)';
     }
     function drop(e) {
       if (!drag || (e && e.pointerId !== drag.id)) return;
-      const li = drag.li; drag = null;
-      try { list.releasePointerCapture(e.pointerId); } catch (x) { /* 已經放開了 */ }
+      const { li, id } = drag; drag = null;
+      try { list.releasePointerCapture(id); } catch (x) { /* 已經放開了 */ }
       li.classList.remove('drag'); li.style.transform = ''; told(li); api.sfx('page');
     }
 
@@ -85,7 +86,7 @@
       });
       list.addEventListener('pointerdown', down); list.addEventListener('pointermove', track);
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => list.addEventListener(n, drop));
-      foot = K.h('div.save-row', K.h('button.btn.pri', { type: 'button', text: '確認', onclick: check }), K.h('span.o-hint', { text: '拖曳卡片，或按上移、下移。' }));
+      foot = K.h('div.save-row', K.h('button.btn.pri', { type: 'button', text: '確認', onclick: check }), K.h('span.o-hint', { text: (coarse ? '拖左邊的把手' : '拖曳卡片') + '，或按上移、下移。' }));
       root.append(K.h('div.o-head', K.h('span.lab', { text: '第' + ZH[at] + '輪 ／ 共三輪　' + r.lab }), K.h('h3', { text: r.ask }), K.h('p', { text: '最早的排最上面，排好按確認。' })), list, foot, say);
       sync(); settle();
       focusSoon(of.get(list.firstElementChild).dn);
@@ -97,8 +98,8 @@
       lis.forEach((li, i) => {
         const c = of.get(li).c, ok = c === right[i]; if (ok) n++;
         li.classList.add(ok ? 'ok' : 'no'); li.style.transform = '';
-        li.querySelector('.tx').prepend(K.h('span.lab', { text: c.tag }));
-        li.querySelector('.mv').replaceWith(K.h('span.vd', { text: ok ? '位置正確' : '應排第 ' + (right.indexOf(c) + 1) + ' 位' }));
+        /* 藏著的章次放在原本按鈕的那一格，卡片不會變高，下面的按鈕也就不會跳走 */
+        li.querySelector('.mv').replaceWith(K.h('div.vd', K.h('b', { text: c.tag }), K.h('span', { text: ok ? '位置正確' : '應排第 ' + (right.indexOf(c) + 1) + ' 位' })));
       });
       list.classList.add('done'); got[at] = n; api.sfx(n >= 3 ? 'right' : 'wrong');
       const last = at === rounds.length - 1, sum = '這一輪排對 ' + n + ' ／ ' + N + '。';
@@ -116,7 +117,7 @@
 
   A.Arcade.add({
     id: 'order', name: '排年代', en: 'In Order', desc: '把章節和暴雨排回原本的先後。',
-    how: ['共三輪，每輪五張卡：兩輪排章節，一輪排暴雨。', '拖曳卡片（手機拖左邊的把手），或按卡片上的上移、下移，最早的排最上面。', '按確認後揭曉。排對一個位置算一分，三輪共十五分。'],
+    how: ['共三輪，每輪五張卡：兩輪排章節，一輪排暴雨。', '最早的排最上面。可以拖曳，也可以按卡片上的上移、下移。', '按確認後揭曉。十五個位置排對越多，分數越高。'],
     shot: { p: 'pages', a: {}, cues: [] }, mount
   });
 })();

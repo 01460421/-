@@ -11,7 +11,7 @@ const path = require('node:path');
 const PORT = String(18000 + Math.floor(Math.random() * 2000));
 const BASE = 'http://127.0.0.1:' + PORT;
 const ROOMS = ['hall', 'chronicle', 'chapters', 'c0', 'c7/3', 'c13', 'film', 'choices', 'rain', 'relay', 'studio', 'studio/wall', 'quiz', 'index', 'index/手提箱', 'questions', 'case', 'about',
-  'play', 'quests', 'darkroom', 'album', 'arcade', 'arcade/order', 'arcade/match', 'arcade/catch', 'arcade/code', 'shop', 'profile'];
+  'play', 'quests', 'darkroom', 'album', 'arcade', 'arcade/order', 'arcade/match', 'arcade/catch', 'arcade/code', 'shop', 'profile', 'journal'];
 
 async function main() {
   let chromium;
@@ -117,7 +117,31 @@ async function main() {
     const kept = await G();
     ok(kept.w.dev === 220 && kept.album === after.album && kept.accent === 'amber', '重新整理之後，資源、底片冊和主題色都應該還在（' + JSON.stringify(kept) + '）');
 
-    /* 六、標頭 */
+    /* 六、劇情互動：親歷走到抉擇、鍵盤確認、揭曉；抉擇頁的結果；我的紀年 */
+    const t = await visitor('丁');
+    const step = async () => { await t.keyboard.press('Space'); await t.waitForTimeout(50); await t.keyboard.press('Space'); await t.waitForTimeout(110); };
+    await t.goto(BASE + '/#c0'); await t.waitForTimeout(900);
+    ok(!!(await t.$('.sty-enter a')), '展間應該有親歷的入口');
+    await t.goto(BASE + '/#story/c0'); await t.waitForTimeout(900);
+    ok(await t.evaluate(() => window.__A.cur === 'story' && document.querySelectorAll('.sty-lines p').length === 1), '親歷應該從第一句旁白開始');
+    for (let i = 0; i < 60 && !(await t.$('.sty-opt')); i++) await step();
+    ok((await t.$$('.sty-opt')).length === 2, '走到落著抉擇的那張底片，應該停下來等人選');
+    await t.waitForTimeout(550); await t.keyboard.press('Space'); await t.keyboard.press('Space'); await t.waitForTimeout(120);
+    ok(!(await t.evaluate(() => window.__A.Case.d.choices.s1)), '連按空白鍵不應該替人做選擇');
+    await t.keyboard.press('1'); await t.waitForTimeout(120); await t.keyboard.press('Enter'); await t.waitForTimeout(300);
+    ok(await t.evaluate(() => window.__A.Case.d.choices.s1 === 'a' && !!document.querySelector('.sty-reveal')), '按 1 再按 Enter：記下選擇並揭曉');
+    await t.click('.sty-act .btn'); await t.waitForTimeout(300);
+    for (let i = 0; i < 40 && !(await t.$('.sty-sum')); i++) await step();
+    ok(!!(await t.$('.sty-sum')) && await t.evaluate(() => window.__A.Story.done() === 1), '走完一章應該出現結尾，並記下親歷過');
+    await t.keyboard.press('Escape'); await t.waitForTimeout(500);
+    ok(await t.evaluate(() => window.__A.cur === 'c0' && !document.documentElement.classList.contains('sty-on')), '離開親歷應該回到展間');
+    await t.evaluate(() => { SC.forEach((x, i) => { if (!window.__A.Case.d.choices[x.id]) window.__A.Case.d.choices[x.id] = i % 2 ? 'a' : 'b'; }); window.__A.Case.save(); });
+    await t.goto(BASE + '/#choices'); await t.waitForTimeout(700);
+    ok(await t.evaluate(() => document.querySelectorAll('.fa-path li').length === 8 && document.querySelectorAll('.fa-path li.diff').length === 7 - window.__A.Fate.sameN()), '抉擇選完應該畫出你和她的路，岔開的步數和紀錄一致');
+    await t.goto(BASE + '/#journal'); await t.waitForTimeout(500);
+    ok((await t.$$('.jr-ch')).length === 14 && (await t.$$('.jr-pick')).length === 8, '我的紀年應該有十四章和八個抉擇');
+
+    /* 七、標頭 */
     const res = await p.request.get(BASE + '/');
     ok(/script-src 'self'/.test(res.headers()['content-security-policy'] || ''), '首頁應該帶內容安全政策');
     const health = await (await p.request.get(BASE + '/api/health')).json();

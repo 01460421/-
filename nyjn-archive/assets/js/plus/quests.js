@@ -13,7 +13,7 @@
   const DAILY = [
     ['d_plate', '在展間看 6 張底片', 'plate', 6, 60, 'chapters'], ['d_film', '在放映廳看 3 分鐘', 'filmSec', 180, 70, 'film'], ['d_quiz', '完成一輪入館考核', 'quiz', 1, 70, 'quiz'],
     ['d_arc', '在遊藝室玩 2 場', 'arcade', 2, 60, 'arcade'], ['d_pull', '在暗房沖洗 1 張底片', 'pull', 1, 50, 'darkroom'], ['d_era', '在暴雨年表走過 4 場雨', 'era', 4, 50, 'chronicle'],
-    ['d_arcA', '在遊藝室拿到一次「優」', 'arcadeA', 1, 80, 'arcade'], ['d_quiz7', '入館考核拿到 7 分以上', 'quiz7', 1, 80, 'quiz']];
+    ['d_arcA', '在遊藝室拿到一次「優」', 'arcadeA', 1, 80, 'arcade'], ['d_quiz7', '入館考核拿到 7 分以上', 'quiz7', 1, 80, 'quiz'], ['d_story', '用親歷走完一章', 'story', 1, 90, 'chapters']];
   const WEEKLY = [
     ['w_plate', '看 40 張底片', 'plate', 40, 200, 'chapters'], ['w_pull', '沖洗 10 張底片', 'pull', 10, 250, 'darkroom'], ['w_arc', '在遊藝室玩 10 場', 'arcade', 10, 250, 'arcade'],
     ['w_quiz', '完成 3 輪入館考核', 'quiz', 3, 200, 'quiz'], ['w_film', '在放映廳看 15 分鐘', 'filmSec', 900, 250, 'film']];
@@ -26,6 +26,7 @@
   const arcN = () => A.Arcade ? A.Arcade.games().length : 4;
   const MAIN = [
     ['m_stamp1', '蓋下第一枚戳記', () => [cnt(d().read), 1], { dev: 150 }, 'chapters'], ['m_stamp7', '蓋滿七章', () => [cnt(d().read), 7], { dev: 300 }, 'chapters'], ['m_stamp14', '十四章全部蓋章', () => [cnt(d().read), 14], { dev: 600, shard: 60 }, 'chapters'],
+    ['m_story1', '用親歷走完一章', () => [A.Story ? A.Story.done() : 0, 1], { dev: 200 }, 'chapters'], ['m_story14', '十四章都親歷過', () => [A.Story ? A.Story.done() : 0, 14], { dev: 800, shard: 80 }, 'chapters'],
     ['m_film', '把紀錄片放到尾聲', () => [K.bag('fm', { fin: 0 }).fin ? 1 : 0, 1], { dev: 400 }, 'film'],
     ['m_choices', '做完司辰的八個抉擇', () => [SC.filter(s => d().choices[s.id]).length, SC.length], { dev: 300 }, 'choices'], ['m_mine', '走過自己的雨', () => [d().mine ? 1 : 0, 1], { dev: 200 }, 'rain'],
     ['m_quiz8', '入館考核拿到 8 分', () => [A.Quiz ? A.Quiz.stats().best : 0, 8], { dev: 300 }, 'quiz'],

@@ -104,7 +104,7 @@
   A.on('import', () => { hud(); if (A.cur === 'play') paint(); });
   A.on('wipe', () => { hud(); if (A.cur === 'play') paint(); });
   A.on('status', o => { if (o.id === 'play') o.s = 'Lv.' + level().lv; });
-  K.key((e, typing) => !typing && (e.key === 'g' || e.key === 'G') && !e.ctrlKey && !e.metaKey && !e.altKey && !K.dialogOpen() && A.cur !== 'film', () => { location.hash = '#play'; });
+  K.key((e, typing) => !typing && (e.key === 'g' || e.key === 'G') && !e.ctrlKey && !e.metaKey && !e.altKey && !K.dialogOpen() && A.cur !== 'film' && A.cur !== 'story', () => { location.hash = '#play'; });
 
   /* 大廳：今日底片下面多一條，告訴人這一層在哪裡 */
   let band = null;
