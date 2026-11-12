@@ -5,3 +5,5 @@ source/pdf/
 source/img/
 dist/prev/
 dist/sample-*
+dist/qinfo.json
+dist/pass1.pdf
