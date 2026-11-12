@@ -183,7 +183,7 @@
     c.fillStyle = '#07090c'; c.fillRect(0, 0, w, h);
     return { cv, c, w, h, shot, t };
   };
-  K.fonts = { serif: '"Noto Serif TC","Noto Serif CJK TC","Songti TC",serif', ui: '"Jost","Noto Sans TC",sans-serif', lat: '"Bodoni Moda","Didot",Georgia,serif' };
+  K.fonts = { serif: '"NiYu","Noto Serif TC","Noto Serif CJK TC","Songti TC",serif', ui: '"Jost","Noto Sans TC",sans-serif', lat: '"NiYu","Bodoni Moda","Didot",Georgia,serif' };
 
   /* 把一張底片畫進任意大小的離屏畫布（圖卡、縮圖用）。 */
   K.plateInto = function (c, shot, t, x, y, w, h) {

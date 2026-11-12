@@ -6,7 +6,7 @@ const sm=t=>{t=clamp(t);return t*t*(3-2*t)}, eo=t=>1-pow(1-clamp(t),3);
 const fr=x=>x-floor(x), hh=(i,k=0)=>fr(sin(i*127.1+k*311.7+1.3)*43758.5453), mod=(a,n)=>((a%n)+n)%n;
 const _rg={};
 const rgba=(h,a)=>{let v=_rg[h];if(!v){const n=parseInt(h.slice(1),16);v=_rg[h]=[(n>>16)&255,(n>>8)&255,n&255].join(',')}return 'rgba('+v+','+clamp(a)+')'};
-const MONO='"Courier Prime","Courier New",monospace',SERIF='"Noto Serif TC","Noto Serif CJK TC",serif',FELL='"IM Fell English",Georgia,serif';
+const MONO='"Courier Prime","Courier New",monospace',SERIF='"NiYu","Noto Serif TC","Noto Serif CJK TC",serif',FELL='"IM Fell English",Georgia,serif';
 
 function sky(c,W,H,cols,y0=0,y1=H){const g=c.createLinearGradient(0,y0,0,y1);cols.forEach((k,i)=>g.addColorStop(i/(cols.length-1),k));c.fillStyle=g;c.fillRect(-W*.1,-H*.1,W*1.2,H*1.2)}
 function glow(c,x,y,r,col,al=1){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,al));g.addColorStop(.4,rgba(col,al*.35));g.addColorStop(1,rgba(col,0));c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2)}

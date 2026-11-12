@@ -5,7 +5,7 @@ const V = new URL(self.location.href).searchParams.get('v') || '0';
 const CACHE = 'nyjn-' + V;
 const q = (p) => p + '?v=' + V;
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg', 'icon-192.png',
-  q('assets/css/base.css'), q('assets/css/plus.css'), q('assets/js/theme.js'), q('assets/js/config.js'),
+  q('assets/css/fonts.css'), 'assets/fonts/niyu-core.woff2', q('assets/css/base.css'), q('assets/css/plus.css'), q('assets/js/theme.js'), q('assets/js/config.js'),
   q('assets/js/paint.js'), q('assets/js/film.js'), q('assets/js/data.js'), q('assets/js/app.js'),
   q('assets/js/plus/kit.js'), q('assets/js/plus/settings.js'), q('assets/js/plus/sound.js'), q('assets/js/plus/gloss.js'),
   q('assets/js/plus/palette.js'), q('assets/js/plus/reader.js'), q('assets/js/plus/score.js'), q('assets/js/plus/cinema.js'), q('assets/js/plus/quiz.js'),

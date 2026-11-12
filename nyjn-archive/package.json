@@ -1,6 +1,6 @@
 {
   "name": "nyjn-archive",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,6 +11,7 @@
     "test": "node --test \"test/*.test.mjs\"",
     "smoke": "node dev/smoke.cjs",
     "score": "node dev/score.cjs",
+    "fonts": "python3 dev/fonts.py",
     "live": "python3 dev/live-check.py"
   },
   "dependencies": {
