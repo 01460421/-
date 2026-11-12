@@ -66,7 +66,7 @@
       K.h('span.lab', { text: r.next ? '再 ' + (r.next[0] - n) + ' 枚升為「' + r.next[1] + '」' : '最高階級。時間交給你來記。' }),
       K.h('div.save-row', K.h('button.tiny', { type: 'button', text: '下載記錄員證', onclick: idCard })));
     const grid = $('achs'); grid.textContent = ''; const got = ac().got;
-    $('ach-note').textContent = '做到了，就蓋上一枚。點任何一格，看它怎麼來的。';
+    $('ach-note').textContent = '做了某件事就會蓋上一枚。點任何一格看它怎麼取得。';
     ACH.forEach(a => {
       const ts = got[a[0]], b = K.h('button' + (ts ? '.got' : '') + (fresh[a[0]] ? '.new' : ''), { type: 'button', 'aria-label': a[1] + (ts ? '，已取得' : '，尚未取得') }, a[1], K.h('small', { text: ts ? fmtDate(ts) : '未取得' }));
       b.onclick = () => K.pop(b, K.h('div.gl-card', K.h('div.th', K.h('b', { text: a[1] }), K.h('span.g', { text: ts ? '取得於 ' + fmtDate(ts) : '尚未取得' })), K.h('p', { text: a[2] })));
@@ -142,7 +142,7 @@
   const PROFILE = [
     [6, '不肯只做記錄的人', '規定要你只記錄，不投入感情。你幾乎每一次都伸了手。主線裡的那個人也是。'],
     [3, '在規定與伸手之間', '有時你照規定記下時間，有時你闖了進去。兩種選擇，你都知道代價。'],
-    [0, '守時的司辰', '你把紀錄留得很完整。主線走的是另一條路。沒有誰錯，故事只是在別的地方轉了彎。']
+    [0, '守時的司辰', '你把紀錄留得很完整。主線走的是另一條路；這不代表你錯，只代表故事會在別的地方轉彎。']
   ];
   A.on('tally', ({ tl, sr, same }) => {
     const p = PROFILE.find(x => same >= x[0]);

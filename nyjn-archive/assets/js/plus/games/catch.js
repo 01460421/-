@@ -23,7 +23,7 @@
     const cv = K.h('canvas', { role: 'img', 'aria-label': '遊戲畫面：手提箱在上方的線上，東西從底下往上飄。' }), c = cv.getContext('2d'), field = K.h('div.ct-field.plate', cv);
     const tEl = K.h('dd', { text: String(SEC) }), nEl = K.h('dd', { text: '0' }), xEl = K.h('dd', { text: '0' }), bar = K.h('i');
     root.append(K.h('dl.ct-hud', K.h('div', K.h('dt', { text: '倒數' }), tEl), K.h('div', { 'aria-live': 'polite', 'aria-atomic': 'true' }, K.h('dt', { text: '手提箱裡' }), nEl), K.h('div', K.h('dt', { text: '症候' }), xEl)),
-      K.h('div.ct-time', bar), field, K.h('p.ct-tip', { text: '滑鼠、手指左右挪。鍵盤按 ← →。' }));
+      K.h('div.ct-time', bar), field, K.h('p.ct-tip', { text: '滑鼠或手指左右移動，也可以按 ← →。' }));
 
     const S = { t: 0, x: .5, to: .5, got: 0, hit: 0, miss: 0, stun: 0, next: .5, items: [], pops: [] }, held = {};
     const rain = Array.from({ length: 44 }, () => [rnd(), rnd() * 1.2, .2 + rnd() * .5]);
@@ -71,7 +71,7 @@
       S.pops = S.pops.filter(q => S.t - q.t < .7);
       const left = Math.max(0, Math.ceil(SEC - S.t));
       if (left !== shown) { shown = left; tEl.textContent = left; bar.style.width = left / SEC * 100 + '%'; tint(); }
-      if (S.t >= SEC) { over = true; api.finish({ score: K.clamp(Math.round(100 * net() / TARGET), 0, 100), detail: [['收進箱子的', S.got], ['碰到症候', S.hit], ['飄走的', S.miss]] }); }
+      if (S.t >= SEC) { over = true; api.finish({ score: K.clamp(Math.round(100 * net() / TARGET), 0, 100), detail: [['收進手提箱', S.got], ['碰到症候', S.hit], ['沒接到', S.miss]] }); }
     }
 
     function thing(o) {
@@ -127,8 +127,8 @@
   }
 
   A.Arcade.add({
-    id: 'catch', name: '收進手提箱', en: 'Into the Suitcase', desc: '雨往上落，東西跟著飄起來。四十五秒，留得住的收進箱子，症候別碰。',
-    how: ['東西從底下飄上來。手提箱掛在上面那條線上，左右挪，接住它們。', '紙、鑰匙、底片、傘。接到一樣，加 1。', '帶刺的暗影是症候。碰一次扣 2，箱子僵住半秒。', '滑鼠、手指，或鍵盤的 ← →（A、D）。越往後，飄得越快、越密。'],
+    id: 'catch', name: '收進手提箱', en: 'Into the Suitcase', desc: '雨往上落的四十五秒。把留得住的東西接進手提箱，避開症候。',
+    how: ['東西從底下往上飄。左右移動上面的手提箱，把它們接住。', '紙、鑰匙、底片、傘：接到一個加 1。', '帶刺的暗影是症候：碰到一次扣 2，手提箱會停住半秒。', '滑鼠、手指拖曳，或鍵盤 ← →（A、D）。越到後面越快、越密。'],
     shot: { p: 'umbrella', a: {}, cues: [] }, mount
   });
 })();

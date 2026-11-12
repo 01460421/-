@@ -24,16 +24,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@400;500&family=Bodoni+Moda:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@400;500&family=IM+Fell+English:ital@0;1&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/base.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/plus.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/game.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/story.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/guide.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/games/order.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/games/match.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/games/catch.css?v=2.2.1">
-<link rel="stylesheet" href="assets/css/games/code.css?v=2.2.1">
-<script src="assets/js/theme.js?v=2.2.1"></script>
+<link rel="stylesheet" href="assets/css/base.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/plus.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/game.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/story.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/guide.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/games/order.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/games/match.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/games/catch.css?v=2.2.2">
+<link rel="stylesheet" href="assets/css/games/code.css?v=2.2.2">
+<script src="assets/js/theme.js?v=2.2.2"></script>
 </head>
 <body>
 <a class="skip" href="#main">跳到內容</a>
@@ -97,7 +97,7 @@
         <span class="kick">Now Showing — 放映廳</span>
         <h2>逆雨紀年</h2>
         <div class="en">A Chronicle Against the Rain</div>
-        <p id="filmband-note">主線全紀錄，二十七分鐘。燈暗了就開始，想停就停。</p>
+        <p id="filmband-note">主線全紀錄，從片頭放到尾聲。旁白逐句浮現，可以隨時暫停、跳章、調整速度。</p>
         <div class="cta"><a class="btn inv solid" id="filmband-go" href="#film">開始放映</a><span class="lab" id="filmband-st"></span></div>
       </div>
     </div>
@@ -164,14 +164,14 @@
   </div></section>
 
   <section class="room" id="r-chapters" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="The Chapters">章節檔案</h2><p class="sub">序幕至第十三章，十四間展間。每一間掛著幾張底片。讀完了，蓋個章；想到什麼，寫進手記。</p></div><div class="no">02</div></div>
+    <div class="room-head"><div><h2 data-en="The Chapters">章節檔案</h2><p class="sub">序幕至第十三章，十四間展間。每一間是一組底片和它們的說明，讀完可以蓋章、寫手記。</p></div><div class="no">02</div></div>
     <div id="ch-list"></div>
   </div></section>
 
   <section class="room" id="r-chapter" hidden><div class="wrap" id="ch-room"></div></section>
 
   <section class="room" id="r-index" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="Index">名詞索引</h2><p class="sub">術語、組織、人物、地點。只寫主線交代過的，並註明出處。</p></div><div class="no">07</div></div>
+    <div class="room-head"><div><h2 data-en="Index">名詞索引</h2><p class="sub">術語、組織、人物、地點。每一條只寫主線已經交代的事，並標出它出現的章節。</p></div><div class="no">07</div></div>
     <div class="tools">
       <input class="field" id="term-q" type="search" placeholder="搜尋，例如：手提箱、維也納、37" aria-label="搜尋名詞" autocomplete="off">
       <div class="tabs" id="term-tabs" role="group" aria-label="分類"></div>
@@ -181,19 +181,19 @@
   </div></section>
 
   <section class="room" id="r-questions" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="Open Questions">未解之謎</h2><p class="sub">主線還沒回答的問題。線索都列在卡片上。想留著的收進箱子，有想法的寫下來。</p></div><div class="no">08</div></div>
+    <div class="room-head"><div><h2 data-en="Open Questions">未解之謎</h2><p class="sub">主線還沒有回答的問題。每張卡片列出目前的線索；你可以收進手提箱，寫下自己的推測。</p></div><div class="no">08</div></div>
     <div class="qs" id="qs"></div>
   </div></section>
 
   <section class="room" id="r-choices" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="Decisions">司辰的抉擇</h2><p class="sub">八個時刻，換你站到她的位置上。選完才揭曉主線裡發生的事。你選的，箱子會記得。</p></div><div class="no">03</div></div>
+    <div class="room-head"><div><h2 data-en="Decisions">司辰的抉擇</h2><p class="sub">八個時刻，換你站在她的位置。選完會揭曉主線裡發生的事。你的選擇會留在手提箱。</p></div><div class="no">03</div></div>
     <div class="steps" id="steps" role="group" aria-label="八個時刻"></div>
     <div class="scene" id="scene"></div>
     <div class="tally" id="tally" hidden></div>
   </div></section>
 
   <section class="room" id="r-rain" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="Your Storm">你的暴雨</h2><p class="sub">留下名字和生日，再挑一樣捨不得的東西。雨會把你帶到某一年。症候由本館編寫，是同好的遊戲，不是遊戲設定。</p></div><div class="no">04</div></div>
+    <div class="room-head"><div><h2 data-en="Your Storm">你的暴雨</h2><p class="sub">寫下名字和生日，選一樣想留下的東西，走一遍屬於你的那場雨。這是同好的遊戲：症候由本館編寫，不是遊戲設定。</p></div><div class="no">04</div></div>
     <div class="mine">
       <figure class="plate mine-plate"><canvas id="mine-cv" width="960" height="600" aria-label="你的暴雨"></canvas><div class="mine-lines" id="mine-lines" aria-live="polite"></div></figure>
       <div>
@@ -214,7 +214,7 @@
   </div></section>
 
   <section class="room" id="r-relay" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="The Relay">接龍</h2><p class="sub">每一本都只有一個開頭。後來的司辰，一人接一段，兩百四十字為限。</p></div><div class="no">05</div></div>
+    <div class="room-head"><div><h2 data-en="The Relay">接龍</h2><p class="sub">每一本從一段開頭寫起，後來的司辰接著往下寫。一次一段，兩百四十字以內。</p></div><div class="no">05</div></div>
     <p class="mode" id="relay-mode"></p>
     <div class="tabs" id="relay-tabs" role="group" aria-label="接龍本"></div>
     <div class="thread-head"><b id="relay-t"></b><span class="lab" id="relay-meta"></span></div>
@@ -227,13 +227,13 @@
   </div></section>
 
   <section class="room" id="r-studio" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="Atelier">創作坊</h2><p class="sub">替一張底片題字，或替你筆下的人立一張檔案卡。寫好的收進創作本，想帶走就抄一份。</p></div><div class="no">06</div></div>
+    <div class="room-head"><div><h2 data-en="Atelier">創作坊</h2><p class="sub">替一張底片題寫，或為你自創的人物立一張檔案卡。作品收在你的創作本，可以複製出去。</p></div><div class="no">06</div></div>
     <div class="tabs" id="studio-tabs" role="group" aria-label="創作坊"></div>
     <div id="studio-body"></div>
   </div></section>
 
   <section class="room" id="r-case" hidden><div class="wrap">
-    <div class="room-head"><div><h2 data-en="The Suitcase">手提箱</h2><p class="sub">雨來的時候，箱子裡的東西不會被沖走。戳記、手記、抉擇、你的那場雨，都在這裡。</p></div><div class="no">09</div></div>
+    <div class="room-head"><div><h2 data-en="The Suitcase">手提箱</h2><p class="sub">雨來的時候，箱子裡的東西不會被沖走。你的戳記、手記、抉擇、暴雨紀錄和作品都收在這裡。</p></div><div class="no">09</div></div>
     <div class="case-grid">
       <div style="display:grid;gap:26px">
         <div class="idcard">
@@ -292,38 +292,38 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="veil" id="veil" aria-hidden="true"></div>
 <noscript><p style="padding:24px;font-family:serif">逆雨檔案館需要開啟 JavaScript 才能顯示底片與互動內容。</p></noscript>
-<script defer src="assets/js/config.js?v=2.2.1"></script>
-<script defer src="assets/js/paint.js?v=2.2.1"></script>
-<script defer src="assets/js/film.js?v=2.2.1"></script>
-<script defer src="assets/js/data.js?v=2.2.1"></script>
-<script defer src="assets/js/app.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/kit.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/settings.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/sound.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/gloss.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/palette.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/reader.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/score.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/cinema.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/quiz.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/rank.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/social.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/sync.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/admin.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/game.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/quests.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/darkroom.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/album.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/arcade.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/games/order.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/games/match.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/games/catch.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/games/code.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/shop.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/profile.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/story.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/fate.js?v=2.2.1"></script>
-<script defer src="assets/js/plus/guide.js?v=2.2.1"></script>
-<script defer src="assets/js/boot.js?v=2.2.1"></script>
+<script defer src="assets/js/config.js?v=2.2.2"></script>
+<script defer src="assets/js/paint.js?v=2.2.2"></script>
+<script defer src="assets/js/film.js?v=2.2.2"></script>
+<script defer src="assets/js/data.js?v=2.2.2"></script>
+<script defer src="assets/js/app.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/kit.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/settings.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/sound.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/gloss.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/palette.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/reader.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/score.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/cinema.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/quiz.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/rank.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/social.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/sync.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/admin.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/game.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/quests.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/darkroom.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/album.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/arcade.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/games/order.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/games/match.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/games/catch.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/games/code.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/shop.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/profile.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/story.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/fate.js?v=2.2.2"></script>
+<script defer src="assets/js/plus/guide.js?v=2.2.2"></script>
+<script defer src="assets/js/boot.js?v=2.2.2"></script>
 </body>
 </html>

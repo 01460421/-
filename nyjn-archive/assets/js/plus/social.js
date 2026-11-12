@@ -33,7 +33,7 @@
     b.onclick = async () => {
       if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = '確定回報這一則不妥'; return; }
       b.disabled = true;
-      try { await Api.report(it.k, it.id); soc().fl[it.id] = 1; Case.save(); Board.gone[it.id] = 1; Board.changed(); toast('已回報。這一則，你不會再看到'); }
+      try { await Api.report(it.k, it.id); soc().fl[it.id] = 1; Case.save(); Board.gone[it.id] = 1; Board.changed(); toast('已回報，這一則不會再顯示給你'); }
       catch (e) { b.disabled = false; toast(e.message || '回報失敗'); }
     };
     return b;
@@ -103,7 +103,7 @@
           const it = await Board.post('theory', { q: q.id, x }); if (it && it.id) { soc().pub[q.id] = it.id; Case.save(); }
           toast('推測已公開'); o.open = true;
         }
-      } catch (e) { toast(e.message === 'local' ? '眼下是單機，公開不了' : (e.message || '沒有送出去')); }
+      } catch (e) { toast(e.message === 'local' ? '目前是單機模式，沒辦法公開' : (e.message || '沒有送出去')); }
       pub.disabled = false; theoryPaint();
     };
     more.onclick = () => { o.open = !o.open; theoryPaint(); };
@@ -177,7 +177,7 @@
       const R = RELAYS.find(r => r.k === f.k), what = R ? '在接龍〈' + R.t + '〉接了一段' : f.k === 'gallery' ? '在展牆展出' : '公開了一則推測', href = R ? '#relay/' + f.k : f.k === 'gallery' ? '#studio/wall' : '#questions';
       ol.append(K.h('li', K.h('a', { href }, K.h('span.w', K.h('b', { text: String(f.name || '無名的司辰').slice(0, 16) }), what), K.h('span.a', { text: K.ago(+f.t || 0) }), K.h('span.s', { text: String(f.s || '').slice(0, 60) }))));
     });
-    if (!feed.length) ol.append(K.h('li.empty', { text: '還沒有人留下東西。第一段，等你來寫。' }));
+    if (!feed.length) ol.append(K.h('li.empty', { text: '還沒有人留下東西。第一段可以是你的。' }));
     $('pulse-lab').textContent = '每分鐘更新';
   }
   A.on('hall', () => { hallPaint(); getPulse().then(hallPaint); });

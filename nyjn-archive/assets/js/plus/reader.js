@@ -163,7 +163,7 @@
       b.textContent = '停止播放'; b.setAttribute('aria-pressed', 'true');
       chronT = setInterval(() => { if (A.cur !== 'chronicle' || Case.d.era >= SD.length - 1) { chronStop(); return; } A.setEra(Case.d.era + 1); A.veil(true); }, 3400);
     };
-    const tools = K.h('div.chron-tools', b, K.h('span.hint', { text: '按住拖曳，或 ← → 鍵。一場一場看。' }));
+    const tools = K.h('div.chron-tools', b, K.h('span.hint', { text: '在圖上按住拖曳，或用 ← → 鍵，可以一場一場看。' }));
     document.querySelector('#r-chronicle .chart-legend').after(tools, K.h('div.census', { id: 'storm-census', hidden: true }));
     const svg = $('chart'); let drag = false;
     const at = e => { const g = document.elementFromPoint(e.clientX, e.clientY); const s = g && g.closest && g.closest('.st'); if (s) A.setEra(+s.dataset.i); };

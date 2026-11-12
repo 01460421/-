@@ -9,7 +9,7 @@
     const pool = '1234567890'.split(''), code = []; while (code.length < LEN) code.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
     let cur = '', used = 0, over = false;
 
-    const rows = [], body = K.h('tbody'), left = K.h('span.cd-left'), lab = K.h('span.lab'), msg = K.h('p.cd-msg', { role: 'status', text: '四個數字，不能重複。排好了，按送出。' });
+    const rows = [], body = K.h('tbody'), left = K.h('span.cd-left'), lab = K.h('span.lab'), msg = K.h('p.cd-msg', { role: 'status', text: '輸入四個不重複的數字，再按送出。' });
     for (let i = 0; i < MAX; i++) { const tr = K.h('tr', K.h('th', { scope: 'row', text: A.pad(i + 1) }), K.h('td.g'), K.h('td'), K.h('td')); rows.push(tr); body.append(tr); }
     const slots = Array.from({ length: LEN }, () => K.h('b')), keys = '1234567890'.split('').map(d => K.h('button', { type: 'button', text: d, onclick: () => put(d) }));
     const pad = K.h('div.cd-pad', keys, K.h('button.btn.pri', { type: 'button', text: '送出', onclick: send }), K.h('button.btn', { type: 'button', text: '刪除', onclick: del }));
@@ -32,13 +32,13 @@
       if (over) return;
       if (cur.length < LEN) return say('還差 ' + (LEN - cur.length) + ' 個數字。', 1);
       const dup = cur.split('').find((d, i) => cur.indexOf(d) !== i);
-      if (dup) return say('暗號的四個數字各不相同。這一組的 ' + dup + ' 重複了。', 1);
+      if (dup) return say('暗號的四個數字都不一樣，這一組的 ' + dup + ' 重複了。', 1);
       let hit = 0, near = 0; for (let i = 0; i < LEN; i++) { if (cur[i] === code[i]) hit++; else if (code.indexOf(cur[i]) >= 0) near++; }
       const tr = rows[used++], ok = hit === LEN; tr.children[1].textContent = cur; tr.children[2].textContent = hit; tr.children[3].textContent = near; tr.classList.toggle('ok', ok);
       cur = '';
       if (!ok && used < MAX) { say('第 ' + used + ' 次：位置對 ' + hit + '，數字對、位置不對 ' + near + '。'); api.sfx('page'); paint(); return; }
       /* 結束：格子裡換成暗號，數字鍵換成一顆「看結果」。不自動跳頁，讓人有時間回頭看自己的紀錄。 */
-      over = true; paint(); say(ok ? '對了。第 ' + used + ' 次猜中。' : '八次用完了。暗號是 ' + code.join(' ') + '。'); api.sfx(ok ? 'right' : 'wrong');
+      over = true; paint(); say(ok ? '猜中了，用了 ' + used + ' 次。' : '八次用完了。暗號是 ' + code.join(' ') + '。'); api.sfx(ok ? 'right' : 'wrong');
       const go = K.h('button.btn.pri', { type: 'button', text: '看結果', onclick: () => api.finish({ score: ok ? SCORE[used - 1] : MISS, detail: [['猜了', used + ' 次' + (ok ? '' : '，沒猜中')], ['暗號', code.join(' ')]] }) });
       play.classList.add('done'); pad.replaceWith(K.h('div.save-row', go)); go.focus({ preventScroll: true });
     }
@@ -57,7 +57,7 @@
 
   A.Arcade.add({
     id: 'code', name: '數字之島', en: 'The Island of Numbers', desc: '島上的人只用數字說話。八次以內，猜出四位數的暗號。',
-    how: ['暗號是四個數字，沒有重複。0 也能排在最前面。', '每猜一次，島上回你兩個數。「位置對」，是數字和位置都對的有幾個。「數字對、位置不對」，是有這個數字、卻擺錯了地方的有幾個。', '畫面上的數字鍵，或鍵盤的數字、Backspace、Enter。', '四次以內猜中，100 分。之後每多一次，少 10 分。八次用完還沒猜中，20 分。'],
+    how: ['暗號是四個不重複的數字，0 也可以排在最前面。', '每猜一次會得到兩個數：「位置對」是數字和位置都對的有幾個，「數字對、位置不對」是有這個數字、但放錯了位置的有幾個。', '用畫面上的數字鍵，或鍵盤的數字、Backspace、Enter。', '四次以內猜中 100 分，之後每多一次少 10 分；八次用完沒猜中 20 分。'],
     shot: { p: 'numbers', a: {}, cues: [] }, mount
   });
 })();

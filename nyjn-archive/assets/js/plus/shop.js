@@ -44,7 +44,7 @@
       const free = !t[3], ok = unlocked(t), own = free ? ok : has(t[0]), on = b.title === t[0];
       const btn = on ? K.h('button.btn.sm', { type: 'button', text: '卸下', onclick: () => { sp().title = ''; Case.save(); paint(); G.repaint(); } })
         : own ? K.h('button.btn.sm', { type: 'button', text: '掛上', onclick: () => { sp().title = t[0]; Case.save(); paint(); G.repaint(); } })
-          : free ? K.h('span.lab', { text: '還沒到手' }) : K.h('button.btn.sm.pri', { type: 'button', text: G.SHD + ' ' + t[3], disabled: g.shard < t[3], onclick: () => { if (buy(t[0], t[3], t[1])) { sp().title = t[0]; Case.save(); paint(); G.repaint(); } } });
+          : free ? K.h('span.lab', { text: '未解鎖' }) : K.h('button.btn.sm.pri', { type: 'button', text: G.SHD + ' ' + t[3], disabled: g.shard < t[3], onclick: () => { if (buy(t[0], t[3], t[1])) { sp().title = t[0]; Case.save(); paint(); G.repaint(); } } });
       tg.append(K.h('div.sp-item' + (on ? '.on' : '') + (own ? '' : '.lock'), K.h('div', K.h('b', { text: t[1] }), K.h('span', { text: t[2] })), btn));
     });
     box.append(K.h('section.sp-sec', K.h('div.q-h', K.h('h3', { text: '稱號' }), K.h('span.lab', { text: '別在名字底下。有幾個不賣，得自己掙' })), tg));
