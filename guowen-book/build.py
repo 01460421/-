@@ -279,6 +279,9 @@ def extra_blocks(e, group=False):
         ks = [f for f in e['fields'] if f['name'] == 'know']
         if ks:
             h += know_block(ks)
+        advs = [f for f in e['fields'] if f['name'] == 'adv']
+        if advs:
+            h += adv_block(advs)
     return h
 
 
@@ -286,6 +289,14 @@ def know_block(ks):
     h = '<section class="blk know"><h4><span class="ico">延</span>延伸知識點</h4><div class="kcards">'
     for i, f in enumerate(ks, 1):
         h += (f'<div class="kcard"><div class="kt-title"><b>{i}</b>{inline(f["arg"])}</div>'
+              f'<div class="bd">{block(f["body"])}</div></div>')
+    return h + '</div></section>'
+
+
+def adv_block(ks):
+    h = '<section class="blk adv"><h4><span class="ico">深</span>加深加廣<small>接軌學測</small></h4><div class="kcards">'
+    for i, f in enumerate(ks, 1):
+        h += (f'<div class="kcard acard"><div class="kt-title"><b>{i}</b>{inline(f["arg"])}</div>'
               f'<div class="bd">{block(f["body"])}</div></div>')
     return h + '</div></section>'
 
@@ -324,9 +335,11 @@ def render_question(year, e, meta, qinfo):
         err(f'{year} Q{no}: @ana 數量 {len(anas)} ≠ 4')
     if not [f for f in e['fields'] if f['name'] == 'know']:
         err(f'{year} Q{no}: 缺少 @know')
+    if not [f for f in e['fields'] if f['name'] == 'adv']:
+        err(f'{year} Q{no}: 缺少 @adv（加深加廣・接軌學測）')
     qid = f'{year}-{no:02d}'
     qinfo.append({'year': year, 'no': no, 'id': qid, 'type': qtype, 'cat': cat, 'diff': diff, 'ans': ans_disp,
-                  'know': [f['arg'] for f in e['fields'] if f['name'] == 'know']})
+                  'know': [f['arg'] for f in e['fields'] if f['name'] in ('know', 'adv')]})
     color = CAT_COLOR.get(cat, '#444')
 
     h = f'<article class="q" id="q{qid}" style="--cat:{color}">'
@@ -420,6 +433,9 @@ def render_question(year, e, meta, qinfo):
     ks = [f for f in e['fields'] if f['name'] == 'know']
     if ks:
         h += know_block(ks)
+    advs = [f for f in e['fields'] if f['name'] == 'adv']
+    if advs:
+        h += adv_block(advs)
     h += '</article>'
     return h
 
@@ -549,7 +565,7 @@ def build(years=None, sample=False, vol=None):
         title += f'　{vol["name"]}' if vol else ''
     fonts = ''.join(f'<link rel="stylesheet" href="../node_modules/{p}">' for p in FONT_CSS)
     doc = (f'<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>{title}｜嘉義高中</title>'
-           f'{fonts}<link rel="stylesheet" href="../style.css"><style>{page_css(order, vol)}</style></head><body>'
+           f'{fonts}<link rel="stylesheet" href="../fonts-bold.css"><link rel="stylesheet" href="../style.css"><style>{page_css(order, vol)}</style></head><body>'
            f'{front}{chapters}{back}</body></html>')
     name = f'sample-{order[0]}.html' if sample else (f'book-v{vol["no"]}.html' if vol else 'book.html')
     out = os.path.join(ROOT, 'dist', name)
