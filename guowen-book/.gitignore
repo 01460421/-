@@ -10,3 +10,5 @@ dist/pass1.pdf
 dist/pass1-*.pdf
 dist/book-v*.html
 dist/pass1-*.pdf
+# 成品 PDF 於定稿時以 git add -f 加入
+dist/*.pdf
