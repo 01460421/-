@@ -351,7 +351,7 @@ def render_question(year, e, meta, qinfo):
     # 選項
     maxlen = max((len(re.sub(r'\{\w+:([^{}|]*)(\|[^{}]*)?\}', r'\1', ' '.join(o['body']))) for o in opts), default=0)
     any_ruby = any('|' in ' '.join(o['body']) for o in opts)
-    cols = 4 if maxlen <= 7 else (2 if maxlen <= 17 else 1)
+    cols = 4 if maxlen <= 4 else (2 if maxlen <= 12 else 1)
     force = first(e, 'cols')
     if force:
         cols = int(force)

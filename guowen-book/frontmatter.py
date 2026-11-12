@@ -4,6 +4,13 @@ from collections import OrderedDict
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 INDEX_URL = 'https://www.cysh.cy.edu.tw/p/412-1008-888.php'
+# 各年度官方公告頁（嘉義高中官網）；未列出的年度使用歷屆試題總目錄
+SOURCE_URL = {'115': '406-1008-134664', '114': '406-1008-131312', '113': '406-1008-113576', '112': '406-1008-75789',
+              '111': '406-1008-44067', '110': '406-1008-10619', '109': '406-1008-8370', '108': '406-1008-8359'}
+
+
+def source_url(y):
+    return f'https://www.cysh.cy.edu.tw/p/{SOURCE_URL[y]},r255.php' if y in SOURCE_URL else INDEX_URL
 
 
 def esc(s):
@@ -58,7 +65,7 @@ def front(order, qinfo, metas, vol=None):
     h += '<div class="fm" style="page:front">'
     src_rows = ''
     for y in order:
-        url = metas[y].get('source', INDEX_URL)
+        url = source_url(y)
         fix = '有（已採修正版）' if metas[y].get('fixnote') else '—'
         src_rows += f'<tr><td>{y} 學年度</td><td>{len([q for q in qinfo if q["year"] == y])} 題</td><td>{fix}</td><td class="url">{esc(url)}</td></tr>'
     h += f'''<section class="fm-sec"><h2 class="fm-h"><i>壹</i>編輯說明</h2>

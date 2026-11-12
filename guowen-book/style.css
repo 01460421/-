@@ -299,3 +299,7 @@ table.stat td:first-child{text-align:left;white-space:nowrap}
 table.sets td{padding:1.2mm 2.4mm} table.sets tr.cur td{background:#FFF3C4;font-weight:700}
 .ans b.multi{font-size:15pt;letter-spacing:.02em}
 table.qlist a{color:inherit;text-decoration:none}
+.circ,.ins,ruby.an,ruby.an>rt{text-indent:0}
+.optgrid{padding-left:1em} .optgrid .opt{padding-left:1.1em}
+/* 區塊標題不落單：標題至少要與後面 14mm 內容同頁 */
+.blk>h4{break-inside:avoid;padding-bottom:15mm;margin-bottom:-13.6mm}

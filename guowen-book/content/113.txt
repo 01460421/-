@@ -3,7 +3,7 @@
 @scoring 1-10=2.5 11-35=3
 @scoretext 1–10 題每題 2.5 分・11–35 題每題 3 分
 @answers BCBCD AACBB BDABD CABDA CCDCC DDCAB DDBCC
-@source https://www.cysh.cy.edu.tw/
+@source https://www.cysh.cy.edu.tw/p/406-1008-113576,r255.php
 @fixnote
 第 6 題官方曾公告修正答案：原公布 (B) 甲丁，修正為 **(A) 甲乙**。本書一律採修正後答案；修正的關鍵在（丁）「由情入景」的敘述有誤，詳見該題解析。
 @trend
