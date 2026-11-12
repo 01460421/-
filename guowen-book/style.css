@@ -310,3 +310,4 @@ table.qlist a{color:inherit;text-decoration:none}
 .acard .kt-title{color:#1F5C61} .acard .kt-title b{background:#2F7F86}
 .acard table.kt th{background:#D8ECEC;color:#1F5C61;border-color:#B5D5D6} .acard table.kt td{border-color:#CFE3E4}
 .acard .bd blockquote{border-left-color:#2F7F86;background:#EAF4F4}
+.blank{display:inline-block;border-bottom:1px solid currentColor;height:1em;vertical-align:-.15em;margin:0 .1em}

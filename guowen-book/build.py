@@ -121,6 +121,7 @@ def inline(s):
 
 def _plain(s):
     s = esc(s)
+    s = re.sub(r'＿{2,}', lambda m: f'<span class="blank" style="width:{len(m.group(0))}em"></span>', s)
     s = re.sub(r'__(.+?)__', r'<span class="ou">\1</span>', s)
     s = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', s)
     return s
