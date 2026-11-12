@@ -133,7 +133,7 @@
       else rec.append(K.h('button.btn.pri', { type: 'button', text: '蓋章：我走完了', onclick: () => { Case.d.read[c.id] = Date.now(); Case.save(); toast('戳記已收進手提箱'); A.emit('stamp', { id: c.id }); paintRec(); } }));
     };
     paintRec();
-    const ta = K.h('textarea.field', { rows: '3', maxlength: '2000', placeholder: '這一章讓你想到什麼？寫在這裡，會收進手提箱。', 'aria-label': '你的手記', value: Case.d.notes[c.id] || '' });
+    const ta = K.h('textarea.field', { rows: '3', maxlength: '2000', placeholder: '看完這一章，想到什麼就寫。箱子替你收著。', 'aria-label': '你的手記', value: Case.d.notes[c.id] || '' });
     ta.addEventListener('input', () => { const v = ta.value.trim(); if (v) Case.d.notes[c.id] = ta.value.slice(0, 2000); else delete Case.d.notes[c.id]; saveSoon(); });
     ta.addEventListener('keydown', e => e.stopPropagation());
     const nav = K.h('div.save-row');

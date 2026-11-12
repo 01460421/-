@@ -169,7 +169,7 @@ enter.chapter=function(id,arg){const c=chOf(id),ix=chIx(id),shots=c.shots.filter
   function recPaint(hit){recRow.textContent='';const ts=Case.d.read[id];if(ts){recRow.append(stampEl(ts,hit));const u=el('button','tiny','取消戳記');u.onclick=()=>{delete Case.d.read[id];Case.save();recPaint()};recRow.append(u)}
     else{const b=el('button','btn pri','蓋章：我讀完了');b.onclick=()=>{Case.d.read[id]=Date.now();Case.save();recPaint(true);toast('戳記已收進手提箱');emit('stamp',{id})};recRow.append(b)}}
   recPaint();const fl=el('p','hint');const fa=el('a','lnk','在放映廳看這一章');fa.href='#film/'+id;fl.append(fa);rec.append(fl);
-  const nt=el('div');nt.append(el('h3','','你的手記'));const ta=el('textarea','field');ta.id='note-'+id;ta.rows=5;ta.maxLength=2000;ta.placeholder='這一章讓你想到什麼？寫在這裡，會收進手提箱。';ta.value=Case.d.notes[id]||'';ta.setAttribute('aria-label','你的手記');
+  const nt=el('div');nt.append(el('h3','','你的手記'));const ta=el('textarea','field');ta.id='note-'+id;ta.rows=5;ta.maxLength=2000;ta.placeholder='看完這一章，想到什麼就寫。箱子替你收著。';ta.value=Case.d.notes[id]||'';ta.setAttribute('aria-label','你的手記');
   const hint=el('p','hint','只存在這台裝置。');ta.oninput=()=>{const v=ta.value.trim();if(v)Case.d.notes[id]=ta.value.slice(0,2000);else delete Case.d.notes[id];Case.save();hint.textContent='已存入手提箱。'};nt.append(ta,hint);end.append(rec,nt);box.append(end);
   const nav=el('div','ch-nav');if(ix>0){const a=el('a','btn','‹ '+CH[ix-1].no+'　'+CH[ix-1].zh);a.href='#'+CH[ix-1].id;nav.append(a)}else nav.append(el('span'));
   if(ix<CH.length-1){const a=el('a','btn pri',CH[ix+1].no+'　'+CH[ix+1].zh+' ›');a.href='#'+CH[ix+1].id;nav.append(a)}else{const a=el('a','btn','第十四章尚未抵達，回章節檔案');a.href='#chapters';nav.append(a)}box.append(nav);emit('chapter',{id,c,box,shots,end,rec,nav})};
@@ -370,7 +370,7 @@ function casePaint(){const d=Case.d;$('id-no').textContent='NO. '+String(d.since
   const nc=Object.keys(d.choices).length,same=SC.filter(s=>s.canon&&d.choices[s.id]===s.canon).length;play.append(li('司辰的抉擇',nc?'已選 '+nc+' ／ 8':'還沒開始','#choices',nc===SC.length?'七次可對照的抉擇裡，'+same+' 次和她走了同一條路。':''));
   const notes=$('case-notes');notes.textContent='';const nk=CH.filter(c=>d.notes[c.id]);if(!nk.length)notes.append(el('li','empty','還沒有手記。每一間展間的最底下，都留了一格。'));nk.forEach(c=>notes.append(li(c.no,c.zh,'#'+c.id,d.notes[c.id])));
   const wk=$('case-works');wk.textContent='';wk.append(li('創作本',d.works.length?d.works.length+' 件作品':'還是空的','#studio'));const rn=RELAYS.reduce((n,r)=>n+(d.relay[r.k]||[]).length,0);wk.append(li('接龍',rn?'存在這台裝置的有 '+rn+' 段':'還沒有只存在本機的段落','#relay'));
-  $('store-note').textContent=Case.ok?'箱子放在這台裝置的瀏覽器裡。要換裝置，或要清瀏覽資料，先產生存檔代碼帶走。':'這個瀏覽器不讓本館存資料，關掉頁面後內容會消失。請用存檔代碼自行保存。';emit('case',{d})}
+  $('store-note').textContent=Case.ok?'箱子放在這台裝置的瀏覽器裡。要換裝置，或要清瀏覽資料，先產生存檔代碼帶走。':'這個瀏覽器不讓本館存東西。頁面一關，箱子就空了。走之前，先產生存檔代碼帶走。';emit('case',{d})}
 enter.case=function(){if(!caseBuilt){caseBuilt=true;$('id-name').addEventListener('input',e=>{Case.d.name=e.target.value.trim().slice(0,16);Case.save()});
     $('exp-btn').onclick=()=>{const t=$('exp-code');t.hidden=false;t.value=Case.code();$('exp-copy').hidden=false};$('exp-copy').onclick=()=>copyText($('exp-code').value,$('exp-code'));
     $('imp-btn').onclick=()=>{const ok=Case.read($('imp-code').value);$('imp-msg').textContent=ok?'匯入完成。':'這不是有效的存檔代碼。';if(ok){$('imp-code').value='';badge();casePaint();veil(true)}};
