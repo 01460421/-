@@ -10,7 +10,8 @@ const path = require('node:path');
 
 const PORT = String(18000 + Math.floor(Math.random() * 2000));
 const BASE = 'http://127.0.0.1:' + PORT;
-const ROOMS = ['hall', 'chronicle', 'chapters', 'c0', 'c7/3', 'c13', 'film', 'choices', 'rain', 'relay', 'studio', 'studio/wall', 'quiz', 'index', 'index/手提箱', 'questions', 'case', 'about'];
+const ROOMS = ['hall', 'chronicle', 'chapters', 'c0', 'c7/3', 'c13', 'film', 'choices', 'rain', 'relay', 'studio', 'studio/wall', 'quiz', 'index', 'index/手提箱', 'questions', 'case', 'about',
+  'play', 'quests', 'darkroom', 'album', 'arcade', 'arcade/order', 'arcade/match', 'arcade/catch', 'arcade/code', 'shop', 'profile'];
 
 async function main() {
   let chromium;
@@ -82,7 +83,41 @@ async function main() {
     await q.goto(BASE + '/#choices'); await q.waitForTimeout(400); await q.click('.opts .opt'); await q.waitForTimeout(2600);
     ok(!!(await q.$('.split-bar')), '投票送出後應該顯示同好的比例');
 
-    /* 五、標頭 */
+    /* 五、遊戲層：到職禮、簽到、沖洗、底片冊、小遊戲開得起來、主題色，重新整理後都還在 */
+    const g = await visitor('丙');
+    const G = () => g.evaluate(() => ({ w: window.__A.Game.wallet(), album: window.__A.Dark.count(), accent: document.documentElement.dataset.accent || '', dots: window.__A.Game.dots() }));
+    await g.goto(BASE + '/#play'); await g.waitForTimeout(600);
+    ok((await g.$$('.g-tile')).length === 6, '值勤台應該有六個入口');
+    await g.click('.g-gift .btn'); await g.waitForTimeout(300);
+    ok((await G()).w.dev === 1200, '到職禮應該給 1200 顯影劑');
+    await g.goto(BASE + '/#quests'); await g.waitForTimeout(400); await g.click('.q-sign .btn.pri'); await g.waitForTimeout(300);
+    ok((await G()).w.dev === 1300, '簽到第一天應該給 100 顯影劑');
+    ok((await g.$$('.q-list .q-row')).length >= 28, '委託應該列出每日、每週和長期');
+    await g.goto(BASE + '/#darkroom'); await g.waitForTimeout(500); await g.click('.dk-act .btn:not(.pri)'); await g.waitForTimeout(300); await g.click('.dk-stage .btn.sm').catch(() => {}); await g.waitForTimeout(500);
+    const after = await G();
+    ok((await g.$$('.dk-card.on')).length === 10, '沖洗十張應該顯影十張');
+    ok(after.w.dev === 220 && after.album >= 1 && after.album <= 10, '沖洗十張之後：顯影劑 220，底片冊有進帳（' + JSON.stringify(after) + '）');
+    await g.goto(BASE + '/#album'); await g.waitForTimeout(600);
+    ok((await g.$$('.al-cell')).length === 78 && (await g.$$('.al-cell:not(.miss)')).length === after.album, '底片冊應該有 78 格，持有的格數和紀錄一致');
+    await g.click('.al-cell:not(.miss)'); await g.waitForTimeout(400);
+    ok(!!(await g.$('.al-detail')), '點底片應該打開它的來歷'); await g.keyboard.press('Escape');
+    for (const id of ['order', 'match', 'catch', 'code']) {
+      await g.goto(BASE + '/#arcade/' + id); await g.waitForTimeout(400);
+      const start = await g.$('.arc-intro .btn.pri'); ok(!!start, '遊藝室應該有「' + id + '」這個遊戲');
+      if (start) { await start.click(); await g.waitForTimeout(700); ok(await g.evaluate(() => { const st = document.querySelector('.arc-stage'); return !!st && st.children.length > 0 && window.__A.Arcade.playing(); }), '「' + id + '」應該開得起來'); }
+    }
+    await g.goto(BASE + '/#shop'); await g.waitForTimeout(300);
+    ok(!(await g.evaluate(() => window.__A.Arcade.playing())), '離開遊藝室之後遊戲應該停下來');
+    await g.evaluate(() => window.__A.Game.give({ shard: 200 }, '', true)); await g.goto(BASE + '/#play'); await g.goto(BASE + '/#shop'); await g.waitForTimeout(300);
+    await g.click('.sp-item:nth-child(2) .btn'); await g.waitForTimeout(300);
+    ok((await G()).accent === 'amber', '換到主題色之後應該立刻換上');
+    await g.goto(BASE + '/#profile'); await g.waitForTimeout(500);
+    ok((await g.$$('.pf-stats > div')).length === 12, '檔案應該列出十二項紀錄');
+    await g.waitForTimeout(700); await g.reload(); await g.waitForTimeout(900);
+    const kept = await G();
+    ok(kept.w.dev === 220 && kept.album === after.album && kept.accent === 'amber', '重新整理之後，資源、底片冊和主題色都應該還在（' + JSON.stringify(kept) + '）');
+
+    /* 六、標頭 */
     const res = await p.request.get(BASE + '/');
     ok(/script-src 'self'/.test(res.headers()['content-security-policy'] || ''), '首頁應該帶內容安全政策');
     const health = await (await p.request.get(BASE + '/api/health')).json();

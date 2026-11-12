@@ -10,6 +10,8 @@ const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg', 'icon-
   q('assets/js/plus/kit.js'), q('assets/js/plus/settings.js'), q('assets/js/plus/sound.js'), q('assets/js/plus/gloss.js'),
   q('assets/js/plus/palette.js'), q('assets/js/plus/reader.js'), q('assets/js/plus/score.js'), q('assets/js/plus/cinema.js'), q('assets/js/plus/quiz.js'),
   q('assets/js/plus/rank.js'), q('assets/js/plus/social.js'), q('assets/js/plus/sync.js'), q('assets/js/plus/admin.js'),
+  q('assets/css/game.css'), q('assets/js/plus/game.js'), q('assets/js/plus/quests.js'), q('assets/js/plus/darkroom.js'), q('assets/js/plus/album.js'), q('assets/js/plus/arcade.js'),
+  q('assets/js/plus/games/order.js'), q('assets/js/plus/games/match.js'), q('assets/js/plus/games/catch.js'), q('assets/js/plus/games/code.js'), q('assets/js/plus/shop.js'), q('assets/js/plus/profile.js'),
   q('assets/js/boot.js')];
 
 self.addEventListener('install', (e) => {

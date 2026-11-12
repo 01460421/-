@@ -1,0 +1,44 @@
+/* 遊藝室：數字之島
+   左邊（手機是上面）是八列的紀錄，右邊是正在輸入的四格和數字鍵。
+   數字一律用 Didone 的等寬數字，欄位才對得齊。 */
+.g-code{display:grid;gap:22px;max-width:900px;scroll-margin-top:150px}
+@media (min-width:760px){.g-code{grid-template-columns:minmax(0,11fr) minmax(0,9fr);gap:56px;align-items:start}}
+
+.g-code .cd-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--ink)}
+.g-code .cd-left{font-family:var(--f-ui);font-size:12px;font-weight:500;letter-spacing:.16em;font-variant-numeric:tabular-nums}
+.g-code .cd-log{width:100%;border-collapse:collapse;table-layout:fixed}
+.g-code .cd-log th,.g-code .cd-log td{padding:0;text-align:left;border-bottom:1px solid var(--hair);font-weight:400}
+.g-code .cd-log thead th{padding:9px 0 7px;font-family:var(--f-ui);font-size:11px;font-weight:500;letter-spacing:.14em;line-height:1.5;color:var(--slate);white-space:nowrap}
+.g-code .cd-log thead th:nth-child(1){width:38px}
+.g-code .cd-log thead th:nth-child(2){width:34%}
+.g-code .cd-log thead th:nth-child(3){width:20%}
+.g-code .cd-log tbody th{font-family:var(--f-latin);font-style:italic;font-size:15px;color:var(--slate);font-variant-numeric:lining-nums}
+.g-code .cd-log td{height:38px;font-family:var(--f-latin);font-size:21px;font-weight:600;line-height:1.2;font-variant-numeric:lining-nums tabular-nums}
+.g-code .cd-log td.g{letter-spacing:.32em}
+.g-code .cd-log tr.now th{color:var(--mark)}
+.g-code .cd-log tr.ok td{color:var(--mark)}
+
+.g-code .cd-play{display:grid;gap:12px}
+.g-code .cd-slots{display:grid;grid-template-columns:repeat(4,minmax(0,64px));gap:8px}
+.g-code .cd-slots b{display:grid;place-items:center;height:64px;border:1px solid var(--ink);font-family:var(--f-latin);font-size:32px;font-weight:600;line-height:1;font-variant-numeric:lining-nums}
+.g-code .cd-slots b.at{box-shadow:inset 0 -3px 0 var(--mark)}   /* 下一個數字會落在這一格 */
+.g-code .cd-play.done .cd-slots b{border-color:var(--mark);color:var(--mark)}
+.g-code .cd-msg{min-height:1.95em;font-size:14.5px;color:var(--slate)}
+.g-code .cd-msg.bad{color:var(--mark)}
+
+.g-code .cd-pad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:420px}
+.g-code .cd-pad button{min-height:48px;touch-action:manipulation}   /* 連點不同的鍵時，手機不要當成雙擊放大 */
+.g-code .cd-pad button:not(.btn){border:1px solid var(--ink);font-family:var(--f-latin);font-size:22px;font-weight:600;line-height:1;font-variant-numeric:lining-nums;transition:background .18s,color .18s}
+.g-code .cd-pad button.in{background:var(--paper-2);color:var(--slate)}   /* 這一組已經用過的數字 */
+.g-code .cd-pad button:not(.btn):active{background:var(--ink);color:var(--paper)}
+@media (hover:hover){.g-code .cd-pad button:not(.btn):hover{background:var(--ink);color:var(--paper)}}
+.g-code .cd-pad .btn{grid-column:span 2;padding-inline:8px}
+.g-code .cd-pad .btn.pri{grid-column:span 3}
+
+@media (max-width:640px){
+  .g-code{gap:16px;scroll-margin-top:140px}
+  .g-code .cd-log td{height:33px;font-size:19px}
+  .g-code .cd-slots b{height:54px;font-size:28px}
+  .g-code .cd-play{gap:10px}
+}
+@media (prefers-reduced-motion:reduce){.g-code .cd-pad button:not(.btn){transition:none}}
