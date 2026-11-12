@@ -1,0 +1,7 @@
+node_modules/
+dist/*.html
+__pycache__/
+source/pdf/
+source/img/
+dist/prev/
+dist/sample-*
