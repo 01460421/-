@@ -21,8 +21,8 @@
   /* 先把字型叫齊，量出來的欄數才是真的 */
   const all = JSON.stringify(B);
   await Promise.all([
-    document.fonts.load('400 12pt "Noto Serif TC"', all),
-    document.fonts.load('700 12pt "Noto Serif TC"', all),
+    document.fonts.load('400 12pt "Iansui"', all),
+    document.fonts.load('400 12pt "LXGW WenKai TC"', '蟪胔'),
     document.fonts.load('12pt "NiYu"', all)
   ]).catch(e => warn.push('font: ' + e.message));
   await document.fonts.ready;

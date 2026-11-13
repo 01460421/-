@@ -5,7 +5,7 @@
 :root { --ink: #1b1b1b; --gold: #9c6b22; --grey: #6b6b6b; --L: 6.588mm; --fs: 11.4pt; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: #fff; color: var(--ink); font-synthesis: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-body { font-family: "Noto Serif TC", serif; }
+body { font-family: "Iansui", "LXGW WenKai TC", "Noto Serif TC", serif; }
 #stage { position: absolute; left: 0; top: 0; visibility: hidden; }
 
 .sheet { position: relative; width: 297mm; height: 210mm; overflow: hidden; page-break-after: always; break-after: page; }
@@ -21,7 +21,7 @@ body { font-family: "Noto Serif TC", serif; }
 
 /* 一頁 */
 .pg { width: 121.77mm; height: 167.94mm; padding: 3.4mm 4.88mm; position: relative; overflow: hidden;
-  writing-mode: vertical-rl; font: 400 var(--fs)/var(--L) "Noto Serif TC", serif; text-align: justify; line-break: strict; word-break: normal; }
+  writing-mode: vertical-rl; font: 400 var(--fs)/var(--L) "Iansui", "LXGW WenKai TC", "Noto Serif TC", serif; text-align: justify; line-break: strict; word-break: normal; }
 #stage .pg { overflow: visible; margin-bottom: 4mm; }
 .flow { display: flow-root; inline-size: 100%; }
 .flow > div { margin: 0; line-height: var(--L); }

@@ -11,7 +11,7 @@ npm run book            # 等於 node dev/book/build.cjs
 node dev/book/build.cjs --cols   # 另外列出每一頁用了幾欄
 ```
 
-需要 Playwright 的 Chromium，並且連得上 Google Fonts（內文用思源宋體；標題用 `dev/fonts/NiYu-Regular.otf`）。排完會印出字數、頁數、每一篇的起始頁，以及只有三欄以內的頁。
+需要 Playwright 的 Chromium，並且連得上 Google Fonts。標題用 `dev/fonts/NiYu-Regular.otf`；內文用芫荽（Iansui，SIL OFL 1.1），芫荽沒有的字（目前只有「蟪」「胔」兩個）以同樣出自 Klee One 的霞鶩文楷 TC 補上。排完會印出字數、頁數、每一篇的起始頁，以及只有三欄以內的頁。
 
 ## 檔案
 

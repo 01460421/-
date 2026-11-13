@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* 《量雨的人》：把 ms/*.txt 排成直排的散葉 PDF。
    用法：node dev/book/build.cjs [--png]      輸出 dev/book/量雨的人.pdf
-   需要 Playwright 的 Chromium，並且連得上 Google Fonts（內文用思源宋體）。 */
+   需要 Playwright 的 Chromium，並且連得上 Google Fonts（內文用芫荽）。 */
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -93,7 +93,7 @@ const META = {
     ['成書', '二〇二六年十一月'],
     ['篇幅', '{N}頁，八卷'],
     ['標題字型', '逆雨 NiYu（SIL OFL 1.1）'],
-    ['內文字型', '思源宋體 Noto Serif TC']
+    ['內文字型', '芫荽 Iansui（SIL OFL 1.1）']
   ],
   notes: [
     '本書是愛好者的二次創作，不是官方出版品，也不作營利之用。《重返未來：1999》的名稱、世界觀與人物，權利屬於深藍互動（Bluepoch）。',
@@ -113,7 +113,7 @@ const META = {
   fs.mkdirSync(OUT, { recursive: true });
   const html = `<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>量雨的人</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&family=LXGW+WenKai+TC:wght@400&family=Noto+Serif+TC:wght@400&display=block">
 <link rel="stylesheet" href="../book.css"></head><body><div id="stage"></div><div id="book"></div>
 <script>window.BOOK=${JSON.stringify(book).replace(/</g, '\\u003c')};</script><script src="../layout.js"></script></body></html>`;
   const file = path.join(OUT, 'book.html');
