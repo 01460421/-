@@ -151,7 +151,8 @@
   cover.el.innerHTML = '<div class="cs"></div><div class="ct"></div><div class="ca"></div><div class="cd"></div>';
   cover.el.querySelector('.cs').textContent = B.meta.series;
   cover.el.querySelector('.ct').textContent = B.meta.title;
-  cover.el.querySelector('.ca').innerHTML = '<span class="lat">Claude</span>　著';
+  cover.el.querySelector('.ca').innerHTML = '<span class="lat"></span>　著';
+  cover.el.querySelector('.ca .lat').textContent = B.meta.author;
   cover.el.querySelector('.cd').textContent = B.meta.date;
   const colo = mkPage('卷首', 'colo', true);
   const epi = mkPage('卷首', 'epi', true);
