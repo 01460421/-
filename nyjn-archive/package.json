@@ -12,6 +12,7 @@
     "smoke": "node dev/smoke.cjs",
     "score": "node dev/score.cjs",
     "fonts": "python3 dev/fonts.py",
+    "book": "node dev/book/build.cjs",
     "live": "python3 dev/live-check.py"
   },
   "dependencies": {

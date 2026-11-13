@@ -1,0 +1,102 @@
+/* 《量雨的人》版式：A4 橫放，一張兩頁，右頁在前；雙框、版心、直排。
+   尺寸一律用 mm。欄距 112mm ÷ 17，內文 11.4pt：每頁 17 欄，每欄 40 字，同原書。 */
+@font-face { font-family: "NiYu"; src: url("../fonts/NiYu-Regular.otf") format("opentype"); font-weight: 100 900; }
+@page { size: 297mm 210mm; margin: 0; }
+:root { --ink: #1b1b1b; --gold: #9c6b22; --grey: #6b6b6b; --L: 6.588mm; --fs: 11.4pt; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; color: var(--ink); font-synthesis: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "Noto Serif TC", serif; }
+#stage { position: absolute; left: 0; top: 0; visibility: hidden; }
+
+.sheet { position: relative; width: 297mm; height: 210mm; overflow: hidden; page-break-after: always; break-after: page; }
+.sheet:last-child { page-break-after: auto; break-after: auto; }
+.frame { position: absolute; left: 19.5mm; top: 19.5mm; width: 258mm; height: 171mm; border: 0.45mm solid var(--ink); padding: 0.9mm; }
+.inner { width: 100%; height: 100%; border: 0.18mm solid var(--ink); display: flex; flex-direction: row; }
+.half { width: 121.77mm; height: 167.94mm; flex: none; position: relative; }
+.core { width: 11.4mm; flex: none; border-left: 0.18mm solid var(--ink); border-right: 0.18mm solid var(--ink); position: relative; writing-mode: vertical-rl; }
+.core .bk { position: absolute; left: 0; right: 0; top: 21mm; text-align: center; font-size: 7.6pt; letter-spacing: .28em; line-height: 11mm; white-space: nowrap; }
+.core .fish { position: absolute; left: 0; right: 0; top: 41mm; height: 5.2mm; background: var(--ink); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 46%, 0 100%); }
+.core .vl { position: absolute; left: 0; right: 0; top: 49.5mm; text-align: center; font-size: 7.6pt; letter-spacing: .3em; line-height: 11mm; white-space: nowrap; }
+.core .lf { position: absolute; left: 0; right: 0; top: 131mm; text-align: center; font-size: 7.6pt; letter-spacing: .12em; line-height: 11mm; white-space: nowrap; }
+
+/* 一頁 */
+.pg { width: 121.77mm; height: 167.94mm; padding: 3.4mm 4.88mm; position: relative; overflow: hidden;
+  writing-mode: vertical-rl; font: 400 var(--fs)/var(--L) "Noto Serif TC", serif; text-align: justify; line-break: strict; word-break: normal; }
+#stage .pg { overflow: visible; margin-bottom: 4mm; }
+.flow { display: flow-root; inline-size: 100%; }
+.flow > div { margin: 0; line-height: var(--L); }
+
+.p { text-indent: 2em; }
+.p0 { text-indent: 0; }
+.tail { text-indent: 0 !important; }
+.cut { text-align-last: justify; }
+.gap { block-size: var(--L); }
+.gap.h { block-size: calc(var(--L) / 2); }
+
+.ttl { font-family: "NiYu", "Noto Serif TC", serif; font-size: 23pt; line-height: calc(var(--L) * 2) !important; letter-spacing: .14em; text-indent: 0; text-align: start;
+  padding-inline-start: 7.2mm; position: relative; white-space: nowrap; }
+.ttl::before { content: ""; position: absolute; top: 2.6mm; left: 50%; width: 1.25mm; height: 1.25mm; margin-left: -0.62mm; border-radius: 50%; background: var(--gold); }
+.ttl.long { font-size: 20pt; letter-spacing: .08em; }
+.pst { font-size: 9.5pt; color: var(--grey); letter-spacing: .12em; text-indent: 0; text-align: start; padding-inline-start: 24mm; white-space: nowrap; }
+
+.dl { padding-inline-start: var(--lab, 3.5em); text-indent: calc(-1 * var(--lab, 3.5em)); }
+.dl .who { display: inline-block; inline-size: var(--lab, 3.5em); text-indent: 0; text-align: start; color: var(--gold); font-weight: 700; }
+.stage { padding-inline-start: var(--lab, 3.5em); text-indent: 0; color: #4a4a4a; }
+.kn { text-indent: 0; }
+.kn .tag { color: var(--gold); font-weight: 700; margin-inline-end: .35em; }
+.pl { padding-inline-start: 2em; text-indent: 0; text-align: start; white-space: nowrap; }
+.sub { font-family: "NiYu", "Noto Serif TC", serif; font-size: 14.5pt; letter-spacing: .08em; padding-inline-start: 4.2mm; text-indent: 0; text-align: start; white-space: nowrap; }
+.num { font-family: "NiYu", "Noto Serif TC", serif; font-size: 15pt; color: var(--gold); padding-inline-start: 4.2mm; text-indent: 0; text-align: start; }
+.note { font-size: 9.6pt; color: var(--grey); padding-inline-start: 17mm; text-indent: 0; }
+.sig { font-size: 10pt; color: #444; text-indent: 0; text-align: end; text-align-last: end; padding-inline-end: 4mm; letter-spacing: .08em; }
+.br { text-indent: 0; text-align: center; text-align-last: center; font-size: 0; }
+.br i { display: inline-block; width: 1.5mm; height: 1.5mm; background: var(--gold); transform: rotate(45deg); margin: 2.1mm 0; vertical-align: middle; }
+
+/* 卷首頁 */
+.pg.vol .vno { position: absolute; top: 24mm; right: 41.2mm; width: 9mm; font-family: "NiYu", serif; font-size: 15pt; color: var(--gold); letter-spacing: .55em; line-height: 9mm; text-align: start; white-space: nowrap; }
+.pg.vol .vt { position: absolute; top: 43.5mm; right: 37.7mm; width: 16mm; font-family: "NiYu", "Noto Serif TC", serif; font-size: 34pt; letter-spacing: .2em; line-height: 16mm; text-align: start; white-space: nowrap; }
+.pg.vol .vt.long { font-size: 29pt; letter-spacing: .12em; }
+.pg.vol .vg { position: absolute; top: 44.5mm; right: 58mm; width: 7mm; font-size: 9.5pt; color: var(--grey); letter-spacing: .5em; line-height: 7mm; text-align: start; white-space: nowrap; }
+.pg.vol .ve { position: absolute; top: 72mm; right: 72mm; font-size: 11pt; color: var(--grey); letter-spacing: .1em; line-height: 7.6mm; text-align: start; white-space: nowrap; }
+
+/* 封面 */
+.pg.cover .ct { position: absolute; top: 34mm; right: 49mm; width: 22mm; font-family: "NiYu", serif; font-size: 50pt; letter-spacing: .26em; line-height: 22mm; text-align: start; white-space: nowrap; }
+.pg.cover .ca { position: absolute; top: 76mm; right: 32mm; width: 8mm; font-family: "NiYu", serif; font-size: 14.5pt; letter-spacing: .22em; line-height: 8mm; text-align: start; white-space: nowrap; }
+.pg.cover .ca .lat { letter-spacing: .12em; }
+.pg.cover .cs { position: absolute; top: 34mm; right: 78mm; width: 6mm; font-size: 9.5pt; color: var(--gold); letter-spacing: .34em; line-height: 6mm; text-align: start; white-space: nowrap; }
+.pg.cover .cd { position: absolute; top: 96mm; right: 89mm; width: 6mm; font-size: 9.5pt; color: #444; letter-spacing: .34em; line-height: 6mm; text-align: start; white-space: nowrap; }
+
+/* 版權頁：橫排小字，落在左下 */
+.pg.colo { writing-mode: horizontal-tb; text-align: start; }
+.pg.colo .box { position: absolute; left: 5mm; bottom: 9mm; width: 96mm; font-size: 7.6pt; line-height: 5.4mm; color: #333; }
+.pg.colo h1 { font-family: "NiYu", serif; font-weight: 400; font-size: 13.5pt; letter-spacing: .12em; margin: 0 0 3.2mm; line-height: 8mm; color: var(--ink); }
+.pg.colo dl { margin: 0 0 3mm; display: grid; grid-template-columns: 15mm 1fr; }
+.pg.colo dt { color: var(--grey); }
+.pg.colo dd { margin: 0; }
+.pg.colo p { margin: 0 0 2.2mm; text-align: justify; }
+
+/* 題辭頁 */
+.pg.epi .e { position: absolute; top: 31mm; right: 40mm; font-size: 11.5pt; letter-spacing: .14em; line-height: 11.5mm; text-align: start; white-space: nowrap; }
+
+/* 目錄：上下兩層 */
+.pg.toc { padding: 3.4mm 4.88mm; display: block; writing-mode: horizontal-tb; }
+.pg.toc .tier { height: 50%; width: 100%; writing-mode: vertical-rl; position: relative; overflow: visible; font-size: 10.6pt; line-height: 6.2mm; }
+.pg.toc .tier + .tier { padding-top: 3mm; }
+.pg.toc .tf { display: flow-root; inline-size: 100%; }
+.pg.toc .tf > div { line-height: 6.2mm; }
+.te { display: flex; flex-direction: row; align-items: center; block-size: 6.2mm; text-indent: 0; }
+.te .tn { flex: none; padding-inline-start: 2em; white-space: nowrap; }
+.te .dots { flex: 1 1 auto; align-self: stretch; margin: 1.6mm 0; background: radial-gradient(circle, #9a9a9a 0.22mm, transparent 0.3mm) center top / 100% 1.5mm repeat-y; }
+.te .tp { flex: none; font-size: 8.6pt; letter-spacing: .06em; color: #333; white-space: nowrap; }
+.tv { font-family: "NiYu", "Noto Serif TC", serif; color: var(--gold); font-size: 12.5pt; letter-spacing: .1em; block-size: 6.2mm; padding-inline-start: 1mm; white-space: nowrap; text-align: start; }
+.tgap { block-size: 3.1mm; }
+.toc .ttl { line-height: 12.4mm !important; }
+.toc .tgap2 { block-size: 6.2mm; }
+
+/* 末頁：訂書記。順著直排往左流：先是加框的那一段，再是三行留給讀者填的 */
+.pg.fin { padding: 12mm 4.88mm 0; }
+.pg.fin .fbox { margin-block-start: 24mm; inline-size: 112mm; border: 0.3mm solid var(--ink); padding: 3.4mm 5mm; font-size: 11.5pt; line-height: 8.4mm; letter-spacing: .08em; text-align: justify; }
+.pg.fin .fl { margin-block-start: 5mm; padding-inline-start: 26mm; font-size: 10pt; color: #333; letter-spacing: .1em; line-height: 8mm; white-space: nowrap; text-align: start; }
+.pg.fin .fbox + .fl { margin-block-start: 11mm; }
+.pg.fin .fl u { display: inline-block; text-decoration: none; border-left: 0.2mm solid #333; inline-size: 26mm; block-size: 4mm; margin: 2mm 0; vertical-align: middle; }
+.pg.fin .fl u.s { inline-size: 11mm; }
