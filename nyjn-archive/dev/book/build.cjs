@@ -4,6 +4,7 @@
         node dev/book/build.cjs --bound    線裝本    → 量雨的人-線裝本.pdf
         node dev/book/build.cjs --kit      書衣與裝訂說明 → 量雨的人-書衣與裝訂.pdf
         node dev/book/build.cjs --all      三份都做
+        node dev/book/build.cjs --publish  把三份 PDF 複製到網站的 book/（檔名改成英數，連結才不必轉碼）
    需要 Playwright 的 Chromium，並且連得上 Google Fonts（內文用芫荽）。 */
 const fs = require('fs');
 const path = require('path');
@@ -13,9 +14,9 @@ const DIR = __dirname;
 const MS = path.join(DIR, 'ms');
 const OUT = path.join(DIR, 'out');
 const TARGETS = {
-  leaves: { pdf: '量雨的人.pdf', w: '297mm', h: '210mm' },
-  bound: { pdf: '量雨的人-線裝本.pdf', w: '317mm', h: '230mm', css: true },
-  kit: { pdf: '量雨的人-書衣與裝訂.pdf', w: '297mm', h: '210mm', css: true }
+  leaves: { pdf: '量雨的人.pdf', pub: 'liangyu-leaves.pdf', w: '297mm', h: '210mm' },
+  bound: { pdf: '量雨的人-線裝本.pdf', pub: 'liangyu-bound.pdf', w: '317mm', h: '230mm', css: true },
+  kit: { pdf: '量雨的人-書衣與裝訂.pdf', pub: 'liangyu-binding-kit.pdf', w: '297mm', h: '210mm', css: true }
 };
 
 const FW = s => s.replace(/[0-9]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFEE0));   // 直排：數字用全形，站著排
@@ -162,6 +163,13 @@ async function build(browser, book, mode, count) {
   const count = JSON.stringify(book).replace(/[^\u4e00-\u9fff]/g, '').length;
   fs.mkdirSync(OUT, { recursive: true });
   const a = process.argv;
+  if (a.includes('--publish')) {
+    const dst = path.join(DIR, '..', '..', 'book');
+    fs.mkdirSync(dst, { recursive: true });
+    const all = Object.values(TARGETS).concat([{ pdf: '量雨的人.docx', pub: 'liangyu.docx' }, { pdf: '量雨的人.txt', pub: 'liangyu.txt' }]);   /* 後兩個由 export.py 產生 */
+    for (const t of all) { fs.copyFileSync(path.join(DIR, t.pdf), path.join(dst, t.pub)); console.log(`${t.pdf} → book/${t.pub}｜${(fs.statSync(path.join(dst, t.pub)).size / 1048576).toFixed(2)} MB`); }
+    return;
+  }
   const modes = a.includes('--all') ? ['leaves', 'bound', 'kit'] : a.includes('--bound') ? ['bound'] : a.includes('--kit') ? ['kit'] : ['leaves'];
   const browser = await chromium.launch();
   for (const m of modes) await build(browser, book, m, count);

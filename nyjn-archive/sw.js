@@ -32,6 +32,7 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== self.location.origin) return;            // 字型等外部資源交給瀏覽器
   if (url.pathname.indexOf('/api/') >= 0) return;             // 後端永遠走網路
   if (url.pathname.endsWith('/sw.js')) return;
+  if (url.pathname.indexOf('/book/') >= 0) return;            // 館刊的頁面與下載檔：交給瀏覽器，不存進快取
   if (req.headers.has('range') || /\.(mp4|m4a|mp3|ogg|webm|wav)$/i.test(url.pathname)) return;   // 配樂是分段抓的大檔，交給瀏覽器
   if (req.mode === 'navigate') {                              // 頁面：先網路，斷線才用快取
     e.respondWith(fetch(req).then((r) => {

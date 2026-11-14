@@ -17,6 +17,7 @@ const SCORE_URL='';
 
 /* 原創字體頁：本館用的「逆雨」（NiYu）字型的樣張與下載。 */
 const FONT_PAGE='https://01460421.github.io/niyu/';
+const BOOK_PAGE='book/';   // 館刊《量雨的人》的閱讀與下載頁，是一張獨立的靜態頁
 
 /* 版本：改了檔案之後把它往上加，瀏覽器和離線快取才會換新。 */
-const SITE_VERSION='2.2.6';
+const SITE_VERSION='2.2.7';
