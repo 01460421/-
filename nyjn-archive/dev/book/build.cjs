@@ -16,7 +16,8 @@ const OUT = path.join(DIR, 'out');
 const TARGETS = {
   leaves: { pdf: '量雨的人.pdf', pub: 'liangyu-leaves.pdf', w: '297mm', h: '210mm' },
   bound: { pdf: '量雨的人-線裝本.pdf', pub: 'liangyu-bound.pdf', w: '317mm', h: '230mm', css: true },
-  kit: { pdf: '量雨的人-書衣與裝訂.pdf', pub: 'liangyu-binding-kit.pdf', w: '297mm', h: '210mm', css: true }
+  kit: { pdf: '量雨的人-書衣與裝訂.pdf', pub: 'liangyu-binding-kit.pdf', w: '297mm', h: '210mm', css: true },
+  pages: { pdf: 'out/pages.pdf', w: '148.5mm', h: '210mm', css: true }   /* 只是轉 PNG 的中間檔：node build.cjs --pages */
 };
 
 const FW = s => s.replace(/[0-9]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFEE0));   // 直排：數字用全形，站著排
@@ -167,11 +168,11 @@ async function build(browser, book, mode, count) {
   if (a.includes('--publish')) {
     const dst = path.join(DIR, '..', '..', 'book');
     fs.mkdirSync(dst, { recursive: true });
-    const all = Object.values(TARGETS).concat([{ pdf: '量雨的人.docx', pub: 'liangyu.docx' }, { pdf: '量雨的人.txt', pub: 'liangyu.txt' }]);   /* 後兩個由 export.py 產生 */
+    const all = Object.values(TARGETS).filter(t => t.pub).concat([{ pdf: '量雨的人.docx', pub: 'liangyu.docx' }, { pdf: '量雨的人.txt', pub: 'liangyu.txt' }]);   /* 後兩個由 export.py 產生 */
     for (const t of all) { fs.copyFileSync(path.join(DIR, t.pdf), path.join(dst, t.pub)); console.log(`${t.pdf} → book/${t.pub}｜${(fs.statSync(path.join(dst, t.pub)).size / 1048576).toFixed(2)} MB`); }
     return;
   }
-  const modes = a.includes('--all') ? ['leaves', 'bound', 'kit'] : a.includes('--bound') ? ['bound'] : a.includes('--kit') ? ['kit'] : ['leaves'];
+  const modes = a.includes('--all') ? ['leaves', 'bound', 'kit'] : a.includes('--bound') ? ['bound'] : a.includes('--kit') ? ['kit'] : a.includes('--pages') ? ['pages'] : ['leaves'];
   const browser = await chromium.launch();
   for (const m of modes) await build(browser, book, m, count);
   await browser.close();

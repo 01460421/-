@@ -381,6 +381,22 @@
     plate('pc').appendChild(closedBook('back'));
   }
 
+  /* 單頁：一頁 PDF 就是書的一頁（A5 直式），前後各加書衣；轉成 PNG 用 */
+  if (mode === 'pages') {
+    document.body.classList.add('bound', 'single');
+    pages[0].el.appendChild(postmark('ontitle'));
+    const one = el => { const p = $('div', 'plate1'); p.appendChild(el); out.appendChild(p); };
+    one(closedBook('front'));
+    pages.forEach((pg, n) => {
+      const side = n % 2 === 0 ? 'a' : 'b', i = Math.floor(n / 2);
+      const win = $('div', 'bp ' + side), vs = $('div', 'vsheet'), fr = $('div', 'frame'), inn = $('div', 'inner'), L = $('div', 'half'), R = $('div', 'half');
+      (side === 'a' ? R : L).appendChild(pg.el);
+      inn.appendChild(L); inn.appendChild(mkCore(pages[2 * i].label, i + 1)); inn.appendChild(R); fr.appendChild(inn); vs.appendChild(fr); win.appendChild(vs);
+      one(win);
+    });
+    one(closedBook('back'));
+  }
+
   if (mode === 'kit') {
     document.body.classList.add('kit');
     const sheet = () => { const sh = $('div', 'sheet ks'); out.appendChild(sh); return sh; };

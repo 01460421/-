@@ -76,3 +76,10 @@ body.bound { background: #0f1415; }
 .blurb p { margin: 0; }
 .blurb p.sp { block-size: 3.6mm; }
 .blurb.print { color: #2a2a2a; }
+
+/* 單頁：沒有桌面，也沒有書脊的陰影 */
+.plate1 { position: relative; width: 148.5mm; height: 210mm; overflow: hidden; break-after: page; page-break-after: always; background: var(--paper); }
+.plate1:last-child { break-after: auto; page-break-after: auto; }
+.plate1 .closed { left: 0; top: 0; box-shadow: none; border-radius: 0; }
+.plate1 .bp { left: 0; }
+.plate1 .bp::after, .plate1 .bp::before { display: none; }
