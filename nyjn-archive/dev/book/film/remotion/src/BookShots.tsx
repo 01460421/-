@@ -4,15 +4,15 @@ import React from 'react';
 import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { CJK, Cam, CamKey, FOIL, HEAD, MONO, clamp, eInOut, eOut, prog } from './lib';
 
-export const BOOK_FRAMES = 600;
-const A_END = 176, B0 = 182, FLIP = 22, HOLD = 20, B_END = B0 + 34 + 5 * (FLIP + HOLD) - HOLD + 24, C0 = B_END, C_END = C0 + 120, D0 = C_END;
+export const BOOK_FRAMES = 750;
+const A_END = 176, B0 = 182, FLIP = 22, HOLD = 28, B_END = B0 + 34 + 5 * (FLIP + HOLD) - HOLD + 24, C0 = B_END, C_END = C0 + 190, D0 = C_END;
 const desk = 'radial-gradient(ellipse 70% 62% at 50% 46%, #26302f 0%, #141b1b 55%, #0a0f0f 100%)';
 const Label: React.FC<{ zh: string; en: string; t0: number; t1: number; band?: boolean }> = ({ zh, en, t0, t1, band }) => {
   const f = useCurrentFrame();
   const o = Math.min(prog(f, t0, 10, eOut), 1 - prog(f, t1 - 8, 8));
   if (o <= 0) return null;
   return (
-    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 250, zIndex: 20, opacity: o, background: band ? 'linear-gradient(to top, rgba(6,10,10,.98) 0%, rgba(6,10,10,.96) 62%, rgba(6,10,10,0) 100%)' : 'none' }}>
+    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 250, zIndex: 20, opacity: o, background: band ? 'linear-gradient(to top, rgba(6,10,10,1) 0%, rgba(6,10,10,1) 60%, rgba(6,10,10,0) 100%)' : 'none' }}>
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 58, textAlign: 'center', transform: `translateY(${(1 - prog(f, t0, 10, eOut)) * 8}px)` }}>
         <div style={{ fontFamily: MONO, fontSize: 28, letterSpacing: '0.26em', color: FOIL, opacity: 0.85 }}>{en}</div>
         <div style={{ fontFamily: CJK, fontSize: 44, letterSpacing: '0.16em', color: '#f2ebdb', marginTop: 6 }}>{zh}</div>
@@ -125,10 +125,10 @@ const Flips: React.FC = () => {
 const NW = 2339, NH = 1654;
 const camC: CamKey[] = [
   { frame: C0, cx: 1990, cy: 430, zoom: 1.15, rotX: 4, rotY: 0, persp: 1800 },
-  { frame: C0 + 36, cx: 1990, cy: 470, zoom: 1.15, rotX: 4, rotY: 0, persp: 1800 },
-  { frame: C0 + 54, cx: 2150, cy: 760, zoom: 1.5, rotX: 3, rotY: -12, persp: 1500 },
-  { frame: C0 + 84, cx: 2150, cy: 760, zoom: 1.5, rotX: 3, rotY: -12, persp: 1500 },
-  { frame: C0 + 102, cx: 900, cy: 420, zoom: 1.5, rotX: 4, rotY: 9, persp: 1600 },
+  { frame: C0 + 50, cx: 1990, cy: 470, zoom: 1.15, rotX: 4, rotY: 0, persp: 1800 },
+  { frame: C0 + 68, cx: 2150, cy: 760, zoom: 1.5, rotX: 3, rotY: -12, persp: 1500 },
+  { frame: C0 + 118, cx: 2150, cy: 760, zoom: 1.5, rotX: 3, rotY: -12, persp: 1500 },
+  { frame: C0 + 136, cx: 900, cy: 420, zoom: 1.5, rotX: 4, rotY: 9, persp: 1600 },
   { frame: C_END, cx: 900, cy: 420, zoom: 1.5, rotX: 4, rotY: 9, persp: 1600 },
 ];
 const Macro: React.FC = () => (
@@ -172,9 +172,9 @@ export const BookShots: React.FC = () => {
         const a = k === 0 ? B0 + 4 : B0 + flipStart(k - 1) + FLIP - 4, b = k === NAMES.length - 1 ? B_END : B0 + flipStart(k) + 6;
         return <Label key={k} zh={zh} en={en} t0={a} t1={b} />;
       }) : null}
-      <Label band zh="〈再短一點〉：一行就好" en="DIALOGUES" t0={C0 + 4} t1={C0 + 40} />
-      <Label band zh="版心在書口，一葉對摺，魚尾各半" en="THE FOLD" t0={C0 + 56} t1={C0 + 88} />
-      <Label band zh="題上的一滴，是倒著落的雨" en="A DROP, RISING" t0={C0 + 104} t1={C_END} />
+      <Label band zh="〈再短一點〉：一行就好" en="DIALOGUES" t0={C0 + 6} t1={C0 + 50} />
+      <Label band zh="版心在書口，一葉對摺，魚尾各半" en="THE FOLD" t0={C0 + 70} t1={C0 + 118} />
+      <Label band zh="題上的一滴，是倒著落的雨" en="A DROP, RISING" t0={C0 + 138} t1={C_END} />
       <AbsoluteFill style={{ backgroundImage: `url(${staticFile('tex/grain.png')})`, opacity: 0.07, mixBlendMode: 'overlay', zIndex: 30 }} />
       {black > 0 ? <AbsoluteFill style={{ backgroundColor: '#050808', opacity: black, zIndex: 40 }} /> : null}
     </AbsoluteFill>

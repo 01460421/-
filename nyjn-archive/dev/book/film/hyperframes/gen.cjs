@@ -158,8 +158,8 @@ const end = `<template>
 </template>
 `;
 
-/* ── 總時間軸：片頭 6 秒 → 手繪四幅 34 秒（Remotion）→ 書 20 秒（Remotion）→ 片尾 9 秒 ── */
-const T = { ident: 6, hand: 34, book: 20, end: 9 };
+/* ── 總時間軸：片頭 6 秒 → 手繪四幅 34 秒（Remotion）→ 書 25 秒（Remotion）→ 片尾 9 秒 ── */
+const T = { ident: 6, hand: 34, book: 25, end: 9 };
 const total = T.ident + T.hand + T.book + T.end;
 const index = `<!doctype html>
 <html lang="zh-Hant" data-resolution="landscape">
