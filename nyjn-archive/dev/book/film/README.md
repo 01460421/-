@@ -33,6 +33,7 @@ cd dev/book/film/remotion && npm install
 npx remotion render src/index.ts Handdrawn out/handdrawn.mp4 --codec=h264 --crf=15 --pixel-format=yuv420p --muted
 npx remotion render src/index.ts BookShots out/book.mp4 --codec=h264 --crf=15 --pixel-format=yuv420p --muted
 cp out/handdrawn.mp4 out/book.mp4 ../hyperframes/assets/
+ffmpeg -y -i out/handdrawn.mp4 -frames:v 1 -q:v 1 ../hyperframes/assets/hand-first.jpg   # 片頭最後蓋上來的那張紙，就是手繪段的第一格，接起來才不會跳
 cd ../hyperframes && node gen.cjs               # 產生 index.html 與兩個場景檔
 npx hyperframes@0.9.43 check && npx hyperframes@0.9.43 render --output liangyu-film.mp4 --fps 30 --quality delivery
 ```

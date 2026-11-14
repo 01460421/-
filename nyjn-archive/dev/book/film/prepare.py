@@ -76,8 +76,7 @@ def hyperframes():
     os.makedirs(os.path.join(HF, 'fonts'), exist_ok=True)
     for f in glob.glob(os.path.join(RM, 'fonts', '*.woff2')):
         shutil.copy(f, os.path.join(HF, 'fonts'))
-    for f in ('cloth.jpg', 'paper.jpg'):
-        shutil.copy(os.path.join(RM, 'tex', f), HF)
+    shutil.copy(os.path.join(RM, 'tex', 'cloth.jpg'), HF)
     # 配樂：館內的主題〈逆雨〉，取開頭七十七秒（片長七十四秒，尾巴由 HyperFrames 淡出）
     run('ffmpeg', '-v', 'error', '-y', '-i', os.path.join(SITE, 'assets', 'audio', 'theme', '00-theme.m4a'), '-t', '77', '-c:a', 'aac', '-b:a', '192k', os.path.join(HF, 'music.m4a'))
 

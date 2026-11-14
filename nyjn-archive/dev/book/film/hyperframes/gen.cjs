@@ -57,7 +57,7 @@ const ident = `<template>
     <div id="id-en" class="clip" data-start="0" data-duration="6" style="z-index:5"><div id="id-en-w">The One Who Measures the Rain</div></div>
     <div id="id-sub" class="clip" data-start="0" data-duration="6" style="z-index:6"><div id="id-sub-w">A REVERSE: 1999 FAN NOVEL　·　OMEGA</div></div>
     <div id="id-stamp" class="clip" data-start="0" data-duration="6" style="z-index:7" data-layout-allow-overlap>${stamp('id-pm')}</div>
-    <div id="id-paper" class="clip" data-start="0" data-duration="6" style="z-index:8" data-layout-allow-overlap data-layout-allow-occlusion><img id="id-paper-img" src="assets/paper.jpg" alt="" /></div>
+    <div id="id-paper" class="clip" data-start="0" data-duration="6" style="z-index:8" data-layout-allow-overlap data-layout-allow-occlusion><img id="id-paper-img" src="assets/hand-first.jpg" alt="" /></div>
   </div>
   <script>
     (function () {
