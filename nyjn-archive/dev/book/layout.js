@@ -23,7 +23,10 @@
   await Promise.all([
     document.fonts.load('400 12pt "Iansui"', all),
     document.fonts.load('400 12pt "LXGW WenKai TC"', '蟪胔'),
-    document.fonts.load('12pt "NiYu"', all)
+    document.fonts.load('12pt "NiYu"', all),
+    document.fonts.load('italic 12pt "IM Fell English"', 'The One Who Measures the Rain'),
+    document.fonts.load('12pt "IM Fell English"', '1999'),
+    document.fonts.load('12pt "Courier Prime"', 'A REVERSE: 1999 FAN NOVEL')
   ]).catch(e => warn.push('font: ' + e.message));
   await document.fonts.ready;
 
@@ -154,6 +157,9 @@
   cover.el.querySelector('.ca').innerHTML = '<span class="lat"></span>　著';
   cover.el.querySelector('.ca .lat').textContent = B.meta.author;
   cover.el.querySelector('.cd').textContent = B.meta.date;
+  cover.el.appendChild($('div', 'len')).innerHTML = '<i></i><em></em><span></span>';
+  cover.el.querySelector('.len em').textContent = B.meta.en;
+  cover.el.querySelector('.len span').textContent = B.meta.enSub;
   const colo = mkPage('卷首', 'colo', true);
   const epi = mkPage('卷首', 'epi', true);
   epi.el.appendChild($('div', 'e')).innerHTML = B.meta.epigraph.map(l => l.replace(/</g, '&lt;')).join('<br>');
@@ -171,6 +177,8 @@
     vp.el.appendChild($('div', 'vt' + (v.title.length > 7 ? ' long' : ''), v.title));
     vp.el.appendChild($('div', 'vg', v.genre));
     vp.el.appendChild($('div', 've')).innerHTML = v.epi.map(l => l.replace(/</g, '&lt;')).join('<br>');
+    const ve = B.meta.volsEn[B.vols.indexOf(v)];
+    if (ve) { vp.el.appendChild($('div', 'len')).innerHTML = '<i></i><em></em><span></span>'; vp.el.querySelector('.len em').textContent = ve[1]; vp.el.querySelector('.len span').textContent = ve[0]; }
     toc.push({ v: v.no + '　' + v.title });
     for (const pc of v.pieces) {
       lab = pc.lab || null;
@@ -233,9 +241,37 @@
      kit   ：書衣兩張與裝訂說明，動手訂的時候用。 */
   const mode = B.meta.mode || 'leaves';
   const out = document.getElementById('book');
-  const mkCore = (lab2, n) => { const core = $('div', 'core'); core.appendChild($('div', 'bk', B.meta.short)); core.appendChild($('div', 'fish')); core.appendChild($('div', 'vl', lab2)); core.appendChild($('div', 'lf', cn(n))); return core; };
-  const seal = (text, cls, rows) => { const s = $('div', 'seal ' + cls), t = $('div', 't'); t.style.setProperty('--rows', rows); [...text].forEach(c => t.appendChild($('i', '', c))); s.appendChild(t); return s; };
+  const mkCore = (lab2, n) => { const core = $('div', 'core'); ['tl', 'tr', 'bl', 'br'].forEach(c => core.appendChild($('span', 'cn ' + c))); core.appendChild($('div', 'bk', B.meta.short)); core.appendChild($('div', 'fish')); core.appendChild($('div', 'vl', lab2)); core.appendChild($('div', 'lf', cn(n))); return core; };
   const HOLES = [16, 75.33, 134.67, 194];           /* 四眼離書頭的距離（mm）；離書脊 11mm */
+  const svgEl = html => { const t = $('div'); t.innerHTML = html; return t.firstChild; };
+  /* 固定種子的亂數：雨線每次排出來都一樣 */
+  const rng = seed => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  /* 倒著落的雨：線由下往上，水滴在上頭，尖端朝下 */
+  const drop = (x, y, r) => 'M' + x + ' ' + (y + r * 1.9) + 'C' + (x - r * 1.15) + ' ' + (y + r * .5) + ' ' + (x - r) + ' ' + (y - r) + ' ' + x + ' ' + (y - r) + 'C' + (x + r) + ' ' + (y - r) + ' ' + (x + r * 1.15) + ' ' + (y + r * .5) + ' ' + x + ' ' + (y + r * 1.9) + 'Z';
+  function rain(x0, x1, ground, maxLen, n, seed, color, id) {
+    const R = rng(seed); let lines = '', drops = '';
+    for (let k = 0; k < n; k++) {
+      const x = +(x0 + (x1 - x0) * ((k + .15 + R() * .7) / n)).toFixed(2), len = 10 + Math.pow(R(), 1.8) * maxLen, top = +(ground - len).toFixed(2), r = +(.42 + R() * .5).toFixed(2), w = +(.12 + R() * .14).toFixed(2);
+      lines += '<line x1="' + x + '" y1="' + ground + '" x2="' + x + '" y2="' + (top + r * 2.2).toFixed(2) + '" stroke-width="' + w + '"/>';
+      drops += drop(x, top + r, r);
+    }
+    return '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="' + color + '" stop-opacity=".95"/><stop offset="1" stop-color="' + color + '" stop-opacity=".12"/></linearGradient></defs>' +
+      '<g stroke="' + color + '" stroke-opacity=".55" stroke-linecap="round">' + lines + '</g><path d="' + drops + '" fill="' + color + '"/>';
+  }
+  /* 階梯角的框：一九二〇年代的樣子 */
+  const stepFrame = (x0, y0, x1, y1, n) => 'M' + (x0 + n) + ' ' + y0 + 'H' + (x1 - n) + 'V' + (y0 + n) + 'H' + x1 + 'V' + (y1 - n) + 'H' + (x1 - n) + 'V' + y1 + 'H' + (x0 + n) + 'V' + (y1 - n) + 'H' + x0 + 'V' + (y0 + n) + 'H' + (x0 + n) + 'Z';
+  /* 藍印：檔案館的郵戳，日期是第一場雨 */
+  let pmN = 0;
+  function postmark(cls) {
+    const id = 'pm' + (++pmN);
+    return svgEl('<svg class="pm ' + cls + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">' +
+      '<defs><path id="' + id + '" d="M50 50m-38.5 0a38.5 38.5 0 1 1 77 0a38.5 38.5 0 1 1 -77 0"/></defs>' +
+      '<circle cx="50" cy="50" r="47.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="30.5" fill="none" stroke="currentColor" stroke-width=".9"/>' +
+      '<text font-family="\'Courier Prime\',\'NiYu\',monospace" font-size="8.4"><textPath href="#' + id + '" textLength="236" lengthAdjust="spacing">NIYU ARCHIVE ＊ 逆雨檔案館 ＊ UNOFFICIAL ＊</textPath></text>' +
+      '<text x="50" y="47.5" text-anchor="middle" font-family="\'IM Fell English\',serif" font-size="21">1999</text>' +
+      '<path d="M27 53.5H73" stroke="currentColor" stroke-width=".8"/>' +
+      '<text x="50" y="63.5" text-anchor="middle" font-family="\'Courier Prime\',monospace" font-size="8.2" letter-spacing="1.2">XII · 31</text></svg>');
+  }
 
   if (mode === 'leaves') {
     for (let i = 0; i < M; i++) {
@@ -247,33 +283,77 @@
     }
   }
 
-  /* 書衣上的線：一條貫穿書頭到書根，每一眼各有一道繞過書脊 */
-  function threadSvg(spineRight) {
-    const hx = spineRight ? 137.5 : 11, ex = spineRight ? 148.5 : 0;
-    const d = 'M' + hx + ' 0V210' + HOLES.map(y => 'M' + hx + ' ' + y + 'H' + ex).join('');
-    return '<svg class="thread" viewBox="0 0 148.5 210" xmlns="http://www.w3.org/2000/svg">' +
-      '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.42)" stroke-width="1" transform="translate(.22 .28)"/>' +
-      '<path d="' + d + '" fill="none" stroke="#f1ecdf" stroke-width=".66"/>' +
-      '<path d="' + d + '" fill="none" stroke="#cfc8b6" stroke-width=".66" stroke-dasharray=".28 .62"/>' +
-      HOLES.map(y => '<circle cx="' + hx + '" cy="' + y + '" r=".62" fill="#0c1826"/>').join('') + '</svg>';
+  /* 書衣。front 的書脊在右，back 在左；print 是印在紙上的版本，只有線，沒有底色 */
+  function coverArt(kind, print) {
+    const front = kind === 'front', gold = print ? '#2a2a2a' : 'url(#foil)', line = print ? '#555' : '#d6bd84';
+    const hx = front ? 137.5 : 11, ex = front ? 148.5 : 0;
+    const fx0 = front ? 9 : 26, fx1 = front ? 122.5 : 139.5;         /* 框讓開縫線那一側 */
+    let g = '<svg class="art" viewBox="0 0 148.5 210" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><linearGradient id="foil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6d19c"/><stop offset=".45" stop-color="#c2a063"/><stop offset=".75" stop-color="#dcc48c"/><stop offset="1" stop-color="#a98649"/></linearGradient>' +
+      '<linearGradient id="brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9d6a0"/><stop offset=".5" stop-color="#b08f4f"/><stop offset="1" stop-color="#7c6130"/></linearGradient></defs>';
+    g += '<path d="' + stepFrame(fx0, 9, fx1, 201, 4.2) + '" fill="none" stroke="' + gold + '" stroke-width=".55"/>' +
+         '<path d="' + stepFrame(fx0 + 1.7, 10.7, fx1 - 1.7, 199.3, 4.2) + '" fill="none" stroke="' + gold + '" stroke-width=".18"/>';
+    if (front) {
+      g += rain(fx0 + 7, fx1 - 7, 170, 128, 44, 1999, line, 'rg') +
+        '<path d="M' + (fx0 + 6) + ' 170H' + (fx1 - 6) + '" stroke="' + gold + '" stroke-width=".3"/>' +
+        '<text x="' + ((fx0 + fx1) / 2) + '" y="181.5" text-anchor="middle" font-family="\'IM Fell English\',serif" font-style="italic" font-size="6.1" fill="' + gold + '">The One Who Measures the Rain</text>' +
+        '<text x="' + ((fx0 + fx1) / 2) + '" y="189.6" text-anchor="middle" font-family="\'Courier Prime\',monospace" font-size="2.35" letter-spacing=".95" fill="' + gold + '" fill-opacity=".85">A REVERSE: 1999 FAN NOVEL　·　OMEGA</text>';
+    } else {
+      /* 封底：一只箱子 */
+      const cx = (fx0 + fx1) / 2, cy = 100;
+      g += '<g fill="none" stroke="' + gold + '" stroke-width=".4" stroke-linejoin="round">' +
+        '<rect x="' + (cx - 17) + '" y="' + (cy - 10) + '" width="34" height="22" rx="1.6"/>' +
+        '<path d="M' + (cx - 6) + ' ' + (cy - 10) + 'v-3.6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3.6"/>' +
+        '<path d="M' + (cx - 17) + ' ' + (cy - 2.5) + 'H' + (cx + 17) + '" stroke-width=".25"/>' +
+        '<rect x="' + (cx - 9.4) + '" y="' + (cy - 4.2) + '" width="3.2" height="3.4"/><rect x="' + (cx + 6.2) + '" y="' + (cy - 4.2) + '" width="3.2" height="3.4"/>' +
+        '<path d="M' + (cx - 17) + ' ' + (cy - 5.4) + 'h4.6v-4.6M' + (cx + 17) + ' ' + (cy - 5.4) + 'h-4.6v-4.6M' + (cx - 17) + ' ' + (cy + 7.4) + 'h4.6v4.6M' + (cx + 17) + ' ' + (cy + 7.4) + 'h-4.6v4.6" stroke-width=".25"/></g>' +
+        '<text x="' + cx + '" y="' + (cy + 22) + '" text-anchor="middle" font-family="\'Courier Prime\',monospace" font-size="2.3" letter-spacing="1.1" fill="' + gold + '" fill-opacity=".85">NIYU ARCHIVE　·　MCMXCIX</text>';
+    }
+    if (!print) {
+      /* 包了銅的角：書口兩個三角，書脊兩個方的 */
+      const fo = front ? 0 : 148.5, d = front ? 1 : -1;
+      [[0, 1], [210, -1]].forEach(([y, v]) => {
+        g += '<path d="M' + fo + ' ' + y + 'h' + (14 * d) + 'l' + (-14 * d) + ' ' + (14 * v) + 'z" fill="url(#brass)"/><path d="M' + (fo + 12.2 * d) + ' ' + (y + .9 * v) + 'L' + (fo + .9 * d) + ' ' + (y + 12.2 * v) + '" stroke="#5d4821" stroke-width=".22" fill="none"/>' +
+          '<circle cx="' + (fo + 3.4 * d) + '" cy="' + (y + 3.4 * v) + '" r=".75" fill="#6e5527"/><circle cx="' + (fo + 3.25 * d) + '" cy="' + (y + 3.25 * v) + '" r=".4" fill="#ecdcae"/>';
+        g += '<rect x="' + Math.min(hx, ex) + '" y="' + (v > 0 ? 0 : 194) + '" width="11" height="16" fill="url(#brass)"/><rect x="' + (Math.min(hx, ex) + .8) + '" y="' + ((v > 0 ? 0 : 194) + .8) + '" width="9.4" height="14.4" fill="none" stroke="#5d4821" stroke-width=".2"/>';
+      });
+      /* 線：一條貫穿書頭到書根，每一眼各有一道繞過書脊 */
+      const d2 = 'M' + hx + ' 0V210' + HOLES.map(y => 'M' + hx + ' ' + y + 'H' + ex).join('');
+      g += '<path d="' + d2 + '" fill="none" stroke="rgba(0,0,0,.5)" stroke-width="1" transform="translate(.22 .28)"/><path d="' + d2 + '" fill="none" stroke="#dcc694" stroke-width=".66"/><path d="' + d2 + '" fill="none" stroke="#a88b52" stroke-width=".66" stroke-dasharray=".28 .62"/>' +
+        HOLES.map(y => '<circle cx="' + hx + '" cy="' + y + '" r=".62" fill="#06100f"/>').join('');
+      if (front) g += '<path d="M29.5 16.4C47 3 104 27 137.5 16" fill="none" stroke="rgba(0,0,0,.45)" stroke-width=".7" transform="translate(.25 .35)"/><path d="M29.5 16.4C47 3 104 27 137.5 16" fill="none" stroke="#c9b27c" stroke-width=".42"/>';
+    } else if (front) {
+      g += HOLES.map(y => '<path d="M' + (hx - 1.6) + ' ' + y + 'h3.2M' + hx + ' ' + (y - 1.6) + 'v3.2" stroke="#888" stroke-width=".12"/>').join('');
+    }
+    return svgEl(g + '</svg>');
+  }
+  /* 行李牌：題簽 */
+  function tag() {
+    const t = $('div', 'tag');
+    t.innerHTML = '<div class="card"></div><div class="eye"></div><div class="in"><div class="st"></div><div class="tl"><b>FILE</b>No. 1999<br><b>VOL.</b>I – VIII</div></div>';
+    t.querySelector('.st').textContent = B.meta.title;
+    t.appendChild(postmark('ontag'));
+    return t;
   }
   function closedBook(kind) {
     const b = $('div', 'closed ' + kind);
-    b.appendChild($('div', 'corner top')); b.appendChild($('div', 'corner bot'));
-    const t = $('div'); t.innerHTML = threadSvg(kind === 'front'); b.appendChild(t.firstChild);
-    if (kind === 'front') {
-      const slip = $('div', 'slip'); const inr = $('div', 'in'); inr.appendChild($('div', 'st', B.meta.title)); slip.appendChild(inr);
-      slip.appendChild(seal('逆雨', 'strip', 2)); b.appendChild(slip);
-    }
+    b.appendChild(coverArt(kind, false));
+    if (kind === 'front') b.appendChild(tag());
     return b;
+  }
+  /* 襯頁：書布的反面，滿版的倒雨 */
+  function endpaper(win, seed) {
+    win.classList.add('blank');
+    win.appendChild(svgEl('<svg class="art" viewBox="0 0 148.5 210" xmlns="http://www.w3.org/2000/svg">' + rain(6, 142.5, 204, 190, 62, seed, '#c9b27c', 'eg' + seed) + '</svg>'));
+    return win;
   }
 
   if (mode === 'bound') {
     document.body.classList.add('bound');
-    pages[0].el.appendChild(seal('逆雨檔案館藏', 'big', 3));
+    pages[0].el.appendChild(postmark('ontitle'));
     const half = (pg, side, i) => {
       const win = $('div', 'bp ' + side + (side === 'a' ? ' l' : ' r'));
-      if (!pg) { win.classList.add('blank'); return win; }
+      if (!pg) return endpaper(win, side === 'a' ? 31 : 12);
       const vs = $('div', 'vsheet'), fr = $('div', 'frame'), inn = $('div', 'inner'), L = $('div', 'half'), R = $('div', 'half');
       (side === 'a' ? R : L).appendChild(pg.el);
       inn.appendChild(L); inn.appendChild(mkCore(pages[2 * i].label, i + 1)); inn.appendChild(R); fr.appendChild(inn); vs.appendChild(fr); win.appendChild(vs);
@@ -297,23 +377,21 @@
   if (mode === 'kit') {
     document.body.classList.add('kit');
     const sheet = () => { const sh = $('div', 'sheet ks'); out.appendChild(sh); return sh; };
-    /* 前書衣：對摺後右半朝外。題簽在左上（靠書口），四眼的記號在右緣（書脊） */
-    const c1 = sheet();
-    const slip = $('div', 'kslip'); const inr = $('div', 'in'); inr.appendChild($('div', 'st', B.meta.title)); slip.appendChild(inr); slip.appendChild(seal('逆雨', 'strip', 2)); c1.appendChild(slip);
-    HOLES.forEach(y => { const m = $('div', 'hole'); m.style.top = y + 'mm'; c1.appendChild(m); });
+    /* 前書衣：對摺後右半朝外。行李牌在左上（靠書口），四眼的記號在右緣（書脊） */
+    const c1 = sheet(); const a1 = $('div', 'kart r'); a1.appendChild(coverArt('front', true)); a1.appendChild(tag()); c1.appendChild(a1);
     /* 後書衣：對摺後左半朝外 */
-    const c2 = sheet(); c2.appendChild(seal('逆雨', 'strip kback', 2));
+    const c2 = sheet(); const a2 = $('div', 'kart l'); a2.appendChild(coverArt('back', true)); c2.appendChild(a2);
     /* 說明 */
     const g = sheet(); g.classList.add('guide');
     const fig = '<svg viewBox="-16 -8 92 96" xmlns="http://www.w3.org/2000/svg" font-family="Iansui, serif" font-size="3.1" fill="#333">' +
       '<rect x="0" y="0" width="54" height="76.4" fill="#fff" stroke="#222" stroke-width=".35"/>' +
-      '<rect x="4.6" y="4.6" width="11.3" height="45" fill="none" stroke="#222" stroke-width=".25"/>' +
+      '<path d="M5.4 5.6h9.4l1.5 1.5v38.4H3.9V7.1z" fill="none" stroke="#222" stroke-width=".25"/>' +
       '<path d="M50 0V76.4' + HOLES.map(y => 'M50 ' + (y * 0.3638).toFixed(2) + 'H54').join('') + '" fill="none" stroke="#9c6b22" stroke-width=".5"/>' +
       HOLES.map((y, i) => '<circle cx="50" cy="' + (y * 0.3638).toFixed(2) + '" r=".9" fill="#222"/><text x="45.6" y="' + (y * 0.3638 + 1.1).toFixed(2) + '" text-anchor="end">' + '一二三四'[i] + '</text>').join('') +
       '<text x="27" y="-2.6" text-anchor="middle">書頭</text><text x="27" y="81.6" text-anchor="middle">書根</text>' +
       '<text x="-2.4" y="39" text-anchor="end">書口</text><text x="-2.4" y="43.2" text-anchor="end" font-size="2.5" fill="#777">（摺口）</text>' +
       '<text x="56.6" y="39">書脊</text><text x="56.6" y="43.2" font-size="2.5" fill="#777">（開口）</text>' +
-      '<text x="10.2" y="56" text-anchor="middle" font-size="2.5" fill="#777">題簽</text></svg>';
+      '<text x="10.2" y="51" text-anchor="middle" font-size="2.5" fill="#777">行李牌</text></svg>';
     g.innerHTML = '<div class="gh"><h1>裝訂說明</h1><p class="gs">《' + B.meta.title + '》｜四眼線裝｜書葉' + cn(M) + '張，訂成一冊，約 A5 大小</p></div>' +
       '<div class="gb"><ol>' + B.meta.guide.map(([h, x]) => '<li><b>' + h + '</b>' + x.replace('{M}', cn(M)) + '</li>').join('') + '</ol>' +
       '<div class="gf">' + fig + '<p>前書衣朝上的樣子。金線是訂好以後正面看得見的線。</p></div></div>';

@@ -34,7 +34,8 @@ body { font-family: "Iansui", "LXGW WenKai TC", "Noto Serif TC", serif; }
 
 .ttl { font-family: "NiYu", "Noto Serif TC", serif; font-size: 23pt; line-height: calc(var(--L) * 2) !important; letter-spacing: .14em; text-indent: 0; text-align: start;
   padding-inline-start: 7.2mm; position: relative; white-space: nowrap; }
-.ttl::before { content: ""; position: absolute; top: 2.6mm; left: 50%; width: 1.25mm; height: 1.25mm; margin-left: -0.62mm; border-radius: 50%; background: var(--gold); }
+/* 題上的一滴：倒著落的雨，圓的在上，尖的在下 */
+.ttl::before { content: ""; position: absolute; top: 2.1mm; left: 50%; width: 1.5mm; height: 1.5mm; margin-left: -0.75mm; border-radius: 50% 50% 0 50%; transform: rotate(45deg); background: var(--gold); }
 .ttl.long { font-size: 20pt; letter-spacing: .08em; }
 .pst { font-size: 9.5pt; color: var(--grey); letter-spacing: .12em; text-indent: 0; text-align: start; padding-inline-start: 24mm; white-space: nowrap; }
 
@@ -49,7 +50,7 @@ body { font-family: "Iansui", "LXGW WenKai TC", "Noto Serif TC", serif; }
 .note { font-size: 9.6pt; color: var(--grey); padding-inline-start: 17mm; text-indent: 0; }
 .sig { font-size: 10pt; color: #444; text-indent: 0; text-align: end; text-align-last: end; padding-inline-end: 4mm; letter-spacing: .08em; }
 .br { text-indent: 0; text-align: center; text-align-last: center; font-size: 0; }
-.br i { display: inline-block; width: 1.5mm; height: 1.5mm; background: var(--gold); transform: rotate(45deg); margin: 2.1mm 0; vertical-align: middle; }
+.br i { display: inline-block; width: 1.45mm; height: 1.45mm; background: var(--gold); border-radius: 50% 50% 0 50%; transform: rotate(45deg); margin: 2.2mm 0; vertical-align: middle; }
 
 /* 卷首頁 */
 .pg.vol .vno { position: absolute; top: 24mm; right: 41.2mm; width: 9mm; font-family: "NiYu", serif; font-size: 15pt; color: var(--gold); letter-spacing: .55em; line-height: 9mm; text-align: start; white-space: nowrap; }
@@ -99,3 +100,24 @@ body { font-family: "Iansui", "LXGW WenKai TC", "Noto Serif TC", serif; }
 .pg.fin .fbox + .fl { margin-block-start: 11mm; }
 .pg.fin .fl u { display: inline-block; text-decoration: none; border-left: 0.2mm solid #333; inline-size: 26mm; block-size: 4mm; margin: 2mm 0; vertical-align: middle; }
 .pg.fin .fl u.s { inline-size: 11mm; }
+
+/* 框的四角：一九二〇年代的階梯角。寫在版心裡，位置往兩邊推一頁的寬 */
+.core .cn { position: absolute; width: 1.7mm; height: 1.7mm; border: 0.18mm solid var(--ink); writing-mode: horizontal-tb; }
+.core .cn::after { content: ""; position: absolute; width: 3.6mm; height: 3.6mm; }
+.core .cn.tl { left: calc(-121.77mm + 1.1mm); top: 1.1mm; }
+.core .cn.tr { right: calc(-121.77mm + 1.1mm); top: 1.1mm; }
+.core .cn.bl { left: calc(-121.77mm + 1.1mm); bottom: 1.1mm; }
+.core .cn.br { right: calc(-121.77mm + 1.1mm); bottom: 1.1mm; }
+.core .cn.tl::after { left: 0.75mm; top: 0.75mm; border-left: 0.18mm solid var(--ink); border-top: 0.18mm solid var(--ink); }
+.core .cn.tr::after { right: 0.75mm; top: 0.75mm; border-right: 0.18mm solid var(--ink); border-top: 0.18mm solid var(--ink); }
+.core .cn.bl::after { left: 0.75mm; bottom: 0.75mm; border-left: 0.18mm solid var(--ink); border-bottom: 0.18mm solid var(--ink); }
+.core .cn.br::after { right: 0.75mm; bottom: 0.75mm; border-right: 0.18mm solid var(--ink); border-bottom: 0.18mm solid var(--ink); }
+
+/* 扉頁與卷首頁腳的英文：斜體的名字，打字機的小字 */
+.pg .len { position: absolute; left: 0; right: 0; bottom: 11mm; writing-mode: horizontal-tb; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pg .len i { display: block; width: 1.3mm; height: 1.3mm; margin-bottom: 2.6mm; background: var(--gold); border-radius: 50% 50% 0 50%; transform: rotate(45deg); }
+.pg .len em { font-family: "IM Fell English", serif; font-style: italic; font-size: 12.5pt; line-height: 6mm; letter-spacing: .02em; color: var(--ink); }
+.pg .len span { font-family: "Courier Prime", monospace; font-size: 6.2pt; line-height: 4.4mm; letter-spacing: .3em; color: var(--grey); margin-top: .6mm; }
+.pg.vol .len span { order: 1; margin: 0 0 .4mm; }
+.pg.vol .len em { order: 2; font-size: 14pt; line-height: 7mm; }
+.pg.vol .len i { order: 0; }

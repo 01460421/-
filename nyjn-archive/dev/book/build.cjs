@@ -90,6 +90,9 @@ const META = {
   title: '量雨的人',
   short: '量雨的人',
   author: 'Omega',
+  en: 'The One Who Measures the Rain',
+  enSub: 'A REVERSE: 1999 FAN NOVEL',
+  volsEn: [['VOLUME I', 'Essays'], ['VOLUME II', 'Sayings'], ['VOLUME III', 'Dialogues'], ['VOLUME IV', 'Old Bottles'], ['VOLUME V', 'Poems'], ['VOLUME VI', 'Two Stories and a Play'], ['VOLUME VII', 'Fables'], ['VOLUME VIII', 'Letters']],
   series: '重返未來：１９９９　二創小說',
   date: '丙午冬月　讀者手訂',
   epigraph: ['雨把年份帶走，', '人把東西留下。', '我是盛著那些東西走來的。'],
@@ -107,10 +110,10 @@ const META = {
     '全書以司辰的手提箱為敘事者。年份與事件依主線已經寫出的部分；主線留白的地方，本書不代為補寫。幾處添寫，在後記裡一一交代。'
   ],
   guide: [
-    ['用料', '書葉{M}張（《量雨的人.pdf》）、書衣兩張（這份檔案的第一、二頁：第一頁有題簽，是前書衣；第二頁是後書衣。可以換成厚一點的色紙來印）、棉線或絲線約一百公分、針、錐子、長尾夾兩個。'],
+    ['用料', '書葉{M}張（《量雨的人.pdf》）、書衣兩張（這份檔案的第一、二頁：第一頁有行李牌，是前書衣；第二頁是後書衣。可以換成厚一點的色紙來印）、棉線或絲線約一百公分、針、錐子、長尾夾兩個。'],
     ['一　印', '書葉與書衣都用 A4 橫向、單面列印，縮放選「實際大小」，不要選「符合頁面」，四眼的位置才對得上。'],
-    ['二　對摺', '每一張沿正中的版心對摺，字朝外。摺得準的話，魚尾的尖角正好落在摺線上。'],
-    ['三　理齊', '照版心下方的葉次，由一疊到{M}。前書衣放最上面，題簽朝上；後書衣放最下面，小印朝下。摺口都朝同一邊，那一邊就是書口。把書口和上下撞齊，用長尾夾夾住書口。'],
+    ['二　對摺', '每一張沿正中的版心對摺，字朝外。摺得準的話，版心那個黑色尖角正好落在摺線上。'],
+    ['三　理齊', '照版心下方的葉次，由一疊到{M}。前書衣放最上面，行李牌朝上；後書衣放最下面，箱子的圖朝下。摺口都朝同一邊，那一邊就是書口。把書口和上下撞齊，用長尾夾夾住書口。'],
     ['四　打眼', '前書衣右緣有四個十字記號，離書脊十一公釐。用錐子對準記號，垂直打穿整疊。'],
     ['五　穿線', '從第二眼起針，線頭留在書葉之間。每一眼都繞書脊一圈；頭尾兩眼再各繞書頭、書根一圈；正反兩面，眼與眼之間都要走到線。最後回到起針的那一眼打結，把結拉進眼裡，剪去線頭。'],
     ['六　落款', '翻到末頁，填上訂書者、年月和當天的天氣。線過之日，方是書成之日。']
@@ -128,7 +131,7 @@ async function build(browser, book, mode, count) {
   book.meta = Object.assign({}, META, { mode });
   const html = `<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>量雨的人</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&family=LXGW+WenKai+TC:wght@400&family=Noto+Serif+TC:wght@400&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&family=LXGW+WenKai+TC:wght@400&family=Noto+Serif+TC:wght@400&family=IM+Fell+English:ital@0;1&family=Courier+Prime&display=block">
 <link rel="stylesheet" href="../book.css">${T.css ? '<link rel="stylesheet" href="../bound.css">' : ''}
 <style>@page { size: ${T.w} ${T.h}; margin: 0; }</style></head><body><div id="stage"></div><div id="book"></div>
 <script>window.BOOK=${JSON.stringify(book).replace(/</g, '\\u003c')};</script><script src="../layout.js"></script></body></html>`;
