@@ -19,13 +19,14 @@ const FONTS = `
     @font-face { font-family: "IM Fell English"; font-style: italic; src: url("assets/fonts/IMFellEnglishital1.woff2") format("woff2"); }
     @font-face { font-family: "IM Fell English"; font-style: normal; src: url("assets/fonts/IMFellEnglish.woff2") format("woff2"); }
     @font-face { font-family: "Courier Prime"; src: url("assets/fonts/CourierPrime.woff2") format("woff2"); }`;
+// 郵戳圈上與日期的小字是紋理，不是要讀的字，標上 data-layout-ignore
 const stamp = id => `<svg id="${id}" viewBox="0 0 100 100" width="230" height="230" fill="#8ea6f0" style="overflow:visible">
         <defs><path id="${id}-ring" d="M50 50m-38.5 0a38.5 38.5 0 1 1 77 0a38.5 38.5 0 1 1 -77 0"/></defs>
         <circle cx="50" cy="50" r="47.5" fill="none" stroke="#8ea6f0" stroke-width="2"/><circle cx="50" cy="50" r="30.5" fill="none" stroke="#8ea6f0" stroke-width=".9"/>
-        <text font-family="'Courier Prime','NiYu',monospace" font-size="8.4"><textPath href="#${id}-ring" textLength="236" lengthAdjust="spacing">NIYU ARCHIVE ＊ 逆雨檔案館 ＊ UNOFFICIAL ＊</textPath></text>
+        <text data-layout-ignore font-family="'Courier Prime','NiYu',monospace" font-size="8.4"><textPath href="#${id}-ring" textLength="236" lengthAdjust="spacing">NIYU ARCHIVE ＊ 逆雨檔案館 ＊ UNOFFICIAL ＊</textPath></text>
         <text x="50" y="47.5" text-anchor="middle" font-family="'IM Fell English',serif" font-size="21">1999</text>
         <path d="M27 53.5H73" stroke="#8ea6f0" stroke-width=".8"/>
-        <text x="50" y="63.5" text-anchor="middle" font-family="'Courier Prime',monospace" font-size="8.2" letter-spacing="1.2">XII · 31</text></svg>`;
+        <text data-layout-ignore x="50" y="63.5" text-anchor="middle" font-family="'Courier Prime',monospace" font-size="8.2" letter-spacing="1.2">XII · 31</text></svg>`;
 
 /* ── 片頭 ── */
 const ident = `<template>
