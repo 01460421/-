@@ -1,7 +1,6 @@
 /* 《量雨的人》版式：A4 橫放，一張兩頁，右頁在前；雙框、版心、直排。
    尺寸一律用 mm。欄距 112mm ÷ 17，內文 11.4pt：每頁 17 欄，每欄 40 字，同原書。 */
 @font-face { font-family: "NiYu"; src: url("../fonts/NiYu-Regular.otf") format("opentype"); font-weight: 100 900; }
-@page { size: 297mm 210mm; margin: 0; }
 :root { --ink: #1b1b1b; --gold: #9c6b22; --grey: #6b6b6b; --L: 6.588mm; --fs: 11.4pt; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: #fff; color: var(--ink); font-synthesis: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }

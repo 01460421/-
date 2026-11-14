@@ -226,16 +226,97 @@
     tPut(() => { const d = $('div', 'te'); d.appendChild($('span', 'tn', e.t)); d.appendChild($('span', 'dots')); d.appendChild($('span', 'tp', digits(e.p))); return d; });
   });
 
-  /* ── 兩頁併一張 ── */
+  /* ── 成冊 ──
+     leaves：兩頁併一張，就是付印的散葉。
+     bound ：線裝本。每一葉對摺之後，前半（原紙右半）在翻開時落在左頁，後半落在下一個對開的右頁；
+             版心正好被摺線分成兩半，露在書口。
+     kit   ：書衣兩張與裝訂說明，動手訂的時候用。 */
+  const mode = B.meta.mode || 'leaves';
   const out = document.getElementById('book');
-  for (let i = 0; i < M; i++) {
-    const r = pages[2 * i], l = pages[2 * i + 1];
-    const sh = $('div', 'sheet'), fr = $('div', 'frame'), inn = $('div', 'inner');
-    const L = $('div', 'half'), core = $('div', 'core'), R = $('div', 'half');
-    core.appendChild($('div', 'bk', B.meta.short)); core.appendChild($('div', 'fish'));
-    core.appendChild($('div', 'vl', r.label)); core.appendChild($('div', 'lf', cn(i + 1)));
-    if (l) L.appendChild(l.el); R.appendChild(r.el);
-    inn.appendChild(L); inn.appendChild(core); inn.appendChild(R); fr.appendChild(inn); sh.appendChild(fr); out.appendChild(sh);
+  const mkCore = (lab2, n) => { const core = $('div', 'core'); core.appendChild($('div', 'bk', B.meta.short)); core.appendChild($('div', 'fish')); core.appendChild($('div', 'vl', lab2)); core.appendChild($('div', 'lf', cn(n))); return core; };
+  const seal = (text, cls, rows) => { const s = $('div', 'seal ' + cls), t = $('div', 't'); t.style.setProperty('--rows', rows); [...text].forEach(c => t.appendChild($('i', '', c))); s.appendChild(t); return s; };
+  const HOLES = [16, 75.33, 134.67, 194];           /* 四眼離書頭的距離（mm）；離書脊 11mm */
+
+  if (mode === 'leaves') {
+    for (let i = 0; i < M; i++) {
+      const r = pages[2 * i], l = pages[2 * i + 1];
+      const sh = $('div', 'sheet'), fr = $('div', 'frame'), inn = $('div', 'inner');
+      const L = $('div', 'half'), R = $('div', 'half');
+      if (l) L.appendChild(l.el); R.appendChild(r.el);
+      inn.appendChild(L); inn.appendChild(mkCore(r.label, i + 1)); inn.appendChild(R); fr.appendChild(inn); sh.appendChild(fr); out.appendChild(sh);
+    }
+  }
+
+  /* 書衣上的線：一條貫穿書頭到書根，每一眼各有一道繞過書脊 */
+  function threadSvg(spineRight) {
+    const hx = spineRight ? 137.5 : 11, ex = spineRight ? 148.5 : 0;
+    const d = 'M' + hx + ' 0V210' + HOLES.map(y => 'M' + hx + ' ' + y + 'H' + ex).join('');
+    return '<svg class="thread" viewBox="0 0 148.5 210" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.42)" stroke-width="1" transform="translate(.22 .28)"/>' +
+      '<path d="' + d + '" fill="none" stroke="#f1ecdf" stroke-width=".66"/>' +
+      '<path d="' + d + '" fill="none" stroke="#cfc8b6" stroke-width=".66" stroke-dasharray=".28 .62"/>' +
+      HOLES.map(y => '<circle cx="' + hx + '" cy="' + y + '" r=".62" fill="#0c1826"/>').join('') + '</svg>';
+  }
+  function closedBook(kind) {
+    const b = $('div', 'closed ' + kind);
+    b.appendChild($('div', 'corner top')); b.appendChild($('div', 'corner bot'));
+    const t = $('div'); t.innerHTML = threadSvg(kind === 'front'); b.appendChild(t.firstChild);
+    if (kind === 'front') {
+      const slip = $('div', 'slip'); const inr = $('div', 'in'); inr.appendChild($('div', 'st', B.meta.title)); slip.appendChild(inr);
+      slip.appendChild(seal('逆雨', 'strip', 2)); b.appendChild(slip);
+    }
+    return b;
+  }
+
+  if (mode === 'bound') {
+    document.body.classList.add('bound');
+    pages[0].el.appendChild(seal('逆雨檔案館藏', 'big', 3));
+    const half = (pg, side, i) => {
+      const win = $('div', 'bp ' + side + (side === 'a' ? ' l' : ' r'));
+      if (!pg) { win.classList.add('blank'); return win; }
+      const vs = $('div', 'vsheet'), fr = $('div', 'frame'), inn = $('div', 'inner'), L = $('div', 'half'), R = $('div', 'half');
+      (side === 'a' ? R : L).appendChild(pg.el);
+      inn.appendChild(L); inn.appendChild(mkCore(pages[2 * i].label, i + 1)); inn.appendChild(R); fr.appendChild(inn); vs.appendChild(fr); win.appendChild(vs);
+      return win;
+    };
+    const plate = cls => { const p = $('div', 'plate ' + cls); out.appendChild(p); return p; };
+    plate('pc').appendChild(closedBook('front'));
+    for (let k = 0; k <= M; k++) {
+      const op = $('div', 'opening');
+      const tl = 0.5 + 2.4 * (M - k) / M, tr = 0.5 + 2.4 * k / M;      /* 左邊是還沒讀的，右邊是讀過的 */
+      const board = $('div', 'board'); board.style.left = (-tl - 1.5) + 'mm'; board.style.right = (-tr - 1.5) + 'mm'; op.appendChild(board);
+      const sl = $('div', 'stack l'); sl.style.width = tl + 'mm'; sl.style.left = (-tl) + 'mm'; op.appendChild(sl);
+      const sr = $('div', 'stack r'); sr.style.width = tr + 'mm'; sr.style.right = (-tr) + 'mm'; op.appendChild(sr);
+      op.appendChild(half(k < M ? pages[2 * k] : null, 'a', k));
+      op.appendChild(half(k > 0 ? pages[2 * k - 1] : null, 'b', k - 1));
+      plate('po').appendChild(op);
+    }
+    plate('pc').appendChild(closedBook('back'));
+  }
+
+  if (mode === 'kit') {
+    document.body.classList.add('kit');
+    const sheet = () => { const sh = $('div', 'sheet ks'); out.appendChild(sh); return sh; };
+    /* 前書衣：對摺後右半朝外。題簽在左上（靠書口），四眼的記號在右緣（書脊） */
+    const c1 = sheet();
+    const slip = $('div', 'kslip'); const inr = $('div', 'in'); inr.appendChild($('div', 'st', B.meta.title)); slip.appendChild(inr); slip.appendChild(seal('逆雨', 'strip', 2)); c1.appendChild(slip);
+    HOLES.forEach(y => { const m = $('div', 'hole'); m.style.top = y + 'mm'; c1.appendChild(m); });
+    /* 後書衣：對摺後左半朝外 */
+    const c2 = sheet(); c2.appendChild(seal('逆雨', 'strip kback', 2));
+    /* 說明 */
+    const g = sheet(); g.classList.add('guide');
+    const fig = '<svg viewBox="-16 -8 92 96" xmlns="http://www.w3.org/2000/svg" font-family="Iansui, serif" font-size="3.1" fill="#333">' +
+      '<rect x="0" y="0" width="54" height="76.4" fill="#fff" stroke="#222" stroke-width=".35"/>' +
+      '<rect x="4.6" y="4.6" width="11.3" height="45" fill="none" stroke="#222" stroke-width=".25"/>' +
+      '<path d="M50 0V76.4' + HOLES.map(y => 'M50 ' + (y * 0.3638).toFixed(2) + 'H54').join('') + '" fill="none" stroke="#9c6b22" stroke-width=".5"/>' +
+      HOLES.map((y, i) => '<circle cx="50" cy="' + (y * 0.3638).toFixed(2) + '" r=".9" fill="#222"/><text x="45.6" y="' + (y * 0.3638 + 1.1).toFixed(2) + '" text-anchor="end">' + '一二三四'[i] + '</text>').join('') +
+      '<text x="27" y="-2.6" text-anchor="middle">書頭</text><text x="27" y="81.6" text-anchor="middle">書根</text>' +
+      '<text x="-2.4" y="39" text-anchor="end">書口</text><text x="-2.4" y="43.2" text-anchor="end" font-size="2.5" fill="#777">（摺口）</text>' +
+      '<text x="56.6" y="39">書脊</text><text x="56.6" y="43.2" font-size="2.5" fill="#777">（開口）</text>' +
+      '<text x="10.2" y="56" text-anchor="middle" font-size="2.5" fill="#777">題簽</text></svg>';
+    g.innerHTML = '<div class="gh"><h1>裝訂說明</h1><p class="gs">《' + B.meta.title + '》｜四眼線裝｜書葉' + cn(M) + '張，訂成一冊，約 A5 大小</p></div>' +
+      '<div class="gb"><ol>' + B.meta.guide.map(([h, x]) => '<li><b>' + h + '</b>' + x.replace('{M}', cn(M)) + '</li>').join('') + '</ol>' +
+      '<div class="gf">' + fig + '<p>前書衣朝上的樣子。金線是訂好以後正面看得見的線。</p></div></div>';
   }
   stage.remove();
   await document.fonts.ready;
