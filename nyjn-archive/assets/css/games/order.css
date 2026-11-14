@@ -1,0 +1,57 @@
+/* 遊藝室：排年代
+   一疊可以上下挪的卡。左邊一格是位置的編號兼把手，右邊是上移、下移；揭曉後右邊換成對錯。 */
+.g-order{display:grid;gap:18px;max-width:780px}
+.g-order .o-head{display:grid;gap:4px}
+.g-order h3{font-family:var(--f-display);font-weight:900;font-size:clamp(20px,3vw,28px);letter-spacing:.08em;line-height:1.5;text-wrap:balance}
+.g-order .o-head p,.g-order .o-hint{font-size:14.5px;color:var(--slate)}
+.g-order .o-say{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.g-order .o-list{position:relative;display:grid;gap:8px;counter-reset:o}
+.g-order .oc{counter-increment:o;position:relative;display:grid;grid-template-columns:48px minmax(0,1fr) auto;border:1px solid var(--ink);background:var(--paper);transition:transform .2s cubic-bezier(.2,.7,.2,1);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.g-order.still .oc{transition:none}
+.g-order .oc.drag{z-index:2;transition:none;background:var(--paper-2);border-color:var(--mark);cursor:grabbing}
+@media (hover:hover){.g-order .oc{cursor:grab}}
+
+/* 把手：編號用計數器，卡片換位置時自己會跟著改 */
+.g-order .grip{display:grid;place-content:center;justify-items:center;gap:7px;border-right:1px solid var(--hair);touch-action:none;cursor:grab}
+.g-order .grip::before{content:counter(o,decimal-leading-zero);font-family:var(--f-latin);font-style:italic;font-size:19px;line-height:1;font-variant-numeric:lining-nums}
+.g-order .grip::after{content:"";width:16px;height:6px;border-block:1px solid var(--slate)}
+.g-order .oc.drag .grip{cursor:grabbing}
+
+.g-order .tx{display:grid;align-content:center;gap:1px;min-width:0;padding:10px 14px}
+.g-order .tx b{font-family:var(--f-display);font-weight:900;font-size:18px;letter-spacing:.06em;line-height:1.55;overflow-wrap:anywhere}
+.g-order .tx .s{font-family:var(--f-latin);font-style:italic;font-size:14.5px;line-height:1.5;color:var(--slate);overflow-wrap:anywhere}
+.g-order .oc.st .tx b{font-family:var(--f-latin);font-weight:600;font-size:21px;letter-spacing:.02em;font-variant-numeric:lining-nums}
+.g-order .oc.st .tx .s{font-family:inherit;font-style:normal;font-size:14px;line-height:1.7}
+
+.g-order .mv{display:flex;border-left:1px solid var(--hair)}
+.g-order .mv button{min-width:48px;min-height:46px;padding:0 10px;font-family:var(--f-ui);font-size:12px;font-weight:500;letter-spacing:.1em;white-space:nowrap;transition:background .18s}
+.g-order .mv button+button{border-left:1px solid var(--hair)}
+@media (hover:hover){.g-order .mv button:hover{background:var(--paper-2)}}
+.g-order .mv button:focus-visible{outline-offset:-4px}
+.g-order .mv button[disabled]{opacity:.3;cursor:default}
+
+/* 揭曉 */
+.g-order .done .oc,.g-order .done .grip{cursor:default}
+.g-order .done .grip::after{display:none}
+.g-order .vd{display:grid;align-content:center;justify-items:center;gap:1px;min-width:124px;padding:6px 12px;border-left:1px solid var(--hair);text-align:center;white-space:nowrap}
+.g-order .vd b{font-family:var(--f-display);font-weight:900;font-size:15px;letter-spacing:.08em;line-height:1.5}
+.g-order .vd span{font-family:var(--f-ui);font-size:11.5px;font-weight:500;letter-spacing:.1em;line-height:1.5;color:var(--slate)}
+.g-order .oc.no{border-color:var(--hair)}
+.g-order .oc.ok{border-color:var(--mark);box-shadow:inset 3px 0 0 var(--mark)}
+.g-order .oc.ok .vd b,.g-order .oc.ok .vd span{color:var(--mark)}
+
+/* 手機：收緊一點，五張卡加確認鈕才塞得進一個畫面；揭曉那一格和按鈕那一格一樣寬，文字不會重新折行 */
+@media (max-width:480px){
+  .g-order{gap:14px}
+  .g-order .oc{grid-template-columns:42px minmax(0,1fr) auto}
+  .g-order .tx{padding:7px 11px}
+  .g-order .tx b{font-size:17px;letter-spacing:.03em}
+  .g-order .oc.st .tx b{font-size:20px}
+  .g-order .oc.st .tx .s{line-height:1.6}
+  .g-order .mv button{min-width:44px;padding:0 6px;letter-spacing:.04em}
+  .g-order .vd{min-width:89px;padding:6px 5px}
+  .g-order .vd b{font-size:13px;letter-spacing:0}
+  .g-order .vd span{font-size:11px;letter-spacing:.04em}
+}
+@media (prefers-reduced-motion:reduce){.g-order .oc,.g-order .mv button{transition:none}}

@@ -1,0 +1,237 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>逆雨檔案館 介紹影片</title>
+<style>
+@font-face{font-family:"NiYu";src:url("../fonts/NiYu-Regular.otf") format("opentype");font-weight:100 900}
+:root{--ink:#0b0d10;--paper:#f4f4f1;--slate:#5f656b;--hair:rgba(11,13,16,.18);--mark:#1f3fa6;--on:#f3f1ea}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:"NiYu",serif;font-synthesis:none;color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--ink)}
+.sc{position:absolute;inset:0;overflow:hidden;background:var(--paper);will-change:clip-path,transform}
+.sc.dark{background:var(--ink);color:var(--on)}
+.edge{position:absolute;left:0;right:0;height:2px;background:var(--mark);z-index:50;opacity:0}
+#rain{position:absolute;inset:0;z-index:60;mix-blend-mode:difference;pointer-events:none}
+/* 文字 */
+.kick{font-size:18px;letter-spacing:.34em;font-variant-caps:all-small-caps;color:var(--slate);white-space:nowrap}
+.dark .kick{color:rgba(243,241,234,.62)}
+.zh{font-size:90px;line-height:1.12;letter-spacing:.1em;white-space:nowrap}
+.zh .c{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}.zh .c i{display:inline-block;font-style:normal;will-change:transform}
+.rule{height:1px;background:var(--ink);transform-origin:0 50%}
+.tag{font-size:33px;line-height:1.7;letter-spacing:.04em}
+.body{font-size:23px;line-height:1.98;letter-spacing:.03em;color:var(--slate)}
+.body b{font-weight:400;color:var(--ink)}
+.col{position:absolute;top:196px;width:536px}
+.col .zh{margin-top:26px}.col .rule{margin:38px 0 34px}.col .body{margin-top:26px}
+.idx{position:absolute;bottom:92px;font-size:15px;letter-spacing:.34em;font-variant-caps:all-small-caps;color:var(--slate)}
+.tag,.body,.kick,.idx,.o-line,.o-en,.o-lede,.ty-col>div,.ty-x,.e-en,.e-url{will-change:transform,opacity}
+/* 畫面 */
+.pan{position:absolute;top:190px;width:1120px;height:700px;overflow:hidden;background:#0b0d10;box-shadow:0 46px 90px -38px rgba(11,13,16,.42),0 0 0 1px var(--hair);will-change:clip-path}
+.pan .in{position:absolute;inset:0;will-change:transform}
+.pan img{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform,opacity;max-width:none}
+/* 片頭 */
+.full{position:absolute;inset:0}.full img{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:50% 60%}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,8,.12) 0%,rgba(4,6,8,0) 34%,rgba(4,6,8,.58) 100%)}
+.o-line{position:absolute;left:112px;top:742px;font-size:74px;letter-spacing:.08em;color:var(--on);white-space:nowrap}
+.o-kick{position:absolute;left:116px;top:690px}
+#ttl{position:absolute;left:100px;top:420px;width:1480px;height:330px;overflow:visible}
+#ttl path{fill:var(--on)}
+.o-en{position:absolute;left:116px;top:772px;font-size:44px;letter-spacing:.02em;color:var(--on);font-feature-settings:"ss01";white-space:nowrap}
+.o-lede{position:absolute;left:116px;top:860px;width:980px;font-size:25px;line-height:1.9;letter-spacing:.05em;color:rgba(243,241,234,.86)}
+.o-sub{position:absolute;left:116px;top:948px}
+/* 字型 */
+.ty-head{position:absolute;left:96px;top:132px}.ty-head .zh{margin-top:22px;font-size:92px}
+.ty-tag{position:absolute;left:1010px;top:184px;width:810px}
+.ty-tag .body{margin-top:14px}
+.ty-rule{position:absolute;left:96px;right:96px;top:404px}
+.ty-col{position:absolute;top:446px;width:520px}
+.ty-col .cj{font-size:112px;line-height:1.12;letter-spacing:.06em;white-space:nowrap}
+.ty-col .la{font-size:62px;line-height:1.3;letter-spacing:.14em;margin-top:6px;white-space:nowrap}
+.ty-col .nm{margin-top:26px;font-size:27px;letter-spacing:.3em;color:var(--mark)}
+.ty-col .body{margin-top:10px;font-size:20px;line-height:1.9}
+.ty-x{position:absolute;left:96px;right:96px;bottom:74px;display:flex;align-items:baseline;gap:54px;border-top:1px solid var(--hair);padding-top:22px}
+.ty-x .cj{font-size:58px;letter-spacing:.14em;white-space:nowrap}.ty-x .body{font-size:20px;line-height:1.85}
+/* 片尾 */
+.e-zh{position:absolute;left:0;right:0;top:330px;text-align:center;font-size:150px;letter-spacing:.14em;text-indent:.14em;color:var(--on);white-space:nowrap}
+.e-en{position:absolute;left:0;right:0;top:532px;text-align:center;font-size:44px;font-feature-settings:"ss01";color:var(--on)}
+.e-rule{position:absolute;left:810px;width:300px;top:640px;height:1px;background:rgba(243,241,234,.5);transform-origin:50% 50%}
+.e-url{position:absolute;left:0;right:0;top:676px;text-align:center;font-size:34px;letter-spacing:.1em;color:var(--on)}
+.e-foot{position:absolute;left:0;right:0;bottom:84px;text-align:center}
+</style>
+<div id="stage"><canvas id="rain" width="1920" height="1080"></canvas></div>
+<script src="title.js"></script>
+<script>
+'use strict';
+const W = 1920, H = 1080, FPS = 60, TR = 1.15, SRC = 'src/';
+const c01 = x => Math.max(0, Math.min(1, x));
+const seg = (t, a, d) => c01((t - a) / d);
+const outExpo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const outCubic = x => 1 - Math.pow(1 - x, 3);
+const ioCubic = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const ioSine = x => -(Math.cos(Math.PI * x) - 1) / 2;
+const lerp = (a, b, p) => a + (b - a) * p;
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+
+/* ---------- 段落 ---------- */
+const SPLIT = [
+  { side: 'R', dur: 8.6, en: 'The Storms', zh: '暴雨年表', tag: '十一場雨排成一條線，<br>看日曆怎麼折返。', body: '世界真正的年份只往前走了十年。日曆卻在一九九九和一九一二之間來回折返，其中兩次跳向未來。',
+    same: true, media: [{ s: 'chronicle', at: 0, cam: [.3, .74, 1.75, .7, .74, 1.75] }, { s: 'chronicle2', at: 4.3, cam: [.3, .74, 1.75, .7, .74, 1.75] }] },
+  { side: 'L', dur: 8.6, en: 'The Chapters', zh: '章節檔案', tag: '序幕至第十三章，<br>十四間展間。', body: '每一間是一組底片和它們的說明，讀完可以蓋章、寫手記。',
+    media: [{ s: 'chapters', at: 0, cam: [.5, .135, 1, .5, .33, 1] }, { s: 'c0', at: 5.5, cam: [.5, .5, 1, .54, .5, 1.1] }] },
+  { side: 'R', dur: 8.6, en: 'Screening Room', zh: '放映廳', tag: '紀錄片《逆雨紀年》，<br>從片頭放到尾聲。', body: '畫面是即時繪製的底片，旁白一句一句浮現。可以暫停、跳到任何一章，或點逐字稿裡的一句話直接放到那裡。',
+    media: [{ s: 'film', at: 0, cam: [.5, .68, 1.5, .5, .68, 1.56] }, { clip: 'film', n: 420, at: 1.5, cam: [.5, .5, 1, .5, .5, 1.05] }] },
+  { side: 'L', dur: 9.2, en: 'Decisions', zh: '司辰的抉擇', tag: '八個時刻，<br>換你站在她的位置。', body: '選完會揭曉主線裡發生的事。你的選擇會留在手提箱。<br><b>親歷</b>　把這一章當成現場走一遍：旁白一句一句出來，走到抉擇的那一刻，故事會停下來等你。',
+    media: [{ s: 'choices', at: 0, cam: [.36, .68, 1.52, .37, .7, 1.64] }, { clip: 'story', n: 540, at: 4.1, cam: [.5, .5, 1, .5, .53, 1.06] }] },
+  { side: 'R', dur: 8.6, en: 'Your Storm', zh: '你的暴雨', tag: '寫下名字和生日，<br>走一遍屬於你的那場雨。', body: '<b>接龍</b>　每一本從一段開頭寫起，後來的司辰接著往下寫。<br><b>創作坊</b>　替一張底片題寫，或為你自創的人物立一張檔案卡。',
+    media: [{ s: 'rain', at: 0, cam: [.5, .68, 1.5, .5, .7, 1.6] }, { s: 'studio', at: 4.3, cam: [.36, .68, 1.5, .38, .7, 1.6] }] },
+  { side: 'L', dur: 9.6, en: 'On Duty', zh: '值勤台', tag: '記錄員的日常：接委託、<br>沖底片、補齊底片冊。', body: '<b>暗房</b>　用顯影劑沖洗底片，收進底片冊。<br><b>遊藝室</b>　四個小遊戲：排年代、翻底片、收進手提箱、數字之島。<br>做過的事會變成資歷。',
+    media: [{ s: 'play', at: 0, cam: [.38, .68, 1.45, .38, .72, 1.55] }, { s: 'darkroom2', at: 2.5, cam: [.5, .46, 1.1, .5, .5, 1.22] }, { s: 'album', at: 4.9, cam: [.38, .7, 1.5, .38, .72, 1.6] }, { s: 'arcade', at: 7.2, cam: [.38, .7, 1.5, .38, .72, 1.6] }] },
+];
+const CASE = { side: 'R', dur: 6.6, en: 'The Suitcase', zh: '手提箱', tag: '雨來的時候，箱子裡的<br>東西不會被沖走。', body: '你的戳記、手記、抉擇、暴雨紀錄和作品都收在這裡。', media: [{ s: 'case', at: 0, cam: [.36, .68, 1.5, .42, .7, 1.6] }] };
+const SC = [{ kind: 'open', dur: 18 }].concat(SPLIT.map((s, i) => Object.assign({ kind: 'split', no: i + 1 }, s)),
+  [{ kind: 'type', dur: 10.6, no: 7 }, Object.assign({ kind: 'split', no: 8 }, CASE), { kind: 'end', dur: 7 }]);
+let acc = 0; SC.forEach(s => { s.t0 = acc; acc += s.dur; });
+const TOTAL = acc;
+
+/* ---------- 動畫登記：每個元素記下「什麼時候、怎麼出現」，render 時照時間算 ---------- */
+const stage = document.getElementById('stage'), imgs = [];
+function anim(sc, e, type, at, d, extra) { (sc.an = sc.an || []).push(Object.assign({ e, type, at, d: d || 1 }, extra || {})); return e; }
+function chars(text) { return [...text].map(ch => '<span class="c"><i>' + ch + '</i></span>').join(''); }
+function still(name) { const im = el('img'); im.src = SRC + 'stills/' + name + '.jpg'; imgs.push(im); return im; }
+
+function buildSplit(sc) {
+  const d = sc.el, R = sc.side === 'R', px = R ? W - 96 - 1120 : 96, tx = R ? 96 : 96 + 1120 + 72;
+  const pan = el('div', 'pan'), inn = el('div', 'in'); pan.style.left = px + 'px'; pan.append(inn); d.append(pan);
+  sc.pan = pan; sc.inn = inn;
+  sc.media.forEach((m, k) => { m.im = m.s ? still(m.s) : el('img'); m.im.style.opacity = k ? 0 : 1; inn.append(m.im); m.end = (sc.media[k + 1] ? sc.media[k + 1].at + 1 : sc.dur + TR); });
+  const col = el('div', 'col'); col.style.left = tx + 'px'; d.append(col);
+  anim(sc, col.appendChild(el('div', 'kick', '0' + sc.no + '　—　' + sc.en)), 'fade', .55, .9);
+  const zh = col.appendChild(el('div', 'zh', chars(sc.zh))); [...zh.querySelectorAll('i')].forEach((c, i) => anim(sc, c, 'rise', .7 + i * .085, 1.1));
+  anim(sc, col.appendChild(el('div', 'rule')), 'rule', 1.25, 1.2);
+  anim(sc, col.appendChild(el('div', 'tag', sc.tag)), 'up', 1.55, 1.1);
+  anim(sc, col.appendChild(el('div', 'body', sc.body)), 'up', 2.15, 1.2);
+  const idx = el('div', 'idx', '0' + sc.no + '　/　08'); idx.style.left = tx + 'px'; d.append(idx); anim(sc, idx, 'fade', 2.6, 1);
+}
+function buildOpen(sc) {
+  const d = sc.el; d.classList.add('dark');
+  const full = el('div', 'full'); sc.clip = el('img'); full.append(sc.clip); d.append(full, el('div', 'scrim'));
+  anim(sc, d.appendChild(el('div', 'kick o-kick', '1999 . 12 . 31　　23 : 59')), 'fade', 1.4, 1.2, { out: 7.1 });
+  anim(sc, d.appendChild(el('div', 'o-line', '雨從地面升起，日曆往回翻。')), 'up', 1.9, 1.5, { out: 7.2 });
+  // 館名：五個字的外框直接取自字型；「雨」裡的四滴雨另外處理
+  const T = window.TITLE, sp = 1180, sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  sv.id = 'ttl'; sv.setAttribute('viewBox', '0 -880 ' + (sp * 5) + ' 1160'); sc.drops = []; sc.gl = [];
+  T.glyphs.forEach((g, i) => {
+    const grp = document.createElementNS(sv.namespaceURI, 'g'); grp.setAttribute('transform', 'translate(' + (i * sp) + ',0) scale(1,-1)');
+    const cp = document.createElementNS(sv.namespaceURI, 'clipPath'); cp.id = 'cp' + i; const r = document.createElementNS(sv.namespaceURI, 'rect');
+    r.setAttribute('x', -40); r.setAttribute('width', 1100); r.setAttribute('y', -140); r.setAttribute('height', 0); cp.append(r); sv.append(cp);
+    const body = document.createElementNS(sv.namespaceURI, 'g'); body.setAttribute('clip-path', 'url(#cp' + i + ')');
+    g.contours.forEach((c, k) => { const p = document.createElementNS(sv.namespaceURI, 'path'); p.setAttribute('d', c.d);
+      const drop = g.ch === '雨' && (c.b[2] - c.b[0]) < 200;
+      if (drop) { grp.append(p); sc.drops.push({ p, x: c.b[0], y: c.b[1] }); p.style.opacity = 0; } else body.append(p); });
+    // 外框有內外之分（挖空的部分靠繞行方向），同一個字的非雨滴外框要併成一條路徑才挖得出洞
+    const main = [...body.querySelectorAll('path')]; if (main.length > 1) { main[0].setAttribute('d', main.map(p => p.getAttribute('d')).join(' ')); main.slice(1).forEach(p => p.remove()); }
+    grp.prepend(body); sv.append(grp); sc.gl.push(r);
+  });
+  sc.drops.sort((a, b) => a.x - b.x); d.append(sv);
+  anim(sc, d.appendChild(el('div', 'o-en', 'An Archive Against the Rain')), 'up', 11.5, 1.3);
+  anim(sc, d.appendChild(el('div', 'o-lede', '這裡收著十一場雨、十四章故事，和每一次折返裡被留在另一邊的人。')), 'up', 12.4, 1.3);
+  anim(sc, d.appendChild(el('div', 'kick o-sub', '一座非官方的《重返未來：1999》粉絲檔案館')), 'fade', 13.4, 1.2);
+}
+function buildType(sc) {
+  const d = sc.el;
+  const h = el('div', 'ty-head'); d.append(h);
+  anim(sc, h.appendChild(el('div', 'kick', '07　—　The Typeface')), 'fade', .55, .9);
+  const zh = h.appendChild(el('div', 'zh', chars('逆雨') + '<span class="c"><i>　NiYu</i></span>')); [...zh.querySelectorAll('i')].forEach((c, i) => anim(sc, c, 'rise', .7 + i * .1, 1.1));
+  const tg = el('div', 'ty-tag'); d.append(tg);
+  anim(sc, tg.appendChild(el('div', 'tag', '骨架保守，細節放肆。')), 'up', 1.3, 1.1);
+  anim(sc, tg.appendChild(el('div', 'body', '本館的原創字體。同樣三條規則，從拉丁字母一路套到五千多個中文字。')), 'up', 1.7, 1.1);
+  anim(sc, d.appendChild(el('div', 'rule ty-rule')), 'rule', 1.5, 1.4);
+  [['永心九風', 'a c f r y', '逆雨滴', '水滴形終端的尖端永遠朝上。'], ['日可書國', 'n b H E', '斷線', '細筆接上粗筆的地方留一道縫，每一道都用同一個數值。'], ['字點江逆', 'i j ; ? A', '菱形點', '所有的「點」都換成 72° 的菱形，連分音符和除號也是。']].forEach((c, i) => {
+    const col = el('div', 'ty-col'); col.style.left = (96 + i * 604) + 'px'; d.append(col); const a = 2.3 + i * .75;
+    anim(sc, col.appendChild(el('div', 'cj', c[0])), 'up', a, 1.2); anim(sc, col.appendChild(el('div', 'la', c[1])), 'up', a + .2, 1.2);
+    anim(sc, col.appendChild(el('div', 'nm', c[2])), 'fade', a + .45, 1); anim(sc, col.appendChild(el('div', 'body', c[3])), 'up', a + .6, 1.1);
+  });
+  const x = el('div', 'ty-x', '<div class="cj">雨雪雲電霧露霜靈</div><div class="body">唯一的例外：雨字頭。底下的點不是菱形，是往上升的雨滴。整套字的名字從這裡來。</div>'); d.append(x); anim(sc, x, 'up', 5.6, 1.3);
+}
+function buildEnd(sc) {
+  const d = sc.el; d.classList.add('dark');
+  const zh = d.appendChild(el('div', 'zh e-zh', chars('逆雨檔案館'))); [...zh.querySelectorAll('i')].forEach((c, i) => anim(sc, c, 'rise', .9 + i * .1, 1.3));
+  anim(sc, d.appendChild(el('div', 'e-en', 'An Archive Against the Rain')), 'up', 1.7, 1.2);
+  anim(sc, d.appendChild(el('div', 'e-rule')), 'rulec', 2.2, 1.2);
+  anim(sc, d.appendChild(el('div', 'e-url', 'reverse-1999-art.vercel.app')), 'up', 2.5, 1.2);
+  anim(sc, d.appendChild(el('div', 'kick e-foot', '非官方粉絲製作　·　《重返未來：1999》著作權與商標屬深藍互動（Bluepoch）所有')), 'fade', 3.3, 1.2);
+}
+SC.forEach((sc, i) => {
+  sc.el = el('section', 'sc'); sc.el.style.zIndex = i + 1; stage.append(sc.el);
+  ({ open: buildOpen, split: buildSplit, type: buildType, end: buildEnd })[sc.kind](sc);
+  sc.edge = el('div', 'edge'); stage.append(sc.edge);
+});
+
+/* ---------- 雨：只看全片的時間，所以換場時不會斷 ---------- */
+const rc = document.getElementById('rain').getContext('2d');
+let seed = 19991231; const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+const DROPS = Array.from({ length: 84 }, () => ({ x: rnd() * W, v: 420 + rnd() * 620, len: 70 + rnd() * 190, ph: rnd() * 3000, a: .07 + rnd() * .15, w: rnd() < .25 ? 1.6 : 1 }));
+function rain(T, amt) {
+  rc.clearRect(0, 0, W, H); if (amt <= 0) return;
+  DROPS.forEach(d => { const span = H + d.len + 80, y = H + 40 - ((d.ph + T * d.v) % span);
+    const g = rc.createLinearGradient(0, y, 0, y + d.len); g.addColorStop(0, 'rgba(255,255,255,' + (d.a * amt) + ')'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    rc.fillStyle = g; rc.fillRect(Math.round(d.x) + .5 - d.w / 2, y, d.w, d.len); });
+}
+const RAIN = { open: 0, split: .62, type: .5, end: 1 };
+
+/* ---------- 每一格 ---------- */
+const clipSrc = (name, f) => SRC + 'clips/' + name + '/' + String(f).padStart(4, '0') + '.jpg';
+async function setClip(im, name, f) { const u = clipSrc(name, f); if (im.dataset.u === u) return; im.dataset.u = u; im.src = u; try { await im.decode(); } catch (e) { /* 這一格讀不到就沿用上一格 */ } }
+function place(m, sc, p, natW, natH, PW, PH) {   // cam: [cx0,cy0,s0,cx1,cy1,s1]，cx、cy 是鏡頭中心落在來源圖的哪裡（比例），s 是相對「寬度貼齊」的放大倍率
+  const c = m.cam, e = ioSine(p), s = lerp(c[2], c[5], e);
+  const base = Math.max(PW / natW, m.clip ? PH / natH : 0), k = base * s, vw = PW / (natW * k), vh = PH / (natH * k);
+  const x = Math.max(0, Math.min(1 - vw, lerp(c[0], c[3], e) - vw / 2)), y = Math.max(0, Math.min(1 - vh, lerp(c[1], c[4], e) - vh / 2));
+  m.im.style.width = natW + 'px'; m.im.style.height = natH + 'px';
+  m.im.style.transform = 'translate3d(' + (-x * natW * k).toFixed(3) + 'px,' + (-y * natH * k).toFixed(3) + 'px,0) scale(' + k.toFixed(5) + ')';
+}
+async function render(T) {
+  const jobs = []; let amt = 0;
+  for (let i = 0; i < SC.length; i++) {
+    const sc = SC[i], t = T - sc.t0, on = t >= 0 && t < sc.dur + TR + .05;
+    sc.el.style.visibility = on ? 'visible' : 'hidden'; sc.edge.style.opacity = 0;
+    if (!on) continue;
+    // 進場：由下往上揭開（片頭沒有上一段，直接淡入）；離場：被下一段蓋過時，自己往上讓一點
+    const pin = i ? ioCubic(seg(t, 0, TR)) : 1, pout = ioCubic(seg(t, sc.dur, TR));
+    sc.el.style.clipPath = i ? 'inset(' + ((1 - pin) * 100).toFixed(4) + '% 0 0 0)' : 'none';
+    sc.el.style.transform = 'translate3d(0,' + (-pout * 54 + (1 - pin) * 34).toFixed(3) + 'px,0)';
+    if (i && pin > 0 && pin < 1) { sc.edge.style.opacity = Math.sin(Math.PI * pin).toFixed(3); sc.edge.style.top = ((1 - pin) * H - 1).toFixed(2) + 'px'; }
+    if (i === 0) sc.el.style.opacity = outCubic(seg(t, .1, 1.6)).toFixed(4);
+    amt = lerp(amt, RAIN[sc.kind], pin);
+    (sc.an || []).forEach(a => {
+      const p = seg(t, a.at, a.d), e = outExpo(p), o = a.out != null ? 1 - ioCubic(seg(t, a.out, .9)) : 1, s = a.e.style;
+      if (a.type === 'fade') s.opacity = (ioSine(p) * o).toFixed(4);
+      else if (a.type === 'up') { s.opacity = (outCubic(seg(t, a.at, a.d * .7)) * o).toFixed(4); s.transform = 'translate3d(0,' + ((1 - e) * 30 - (1 - o) * 16).toFixed(3) + 'px,0)'; }
+      else if (a.type === 'rise') s.transform = 'translate3d(0,' + ((1 - e) * 108).toFixed(3) + '%,0)';
+      else if (a.type === 'rule') s.transform = 'scaleX(' + ioCubic(p).toFixed(5) + ')';
+      else if (a.type === 'rulec') s.transform = 'scaleX(' + ioCubic(p).toFixed(5) + ')';
+    });
+    if (sc.kind === 'open') {
+      jobs.push(setClip(sc.clip, 'hero', Math.min(1139, Math.max(0, Math.round(t * FPS)))));
+      sc.clip.style.transform = 'scale(' + (1 + .06 * ioSine(c01(t / 19))).toFixed(5) + ')';
+      sc.gl.forEach((r, k) => { const e = outExpo(seg(t, 8.5 + k * .16, 1.6)); r.setAttribute('height', (1140 * e).toFixed(2)); });
+      sc.drops.forEach((dr, k) => { const p = seg(t, 9.9 + k * .22, 1.5), e = outExpo(p); dr.p.style.opacity = c01(p * 3).toFixed(3); dr.p.setAttribute('transform', 'translate(0,' + (-(1 - e) * 360).toFixed(2) + ')'); });
+    }
+    if (sc.kind === 'split') {
+      const pe = outExpo(seg(t, .3, 1.5));
+      sc.pan.style.clipPath = 'inset(' + ((1 - pe) * 100).toFixed(4) + '% 0 0 0)';
+      sc.inn.style.transform = 'scale(' + (1.07 - .07 * pe).toFixed(5) + ')';
+      sc.media.forEach((m, k) => {
+        const vis = t >= m.at - .05 && t <= m.end + .1; m.im.style.visibility = vis ? 'visible' : 'hidden'; if (!vis) return;
+        m.im.style.opacity = k ? ioSine(seg(t, m.at, .9)).toFixed(4) : 1;
+        const p = sc.same ? c01(t / (sc.dur + TR)) : c01((t - m.at) / (m.end - m.at));
+        if (m.clip) { jobs.push(setClip(m.im, m.clip, Math.min(m.n - 1, Math.max(0, Math.round((t - m.at) * FPS)))).then(() => place(m, sc, p, 1920, 1080, 1120, 700))); }
+        else place(m, sc, p, m.im.naturalWidth, m.im.naturalHeight, 1120, 700);
+      });
+    }
+  }
+  rain(T, amt);
+  await Promise.all(jobs);
+}
+window.ready = (async () => { await document.fonts.load('40px NiYu', '逆雨檔案館 Rain'); await document.fonts.ready; await Promise.all(imgs.map(i => i.decode().catch(() => 0))); return { total: TOTAL, frames: Math.round(TOTAL * FPS), scenes: SC.map(s => [s.kind, s.t0]) }; })();
+window.render = render;
+</script>

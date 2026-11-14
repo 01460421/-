@@ -1,0 +1,21 @@
+/* 遊藝室：收進手提箱
+   畫布永遠是暗房的底色（兩種主題都一樣），外面的讀數才跟著紙和墨走。
+   寬度用視窗的高度反推：整塊畫布要一次看得到，玩到一半不能還得捲頁面。 */
+.g-catch{display:grid;gap:12px;width:min(100%,960px,calc(max(100vh - 300px,240px)*1.6));margin-inline:auto;scroll-margin-top:150px}
+@supports (height:1svh){.g-catch{width:min(100%,960px,calc(max(100svh - 300px,240px)*1.6))}}
+.g-catch .ct-hud{display:flex;gap:30px}
+.g-catch .ct-hud>div:first-child{margin-right:auto}
+.g-catch .ct-hud dt{font-family:var(--f-ui);font-size:11px;font-weight:500;letter-spacing:.24em;color:var(--slate)}
+.g-catch .ct-hud dd{font-family:var(--f-latin);font-size:28px;font-weight:600;line-height:1.2;font-variant-numeric:lining-nums tabular-nums}
+.g-catch .ct-time{height:3px;background:var(--hair)}
+.g-catch .ct-time i{display:block;width:100%;height:100%;background:var(--mark)}
+.g-catch .ct-field{aspect-ratio:16/10}
+.g-catch .ct-field canvas{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:auto;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:ew-resize}
+.g-catch .ct-tip{font-size:14px;color:var(--slate)}
+
+/* 窄螢幕：畫布改成直的，手指才有地方移 */
+@media (max-width:640px){
+  .g-catch{width:min(100%,calc(max(100vh - 290px,280px)*.75));scroll-margin-top:140px}
+  @supports (height:1svh){.g-catch{width:min(100%,calc(max(100svh - 290px,280px)*.75))}}
+  .g-catch .ct-field{aspect-ratio:3/4}
+}

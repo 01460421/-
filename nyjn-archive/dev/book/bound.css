@@ -1,0 +1,85 @@
+/* 線裝本與書衣。只在 --bound、--kit 時載入；散葉本身的版式在 book.css。
+   調子取自館內：藍黑的墨、打字機的小字、藍色的戳記；書衣是深色的布，燙金，四角包銅，像一只箱子。 */
+:root { --paper: #f6f1e4; --cloth: #10262b; --stamp: #22409a; }
+
+/* 藍印 */
+.pm { position: absolute; color: var(--stamp); opacity: .84; overflow: visible; }
+.pm.ontitle { left: 8mm; bottom: 31mm; width: 26mm; height: 26mm; transform: rotate(-9deg); }
+.pm.ontag { right: -8.5mm; bottom: 12mm; width: 21mm; height: 21mm; transform: rotate(12deg); z-index: 2; }
+
+/* ── 線裝本：一頁 PDF 是一個對開，書放在深色的桌面上 ── */
+body.bound { background: #0f1415; }
+.plate { position: relative; width: 317mm; height: 230mm; overflow: hidden; break-after: page; page-break-after: always;
+  background: #1a2423 url("assets/desk-open.jpg") 0 0 / 100% 100% no-repeat; }
+.plate.pc { background-image: url("assets/desk-closed.jpg"); }
+.plate:last-child { break-after: auto; page-break-after: auto; }
+.opening { position: absolute; left: 10mm; top: 10mm; width: 297mm; height: 210mm; }
+.board { position: absolute; top: -1.5mm; bottom: -1.5mm; background: #0c1c1f; border-radius: .4mm; }
+.stack { position: absolute; top: .35mm; bottom: -.35mm; }
+.stack.l { background: repeating-linear-gradient(to right, #ece5d3 0 .17mm, #cfc6b0 .17mm .3mm); }
+.stack.r { background: repeating-linear-gradient(to left, #ece5d3 0 .17mm, #cfc6b0 .17mm .3mm); }
+.bp { position: absolute; top: 0; width: 148.5mm; height: 210mm; overflow: hidden; background: var(--paper); }
+.bp.l { left: 0; }
+.bp.r { left: 148.5mm; }
+.bp .vsheet { position: absolute; top: 0; width: 297mm; height: 210mm; }
+.bp.a .vsheet { left: -148.5mm; }
+.bp.b .vsheet { left: 0; }
+/* 書脊那一側的陰影；書口那一側一點點反光 */
+.bp::after { content: ""; position: absolute; top: 0; bottom: 0; width: 30mm; pointer-events: none; }
+.bp.l::after { right: 0; background: linear-gradient(to left, rgba(40, 34, 18, .42), rgba(40, 34, 18, .18) 16%, rgba(40, 34, 18, .05) 50%, rgba(40, 34, 18, 0)); }
+.bp.r::after { left: 0; background: linear-gradient(to right, rgba(40, 34, 18, .42), rgba(40, 34, 18, .18) 16%, rgba(40, 34, 18, .05) 50%, rgba(40, 34, 18, 0)); }
+.bp::before { content: ""; position: absolute; top: 0; bottom: 0; width: 5mm; pointer-events: none; z-index: 2; }
+.bp.l::before { left: 0; background: linear-gradient(to right, rgba(90, 70, 30, .10), rgba(90, 70, 30, 0)); }
+.bp.r::before { right: 0; background: linear-gradient(to left, rgba(90, 70, 30, .10), rgba(90, 70, 30, 0)); }
+/* 襯頁：書布的反面，滿版的倒雨 */
+.bp.blank { background: #132c30; }
+.bp.blank .art { opacity: .5; }
+
+/* 闔上的書：前書衣書脊在右，後書衣書脊在左 */
+.closed { position: absolute; left: 84.25mm; top: 10mm; width: 148.5mm; height: 210mm; background: var(--cloth) url("assets/cover-cloth.jpg") 0 0 / 100% 100% no-repeat; border-radius: .4mm; }
+.closed.front { box-shadow: -.45mm .45mm 0 #ebe4d2, -.9mm .9mm 0 #d9d0bb, -1.35mm 1.35mm 0 #ebe4d2, -1.8mm 1.8mm 0 #0a1719; }
+.closed.back { box-shadow: .45mm .45mm 0 #ebe4d2, .9mm .9mm 0 #d9d0bb, 1.35mm 1.35mm 0 #ebe4d2, 1.8mm 1.8mm 0 #0a1719; }
+.art { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+
+/* 行李牌：題簽。上面兩個角是斜的，銅圈上繫一條線，連到第一眼 */
+.ltag { position: absolute; left: 14mm; top: 11.6mm; width: 31mm; height: 116mm; z-index: 1; }
+.ltag .card { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: #f1ead9 url("assets/paper-slip.jpg") 0 0 / cover no-repeat;
+  clip-path: polygon(4.6mm 0, calc(100% - 4.6mm) 0, 100% 4.6mm, 100% 100%, 0 100%, 0 4.6mm); }
+.ltag .eye { position: absolute; left: 50%; top: 2.2mm; width: 4.4mm; height: 4.4mm; margin-left: -2.2mm; border: .85mm solid #b39356; border-radius: 50%; background: #0b1a1c; }
+.ltag .in { position: absolute; left: 2mm; right: 2mm; top: 9.4mm; bottom: 2mm; border: .34mm solid #10151a; }
+.ltag .in::before { content: ""; position: absolute; left: .7mm; right: .7mm; top: .7mm; bottom: .7mm; border: .14mm solid #10151a; }
+.ltag .st { position: absolute; left: 0; right: 0; top: 8mm; margin: 0 auto; width: 13mm; writing-mode: vertical-rl; font-family: "NiYu", serif; font-size: 29pt; letter-spacing: .3em; line-height: 13mm; color: #10151a; white-space: nowrap; }
+.ltag .tl { position: absolute; left: 3mm; right: 3mm; bottom: 4mm; padding-top: 2mm; border-top: .14mm solid #10151a; font-family: "Courier Prime", monospace; font-size: 5.4pt; line-height: 3.3mm; letter-spacing: .06em; color: #10151a; }
+.ltag .tl b { display: inline-block; width: 7.4mm; font-weight: 400; color: #57626b; }
+
+/* ── 書衣與裝訂說明：三張 A4 橫向，照散葉一樣印 ── */
+.sheet.ks { background: #fff; }
+.kart { position: absolute; top: 0; width: 148.5mm; height: 210mm; }
+.kart.r { left: 148.5mm; }
+.kart.l { left: 0; }
+.ks .ltag .card { background: #fff; outline: .2mm solid #10151a; outline-offset: -.2mm; clip-path: none; }
+.ks .ltag .eye { background: #fff; border-color: #10151a; border-width: .3mm; }
+.sheet.guide { padding: 20mm 22mm 0; font-size: 10.6pt; line-height: 7.1mm; color: #1b1b1b; }
+.guide h1 { font-family: "NiYu", serif; font-weight: 400; font-size: 25pt; letter-spacing: .2em; margin: 0; line-height: 13mm; }
+.guide .gs { margin: 1mm 0 0; color: #6b6b6b; font-size: 9.6pt; letter-spacing: .06em; }
+.guide .gh { border-bottom: .3mm solid #1b1b1b; padding-bottom: 4mm; margin-bottom: 6mm; }
+.guide .gb { display: flex; gap: 12mm; align-items: flex-start; }
+.guide ol { flex: 1; margin: 0; padding: 0; list-style: none; counter-reset: g; }
+.guide li { position: relative; padding-left: 21mm; margin-bottom: 3.6mm; text-align: justify; }
+.guide li b { position: absolute; left: 0; top: 0; font-family: "NiYu", serif; font-weight: 400; font-size: 12.5pt; color: #9c6b22; letter-spacing: .12em; }
+.guide .gf { flex: none; width: 82mm; }
+.guide .gf svg { display: block; width: 82mm; height: auto; }
+.guide .gf p { margin: 1mm 0 0; font-size: 8.6pt; line-height: 5.2mm; color: #6b6b6b; text-align: center; }
+
+/* 封底的短文 */
+.blurb { position: absolute; top: 27mm; right: 21mm; writing-mode: vertical-rl; font-family: "Iansui", "LXGW WenKai TC", serif; font-size: 10.4pt; line-height: 7.2mm; letter-spacing: .16em; color: #d6bd84; text-align: start; white-space: nowrap; }
+.blurb p { margin: 0; }
+.blurb p.sp { block-size: 3.6mm; }
+.blurb.print { color: #2a2a2a; }
+
+/* 單頁：沒有桌面，也沒有書脊的陰影 */
+.plate1 { position: relative; width: 148.5mm; height: 210mm; overflow: hidden; break-after: page; page-break-after: always; background: var(--paper); }
+.plate1:last-child { break-after: auto; page-break-after: auto; }
+.plate1 .closed { left: 0; top: 0; box-shadow: none; border-radius: 0; }
+.plate1 .bp { left: 0; }
+.plate1 .bp::after, .plate1 .bp::before { display: none; }

@@ -1,0 +1,22 @@
+{
+  "name": "逆雨檔案館",
+  "short_name": "逆雨檔案館",
+  "description": "非官方的《重返未來：1999》粉絲檔案館：暴雨年表、章節底片、站內放映廳、抉擇、接龍與創作坊。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "章節檔案", "url": "./#chapters" },
+    { "name": "放映廳", "url": "./#film" },
+    { "name": "接龍", "url": "./#relay" },
+    { "name": "手提箱", "url": "./#case" }
+  ]
+}
