@@ -300,7 +300,7 @@
         '<text x="' + ((fx0 + fx1) / 2) + '" y="189.6" text-anchor="middle" font-family="\'Courier Prime\',monospace" font-size="2.35" letter-spacing=".95" fill="' + gold + '" fill-opacity=".85">A REVERSE: 1999 FAN NOVEL　·　OMEGA</text>';
     } else {
       /* 封底：一只箱子 */
-      const cx = (fx0 + fx1) / 2, cy = 100;
+      const cx = (fx0 + fx1) / 2, cy = 158;
       g += '<g fill="none" stroke="' + gold + '" stroke-width=".4" stroke-linejoin="round">' +
         '<rect x="' + (cx - 17) + '" y="' + (cy - 10) + '" width="34" height="22" rx="1.6"/>' +
         '<path d="M' + (cx - 6) + ' ' + (cy - 10) + 'v-3.6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3.6"/>' +
@@ -329,16 +329,23 @@
   }
   /* 行李牌：題簽 */
   function tag() {
-    const t = $('div', 'tag');
+    const t = $('div', 'ltag');
     t.innerHTML = '<div class="card"></div><div class="eye"></div><div class="in"><div class="st"></div><div class="tl"><b>FILE</b>No. 1999<br><b>VOL.</b>I – VIII</div></div>';
     t.querySelector('.st').textContent = B.meta.title;
     t.appendChild(postmark('ontag'));
     return t;
   }
+  /* 封底的短文：直排，一句一欄，節與節之間空半欄 */
+  function blurb(print) {
+    const d = $('div', 'blurb' + (print ? ' print' : ''));
+    B.meta.blurb.forEach(l => d.appendChild(l ? $('p', '', l) : $('p', 'sp')));
+    return d;
+  }
   function closedBook(kind) {
     const b = $('div', 'closed ' + kind);
     b.appendChild(coverArt(kind, false));
     if (kind === 'front') b.appendChild(tag());
+    else b.appendChild(blurb(false));
     return b;
   }
   /* 襯頁：書布的反面，滿版的倒雨 */
@@ -380,7 +387,7 @@
     /* 前書衣：對摺後右半朝外。行李牌在左上（靠書口），四眼的記號在右緣（書脊） */
     const c1 = sheet(); const a1 = $('div', 'kart r'); a1.appendChild(coverArt('front', true)); a1.appendChild(tag()); c1.appendChild(a1);
     /* 後書衣：對摺後左半朝外 */
-    const c2 = sheet(); const a2 = $('div', 'kart l'); a2.appendChild(coverArt('back', true)); c2.appendChild(a2);
+    const c2 = sheet(); const a2 = $('div', 'kart l'); a2.appendChild(coverArt('back', true)); a2.appendChild(blurb(true)); c2.appendChild(a2);
     /* 說明 */
     const g = sheet(); g.classList.add('guide');
     const fig = '<svg viewBox="-16 -8 92 96" xmlns="http://www.w3.org/2000/svg" font-family="Iansui, serif" font-size="3.1" fill="#333">' +

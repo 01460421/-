@@ -42,23 +42,23 @@ body.bound { background: #0f1415; }
 .art { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 
 /* 行李牌：題簽。上面兩個角是斜的，銅圈上繫一條線，連到第一眼 */
-.tag { position: absolute; left: 14mm; top: 11.6mm; width: 31mm; height: 116mm; z-index: 1; }
-.tag .card { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: #f1ead9 url("assets/paper-slip.jpg") 0 0 / cover no-repeat;
+.ltag { position: absolute; left: 14mm; top: 11.6mm; width: 31mm; height: 116mm; z-index: 1; }
+.ltag .card { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: #f1ead9 url("assets/paper-slip.jpg") 0 0 / cover no-repeat;
   clip-path: polygon(4.6mm 0, calc(100% - 4.6mm) 0, 100% 4.6mm, 100% 100%, 0 100%, 0 4.6mm); }
-.tag .eye { position: absolute; left: 50%; top: 2.2mm; width: 4.4mm; height: 4.4mm; margin-left: -2.2mm; border: .85mm solid #b39356; border-radius: 50%; background: #0b1a1c; }
-.tag .in { position: absolute; left: 2mm; right: 2mm; top: 9.4mm; bottom: 2mm; border: .34mm solid #10151a; }
-.tag .in::before { content: ""; position: absolute; left: .7mm; right: .7mm; top: .7mm; bottom: .7mm; border: .14mm solid #10151a; }
-.tag .st { position: absolute; left: 0; right: 0; top: 8mm; margin: 0 auto; width: 13mm; writing-mode: vertical-rl; font-family: "NiYu", serif; font-size: 29pt; letter-spacing: .3em; line-height: 13mm; color: #10151a; white-space: nowrap; }
-.tag .tl { position: absolute; left: 3mm; right: 3mm; bottom: 4mm; padding-top: 2mm; border-top: .14mm solid #10151a; font-family: "Courier Prime", monospace; font-size: 5.4pt; line-height: 3.3mm; letter-spacing: .06em; color: #10151a; }
-.tag .tl b { display: inline-block; width: 7.4mm; font-weight: 400; color: #57626b; }
+.ltag .eye { position: absolute; left: 50%; top: 2.2mm; width: 4.4mm; height: 4.4mm; margin-left: -2.2mm; border: .85mm solid #b39356; border-radius: 50%; background: #0b1a1c; }
+.ltag .in { position: absolute; left: 2mm; right: 2mm; top: 9.4mm; bottom: 2mm; border: .34mm solid #10151a; }
+.ltag .in::before { content: ""; position: absolute; left: .7mm; right: .7mm; top: .7mm; bottom: .7mm; border: .14mm solid #10151a; }
+.ltag .st { position: absolute; left: 0; right: 0; top: 8mm; margin: 0 auto; width: 13mm; writing-mode: vertical-rl; font-family: "NiYu", serif; font-size: 29pt; letter-spacing: .3em; line-height: 13mm; color: #10151a; white-space: nowrap; }
+.ltag .tl { position: absolute; left: 3mm; right: 3mm; bottom: 4mm; padding-top: 2mm; border-top: .14mm solid #10151a; font-family: "Courier Prime", monospace; font-size: 5.4pt; line-height: 3.3mm; letter-spacing: .06em; color: #10151a; }
+.ltag .tl b { display: inline-block; width: 7.4mm; font-weight: 400; color: #57626b; }
 
 /* ── 書衣與裝訂說明：三張 A4 橫向，照散葉一樣印 ── */
 .sheet.ks { background: #fff; }
 .kart { position: absolute; top: 0; width: 148.5mm; height: 210mm; }
 .kart.r { left: 148.5mm; }
 .kart.l { left: 0; }
-.ks .tag .card { background: #fff; outline: .2mm solid #10151a; outline-offset: -.2mm; clip-path: none; }
-.ks .tag .eye { background: #fff; border-color: #10151a; border-width: .3mm; }
+.ks .ltag .card { background: #fff; outline: .2mm solid #10151a; outline-offset: -.2mm; clip-path: none; }
+.ks .ltag .eye { background: #fff; border-color: #10151a; border-width: .3mm; }
 .sheet.guide { padding: 20mm 22mm 0; font-size: 10.6pt; line-height: 7.1mm; color: #1b1b1b; }
 .guide h1 { font-family: "NiYu", serif; font-weight: 400; font-size: 25pt; letter-spacing: .2em; margin: 0; line-height: 13mm; }
 .guide .gs { margin: 1mm 0 0; color: #6b6b6b; font-size: 9.6pt; letter-spacing: .06em; }
@@ -70,3 +70,9 @@ body.bound { background: #0f1415; }
 .guide .gf { flex: none; width: 82mm; }
 .guide .gf svg { display: block; width: 82mm; height: auto; }
 .guide .gf p { margin: 1mm 0 0; font-size: 8.6pt; line-height: 5.2mm; color: #6b6b6b; text-align: center; }
+
+/* 封底的短文 */
+.blurb { position: absolute; top: 27mm; right: 21mm; writing-mode: vertical-rl; font-family: "Iansui", "LXGW WenKai TC", serif; font-size: 10.4pt; line-height: 7.2mm; letter-spacing: .16em; color: #d6bd84; text-align: start; white-space: nowrap; }
+.blurb p { margin: 0; }
+.blurb p.sp { block-size: 3.6mm; }
+.blurb.print { color: #2a2a2a; }
