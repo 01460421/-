@@ -19,7 +19,7 @@
     add('動作', '館內設定', '外觀 字級 動態 雨聲', () => A.Settings.open());
     add('動作', '鍵盤快捷鍵', '', () => A.Settings.shortcuts());
     add('動作', '原創字體頁：逆雨 NiYu', '字型 字體 樣張 下載 font', () => window.open(FONT_PAGE, '_blank', 'noopener'));
-    add('動作', '館刊：量雨的人（閱讀與下載）', '小說 書 線裝本 PDF Word 下載 book', () => { location.href = BOOK_PAGE; });
+    add('動作', '館刊：量雨的人（閱讀與下載）', '小說 書 線裝本 PDF 下載 book', () => { location.href = BOOK_PAGE; });
     add('動作', '雨聲：開／關', '環境音', () => A.Settings.set('snd', !A.Settings.get().snd));
     add('動作', '館內配樂：開／關', '音樂 主題 變奏', () => A.Music.toggle());
     add('動作', '外觀：白晝', '淺色', () => A.Settings.set('theme', 'light'));

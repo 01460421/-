@@ -12,9 +12,9 @@
 
 另有可編輯的兩份：`量雨的人.docx`（直排的 Word 檔，樣式都有名字）和 `量雨的人.txt`（純文字），由 `python3 dev/book/export.py` 從同一份稿子轉出來，需要 `python-docx`。
 
-一頁一張的 PNG（封面、內文九十八頁、封底，共一百張，打成 zip）由 `python3 dev/book/pages.py` 產生，直接寫到 `book/liangyu-pages-png.zip`；需要 poppler 的 `pdftoppm` 和 ImageMagick。
+一頁一張的 PNG（封面、內文九十八頁、封底，共一百張，打成 zip）由 `python3 dev/book/pages.py` 產生，放在 `dev/book/out/`，不進 repo；需要 poppler 的 `pdftoppm` 和 ImageMagick。
 
-網站上的下載頁在 repo 的 `book/`：`npm run book -- --publish` 把上面五個檔複製過去（檔名改成英數）。
+網站上的下載頁在 repo 的 `book/`，只放線裝本：`npm run book -- --publish` 把它複製過去（檔名改成英數）。其他幾份只留在 `dev/book/`。
 
 ## 重排
 

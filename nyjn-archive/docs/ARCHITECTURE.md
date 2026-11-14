@@ -245,9 +245,8 @@ v1 已經在用，站主不需要多設定任何東西。代價是 Blob 的操�
 
 ## 館刊（`book/`）
 
-《量雨的人》的閱讀與下載頁是一張獨立的靜態頁 `book/index.html`，不經過館內的路由，也沒有 script；樣式寫在頁內，字型用館內的 `assets/css/fonts.css`。同一個資料夾放著六個下載檔（線裝本、散葉、書衣與裝訂說明三份 PDF，一頁一張 PNG 的 zip，Word 檔，純文字），檔名是英數，連結上的 `download` 屬性再把存檔的名字換回中文書名。
+《量雨的人》的閱讀與下載頁是一張獨立的靜態頁 `book/index.html`，不經過館內的路由，也沒有 script；樣式寫在頁內，字型用館內的 `assets/css/fonts.css`。下載只放線裝本一個檔（`liangyu-bound.pdf`），檔名是英數，連結上的 `download` 屬性再把存檔的名字換回中文書名。
 
-- 這些檔案的來源在 `dev/book/`：`npm run book -- --all` 排出三份 PDF，`python3 dev/book/export.py` 轉出 Word 與純文字，`npm run book -- --publish` 把五個檔複製過來。`dev/` 不隨網站部署，所以要複製一份。
+- 來源在 `dev/book/`：`npm run book -- --all` 排出 PDF，`npm run book -- --publish` 把線裝本複製過來。散葉、書衣與裝訂說明、Word 檔、純文字、單頁 PNG 都只留在 `dev/book/`，不放上網站；`dev/` 不隨網站部署。
 - service worker 不碰 `/book/` 底下的請求。它對導覽請求是「先網路，成功就把回應存成 `index.html`」；下載 PDF 也是導覽，不擋掉的話，離線時的館就會被換成一份 PDF。
 - 入口有三個：「關於本館」的館刊一段、頁尾、全館搜尋的動作。
-

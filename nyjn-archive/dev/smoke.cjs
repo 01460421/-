@@ -161,12 +161,12 @@ async function main() {
     ok(await p.evaluate(() => document.fonts.ready.then(() => document.fonts.check('40px NiYu', '逆雨檔案館'))), '逆雨字型應該載入');
     ok(await p.evaluate(() => [...document.querySelectorAll('a[href="https://01460421.github.io/niyu/"]')].filter(a => a.target === '_blank' && /noopener/.test(a.rel)).length === 2 && typeof FONT_PAGE === 'string'), '關於本館和頁尾都應該連到原創字體頁（另開分頁）');
 
-    /* 八之二、館刊：關於本館和頁尾都連到 book/；那一頁打得開，六個下載檔都在，而且沒有用到 script */
+    /* 八之二、館刊：關於本館和頁尾都連到 book/；那一頁打得開，下載只有線裝本一個檔，而且沒有用到 script */
     ok(await p.evaluate(() => document.querySelector('#book-page') && document.querySelectorAll('a[href="book/"]').length === 2 && BOOK_PAGE === 'book/'), '關於本館和頁尾都應該連到館刊的下載頁');
     await p.goto(BASE + '/book/'); await p.waitForTimeout(500);
     ok(await p.evaluate(() => document.querySelector('h1').textContent === '量雨的人' && document.scripts.length === 0 && document.querySelector('.cover img').naturalWidth > 0), '館刊的下載頁應該打得開，有書衣的圖，沒有 script');
     const bookFiles = await p.evaluate(() => Promise.all([...document.querySelectorAll('.dl a')].map(a => fetch(a.href, { method: 'HEAD' }).then(r => [a.id, r.status, a.getAttribute('download')]))));
-    ok(bookFiles.length === 6 && bookFiles.every(f => f[1] === 200 && /^量雨的人/.test(f[2])), '六個下載檔都應該在，存檔的名字是中文書名：' + JSON.stringify(bookFiles));
+    ok(bookFiles.length === 1 && bookFiles[0][0] === 'dl-bound' && bookFiles.every(f => f[1] === 200 && /^量雨的人/.test(f[2])), '下載只留線裝本，檔案應該在，存檔的名字是中文書名：' + JSON.stringify(bookFiles));
     await p.goto(BASE + '/'); await p.waitForTimeout(400);
 
     /* 九、館內配樂：預設關；打開之後跟著房間換段；同一段不重頭；放映廳讓位；回到原來那段時接著播 */
