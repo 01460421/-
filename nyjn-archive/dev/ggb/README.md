@@ -33,6 +33,8 @@ node post.cjs out/x-stage.ggb out/x.ggb --title 名字      # 橫的畫面：圖
 node record.cjs out/x.ggb rec/                            # 在 GeoGebra 裡一步一步截圖（錄影時把滑桿藏起來）
 ```
 
+`run.sh` 把上面幾步串成一個指令（`bash run.sh 名字 原圖`）。`edit.py` 把幾段錄影剪成一支，段與段之間用「往上落的雨」轉場：畫好的整張圖切成直條往上升，拖出金色的雨，露出下一段的空白畫面；每一段配一次音樂。
+
 `preview2.py` 把方程式畫回點陣圖和原圖並排比對；`anim.py` 不經過 GeoGebra，直接用擬合的結果做一支示意影片；`verify.cjs` 打開成品檢查物件數、播放與每一步顯示的物件。
 
 ### 線怎麼來
