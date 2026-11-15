@@ -10,7 +10,7 @@ const steps = (stepsArg || '40,150,200,250,312').split(',').map(Number);
 // --browser-js：這個測試環境的 GeoGebra 不執行檔案裡的程式，所以把檔案裡那段程式原封不動放到頁面上，
 // 讓 GeoGebra 用頁面的 ggbOnInit 呼叫它；這和檔案的程式被執行時跑的是同一段碼。
 const browserJS = process.argv.includes('--browser-js');
-const fileJS = browserJS ? require('child_process').execFileSync('unzip', ['-p', file, 'geogebra_javascript.js']).toString('utf8') : '';
+const fileJS = browserJS ? require('child_process').execFileSync('unzip', ['-p', file, 'geogebra_javascript.js'], { maxBuffer: 256 * 1024 * 1024 }).toString('utf8') : '';
 fs.mkdirSync(dir, { recursive: true });
 const PAGE = `<!doctype html><html><head><meta charset="utf-8"><script src="https://www.geogebra.org/apps/deployggb.js"></script>
 <style>html,body{margin:0;background:#fff}</style></head><body><div id="ggb"></div></body></html>`;

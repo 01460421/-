@@ -533,6 +533,8 @@ def main():
         else:
             dark = np.zeros((H, W), np.float32)
         rim = (solid > 0) & (cv2.erode(solid, np.ones((3, 3), np.uint8)) == 0)       # 外輪廓：一個像素寬
+        if solid.mean() > 0.99:                                      # 整張不透明的畫（有背景）：沒有外輪廓，不然會畫出一個框
+            rim[:] = False
         band = cv2.dilate(rim.astype(np.uint8), np.ones((7, 7), np.uint8)) > 0
         dark = np.maximum(dark, cv2.GaussianBlur(rim.astype(np.float32) * 255, (0, 0), 0.9) * 1.6)   # 外輪廓畫進線稿，和模型畫的輪廓併成一條
         dark[solid == 0] = 0

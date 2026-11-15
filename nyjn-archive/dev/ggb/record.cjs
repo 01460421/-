@@ -8,7 +8,7 @@ const { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
 const [, , file, dir] = process.argv;
 fs.mkdirSync(dir, { recursive: true });
-const js = execFileSync('unzip', ['-p', file, 'geogebra_javascript.js']).toString('utf8');
+const js = execFileSync('unzip', ['-p', file, 'geogebra_javascript.js'], { maxBuffer: 256 * 1024 * 1024 }).toString('utf8');
 const SMAX = Number(js.match(/SMAX = (\d+)/)[1]);
 const PAGE = `<!doctype html><html><head><meta charset="utf-8"><script src="https://www.geogebra.org/apps/deployggb.js"></script><style>html,body{margin:0;background:#fff;overflow:hidden}</style></head><body><div id="ggb"></div></body></html>`;
 const frame = p => p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
@@ -27,7 +27,7 @@ const frame = p => p.evaluate(() => new Promise(r => requestAnimationFrame(() =>
   for (let v = 0; v <= SMAX; v++) {
     await page.evaluate(x => { window.ggbApplet.setValue('s', x); window.drawTo(); }, v);
     await frame(page);
-    await page.screenshot({ path: path.join(dir, `s${String(v).padStart(3, '0')}.png`), timeout: 300000 });
+    await page.screenshot({ path: path.join(dir, `s${String(v).padStart(4, "0")}.png`), timeout: 300000 });
     if (v % 20 === 0) {
       const n = await page.evaluate(() => window.shown !== undefined ? window.shown : -1);
       console.log(`第 ${v} / ${SMAX} 步，${((Date.now() - t0) / 1000).toFixed(0)} 秒`);
