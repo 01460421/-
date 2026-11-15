@@ -1,0 +1,11 @@
+# 原圖、線稿模型的權重、擬合結果與成品都不進 repo
+src/
+models/
+out/
+rec/
+show/
+*.ggb
+*.mp4
+*.png
+*.jpg
+*.json
