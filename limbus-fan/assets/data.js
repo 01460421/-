@@ -1,0 +1,157 @@
+// 手冊的內容都在這裡。要更新（例如新章節上線），只改這個檔。
+// 遊戲沒有官方中文：角色與章節的中文名稱參考玩家自發的翻譯計畫——
+// 都市零協會漢化組 LLC（簡體）與 LTM（繁體，以 LLC 為底本），轉成繁體字形。
+// 文學作品的書名照台灣出版常見的譯名。整理日期：2026 年 11 月。
+window.LB = {
+  updated: '2026.11',
+
+  // 十二位罪人。號碼照劇情裡的編號：但丁是 10 號，所以辛克萊、奧提斯、格里高爾是 11、12、13 號。
+  sinners: [
+    { no: 1, id: 'yisang', zh: '李箱', en: 'Yi Sang', emblem: 'wing', c: '#d4e1e8',
+      src: { author: '李箱', work: '翅膀', year: '1936' },
+      note: '韓國現代主義作家李箱（本名金海卿）的短篇小說。主角整天關在房裡，靠妻子過活；故事最後，他站在百貨公司頂樓，希望自己再長出翅膀。' },
+    { no: 2, id: 'faust', zh: '浮士德', en: 'Faust', emblem: 'quill', c: '#ffb1b4',
+      src: { author: '歌德', work: '浮士德', year: '1808、1832' },
+      note: '歌德的詩劇。學者浮士德和魔鬼梅菲斯特訂約，用靈魂換取知識與人生的經驗。遊戲裡的巴士就叫梅菲斯托費勒斯。' },
+    { no: 3, id: 'donquixote', zh: '堂吉訶德', en: 'Don Quixote', emblem: 'windmill', c: '#ffef23',
+      src: { author: '塞萬提斯', work: '唐吉訶德', year: '1605、1615' },
+      note: '讀騎士小說讀到入迷的鄉紳，自封為騎士出門行俠仗義，把風車當成巨人衝上去。' },
+    { no: 4, id: 'ryoshu', zh: '良秀', en: 'Ryōshū', emblem: 'flame', c: '#cf0000',
+      src: { author: '芥川龍之介', work: '地獄變', year: '1918' },
+      note: '芥川龍之介的短篇。畫師良秀為了畫出一幅逼真的地獄圖屏風，親眼看著火焰吞沒載著女兒的牛車。' },
+    { no: 5, id: 'meursault', zh: '默爾索', en: 'Meursault', emblem: 'sun', c: '#293b95',
+      src: { author: '卡繆', work: '異鄉人', year: '1942' },
+      note: '卡繆的小說。默爾索在母親的葬禮上沒有哭，後來在海灘上，因為刺眼的陽光開槍殺了人，接著受審。' },
+    { no: 6, id: 'honglu', zh: '鴻璐', en: 'Hong Lu', emblem: 'pavilion', c: '#5bffde',
+      src: { author: '曹雪芹', work: '紅樓夢', year: '十八世紀' },
+      note: '原型是《紅樓夢》裡賈府的公子賈寶玉。小說寫一個大家族由盛轉衰，也寫大觀園裡的少年少女。' },
+    { no: 7, id: 'heathcliff', zh: '希斯克利夫', en: 'Heathcliff', emblem: 'tree', c: '#4e3076',
+      src: { author: '艾蜜莉．勃朗特', work: '咆哮山莊', year: '1847' },
+      note: '被收養的孤兒希斯克利夫和凱瑟琳在約克郡的荒原上一起長大，兩人之間糾纏一生的愛，後來變成了復仇。' },
+    { no: 8, id: 'ishmael', zh: '以實瑪利', en: 'Ishmael', emblem: 'whale', c: '#ff9500',
+      src: { author: '梅爾維爾', work: '白鯨記', year: '1851' },
+      note: '小說的第一句是「叫我以實瑪利」。他上了亞哈船長追捕白鯨的捕鯨船，是船沉之後唯一活下來的人。' },
+    { no: 9, id: 'rodion', zh: '羅佳', en: 'Rodion', emblem: 'axe', c: '#820000',
+      src: { author: '杜斯妥也夫斯基', work: '罪與罰', year: '1866' },
+      note: '窮學生羅迪恩．拉斯柯尼科夫（羅佳是他的暱稱）用斧頭殺了放高利貸的老婦人，之後在罪惡感裡掙扎。' },
+    { no: 11, id: 'sinclair', zh: '辛克萊', en: 'Sinclair', emblem: 'egg', c: '#8b9c15',
+      src: { author: '赫曼．赫塞', work: '徬徨少年時', year: '1919' },
+      note: '原名《德米安》。少年辛克萊在德米安的引導下離開家裡那個光明的世界，去找自己。書裡說：「鳥奮力要從蛋裡出來，蛋就是世界。」' },
+    { no: 12, id: 'outis', zh: '奧提斯', en: 'Outis', emblem: 'eye', c: '#325339',
+      src: { author: '荷馬', work: '奧德賽', year: '古希臘' },
+      note: '奧德修斯被獨眼巨人困在洞裡時，自稱「沒有人」，希臘文就是 Outis。巨人被刺瞎後大喊求救，只能說「沒有人害我」。' },
+    { no: 13, id: 'gregor', zh: '格里高爾', en: 'Gregor', emblem: 'beetle', c: '#69350b',
+      src: { author: '卡夫卡', work: '變形記', year: '1915' },
+      note: '推銷員格里高爾．薩姆沙一早醒來，發現自己變成了一隻巨大的蟲，家人從此不知道該拿他怎麼辦。' },
+  ],
+
+  // 車頭的三個位子
+  crew: [
+    { id: 'dante', crew: true, seat: true, no: 10, zh: '但丁', en: 'Dante', emblem: 'clock', role: '管理人', roleLong: '執行經理（10 號）', c: '#b01c37',
+      src: { author: '但丁', work: '神曲', year: '十四世紀初' },
+      note: '玩家扮演的角色。頭是一座燃燒的時鐘，失去了記憶，只能發出滴答聲，罪人們卻聽得懂。但丁能倒轉時間讓倒下的罪人回來，也能替他們換上不同的人格。' },
+    { id: 'vergilius', crew: true, seat: true, zh: '維吉里烏斯', en: 'Vergilius', emblem: 'star', role: '嚮導', roleLong: '替巴士帶路的嚮導',
+      src: { author: '但丁', work: '神曲', year: '十四世紀初' },
+      note: '名字取自《神曲》裡帶但丁走過地獄的古羅馬詩人維吉爾。在遊戲裡是一位收尾人，合約規定不能親手收集金枝。' },
+    { id: 'charon', crew: true, seat: true, zh: '卡戎', en: 'Charon', emblem: 'wheel', role: '司機', roleLong: '梅菲斯托費勒斯號的司機',
+      src: { author: '希臘神話', work: '', year: '' },
+      note: '名字取自希臘神話裡冥河的擺渡人，《神曲》裡也是由卡戎把亡魂渡過冥河。在遊戲裡負責開巴士。' },
+  ],
+
+  // 七宗罪。顏色是照遊戲的彩虹順序調的近似色，不是官方色碼。
+  sins: [
+    { id: 'wrath', zh: '暴怒', en: 'Wrath', c: '#d8423a', note: '紅色。常和燒傷一起出現。' },
+    { id: 'lust', zh: '色慾', en: 'Lust', c: '#ec8b3a', note: '橙色。常和流血一起出現。' },
+    { id: 'sloth', zh: '怠惰', en: 'Sloth', c: '#e9c64a', note: '黃色。常和震顫一起出現。' },
+    { id: 'gluttony', zh: '暴食', en: 'Gluttony', c: '#93c246', note: '綠色。常和破裂一起出現。' },
+    { id: 'gloom', zh: '憂鬱', en: 'Gloom', c: '#4a9ad8', note: '藍色。常和沉淪一起出現。' },
+    { id: 'pride', zh: '傲慢', en: 'Pride', c: '#3a5fc0', note: '靛色。常和呼吸法一起出現。' },
+    { id: 'envy', zh: '嫉妒', en: 'Envy', c: '#9255c6', note: '紫色。常和充能一起出現。' },
+  ],
+
+  // 主線與間章。主角用上面的 id；side: true 是間章。
+  cantos: [
+    { code: 'C-00', lab: '序章', title: '幽暗的森林', en: 'Selva Oscura', who: [], when: '2023.02' },
+    { code: 'C-01', lab: '第一章', title: '無歸屬者', en: 'The Outcast', who: ['gregor'], when: '2023.02' },
+    { code: 'C-02', lab: '第二章', title: '無法去愛', en: 'The Unloving', who: ['rodion'], when: '2023.02' },
+    { code: 'C-03', lab: '第三章', title: '未曾面對', en: 'The Unconfronting', who: ['sinclair'], when: '2023.02' },
+    { code: 'I-3.5', lab: '間章 3.5', title: '地獄雞', en: "Hell's Chicken", side: true, when: '3.5' },
+    { code: 'C-04', lab: '第四章', title: '無改變者', en: 'The Unchanging', who: ['yisang'], when: '2023.06' },
+    { code: 'I-4.5', lab: '間章 4.5', title: '去·海·邊', en: 'S.E.A.', side: true, when: '4.5' },
+    { code: 'C-05', lab: '第五章', title: '定義為惡', en: 'The Evil Defining', who: ['ishmael'], when: '2023.11' },
+    { code: 'I-5.5', lab: '間章 5.5', title: '20區的奇蹟／肉斬骨斷', en: 'Miracle in District 20 / Yield My Flesh to Claim Their Bones', side: true, when: '5.5' },
+    { code: 'C-06', lab: '第六章', title: '心意相悖', en: 'The Heartbreaking', who: ['heathcliff'], when: '2024.03' },
+    { code: 'I-6.5', lab: '間章 6.5', title: '時間殺人時間／WARP快車謀殺案', en: 'Timekilling Time / Murder on the WARP Express', side: true, when: '6.5' },
+    { code: 'C-07', lab: '第七章', title: '夢之終焉', en: 'The Dream Ending', who: ['donquixote'], when: '2024.10' },
+    { code: 'I-7.5', lab: '間章 7.5', title: 'LCB定期體檢／深夜清掃', en: 'LCB Regular Check-up / Nocturnal Sweeping', side: true, when: '7.5' },
+    { code: 'C-08', lab: '第八章', title: '不思觀望', en: 'The Surrendered Witnessing', who: ['honglu'], when: '2025.05' },
+    { code: 'I-8.5', lab: '間章 8.5', title: '切磋琢春', en: 'Spring Cultivation', side: true, when: '8.5' },
+    { code: 'C-09', lab: '第九章', title: '無割捨者', en: 'The Unsevering', who: ['ryoshu'], when: '2025.12' },
+    { code: 'I-9.5', lab: '間章 9.5', title: '絞絲結線／經驗記憶', en: 'Twining Threads / Mnestic Experience', side: true, when: '9.5' },
+    { code: 'C-10', lab: '第十章', title: 'The Gaze Bearing', en: '中文譯名還沒有確定', who: ['meursault'], when: '2026.09' },
+  ],
+
+  // 名字的來歷
+  names: [
+    { from: '拉丁文／《神曲》', title: '邊獄 Limbus', text: 'Limbus 在拉丁文裡是「邊緣」的意思。《神曲》的地獄第一層叫靈薄獄（Limbo），收留沒有受洗的人，和生在基督之前的好人，是地獄的邊緣。' },
+    { from: '《神曲》', title: '但丁', text: '《神曲》的作者，也是書裡的主角：一個在人生中途迷了路的人，被帶著走過地獄、煉獄，最後到了天堂。遊戲裡的但丁是巴士的管理人，也就是玩家。' },
+    { from: '《神曲》', title: '維吉里烏斯', text: '古羅馬詩人維吉爾的拉丁文名字。在《神曲》裡，是他帶但丁走過地獄和煉獄。遊戲裡的維吉里烏斯一樣是帶路的人。' },
+    { from: '希臘神話／《神曲》', title: '卡戎', text: '冥河上的擺渡人，收了錢才把亡魂渡到對岸。《神曲》的地獄篇裡，卡戎在阿刻戎河邊載送亡魂。遊戲裡卡戎開的是一輛巴士。' },
+    { from: '《浮士德》', title: '梅菲斯托費勒斯', text: '歌德《浮士德》裡和浮士德訂約的魔鬼，常簡稱梅菲斯特。遊戲裡這是巴士的名字，而 2 號罪人就叫浮士德。' },
+    { from: '《埃涅阿斯紀》', title: '金枝', text: '維吉爾的史詩裡，英雄埃涅阿斯要先折下一根金色的樹枝，才能進入冥界。人類學家弗雷澤的名著也叫《金枝》。遊戲裡收集金枝，是整趟旅程的目的。' },
+    { from: '《神曲》', title: '幽暗的森林', text: '序章的標題 Selva Oscura 取自《神曲》的第一段：「在人生旅程的中途，我發現自己身在一座幽暗的森林。」' },
+    { from: '《神曲》', title: 'Canto', text: '《神曲》全書分成一百「歌」，義大利文叫 canto。遊戲的主線章節也叫 Canto；間章叫 Intervallo，在義大利文裡是「中場休息」。' },
+  ],
+
+  // 車上用語（kind：世界觀、戰鬥、狀態、模式、資源）
+  glossary: [
+    { t: '都市', en: 'The City', kind: '世界觀', d: '由巨型企業統治的大都市，Project Moon 的三部遊戲都發生在這裡。' },
+    { t: '翼', en: 'Wings', kind: '世界觀', d: '都市裡最大的二十六家企業，各自管轄一區的「巢」，手上握有違反物理法則的技術「奇點」。' },
+    { t: '巢', en: 'Nest', kind: '世界觀', d: '每一區由翼管轄的核心地帶，是都市裡相對安全、富裕的地方。巢以外的街區叫後巷。' },
+    { t: '五指', en: 'The Five Fingers', kind: '世界觀', d: '控制後巷的五個犯罪組織，勢力足以和翼抗衡。' },
+    { t: '收尾人', en: 'Fixer', kind: '世界觀', d: '在都市裡接委託辦事的人，從護衛、調查到殺人都有。等級最高的稱為「色彩」。' },
+    { t: '異想體', en: 'Abnormality', kind: '世界觀', d: '從人的心靈裡誕生的怪物，《腦葉公司》的主角就是管理牠們的人。' },
+    { t: '扭曲', en: 'Distortion', kind: '世界觀', d: '人被自己的執念吞沒，變成怪物的現象，從《廢墟圖書館》開始出現。' },
+    { t: '金枝', en: 'Golden Bough', kind: '世界觀', d: '能讓人的感情與願望成真的樹枝。替公司收集金枝，就是巴士這趟旅程的任務。' },
+    { t: '人格', en: 'Identity', kind: '戰鬥', d: '透過鏡子技術，把另一個世界裡的罪人疊到本人身上。抽卡抽到的就是人格，同一位罪人可以換上不同的人格。' },
+    { t: 'E.G.O', en: 'E.G.O', kind: '戰鬥', d: '從心靈具現化的武器或護甲。戰鬥時是威力很大的技能，要消耗罪孽資源才能使用。' },
+    { t: '拼點', en: 'Clash', kind: '戰鬥', d: '雙方的技能對上時，各自擲硬幣比威力。輸的一方每回合少一枚硬幣，直到一方贏下來，用完整的威力攻擊。' },
+    { t: '硬幣', en: 'Coin', kind: '戰鬥', d: '每個技能有幾枚硬幣，擲出正面就加威力。硬幣越多，拼點越有機會贏。' },
+    { t: '理智值', en: 'Sanity (SP)', kind: '戰鬥', d: '從 −45 到 +45。擲出正面的機率是 50% 加上理智值，所以理智越高越容易擲出正面；太低會陷入恐慌。' },
+    { t: '混亂', en: 'Stagger', kind: '戰鬥', d: '血量掉到某條門檻時陷入的狀態，這段時間受到的傷害會變多。' },
+    { t: '共鳴', en: 'Resonance', kind: '戰鬥', d: '同一回合用了兩個以上同一種罪的技能，就會產生共鳴；三個以上連在一起，叫作完全共鳴，整串技能一起變強。' },
+    { t: '流血', en: 'Bleed', kind: '狀態', d: '中了流血的人，每擲一枚攻擊硬幣，就會受到傷害。' },
+    { t: '燒傷', en: 'Burn', kind: '狀態', d: '每回合結束時造成傷害。' },
+    { t: '震顫', en: 'Tremor', kind: '狀態', d: '引爆震顫時，會讓對手更快進入混亂。' },
+    { t: '破裂', en: 'Rupture', kind: '狀態', d: '中了破裂的人，被打中時會受到額外的傷害。' },
+    { t: '沉淪', en: 'Sinking', kind: '狀態', d: '中了沉淪的人，被打中時會損失理智值。' },
+    { t: '呼吸法', en: 'Poise', kind: '狀態', d: '提高爆擊的機率。' },
+    { t: '充能', en: 'Charge', kind: '狀態', d: '一種可以累積的資源，有些技能要消耗充能才能發揮效果。' },
+    { t: '鏡像地牢', en: 'Mirror Dungeon', kind: '模式', d: '可以反覆挑戰的 Roguelike 模式，每一趟路線和獎勵都不一樣，是取得素材的主要地方。LLC 的譯名是「鏡像迷宮」。' },
+    { t: '折射軌道', en: 'Refraction Railway', kind: '模式', d: '高難度的挑戰模式，每一季會加一條新的路線。也有人叫它「折射地鐵」。' },
+    { t: 'E.G.O 飾品', en: 'E.G.O Gift', kind: '模式', d: '在鏡像地牢裡撿到的增益道具，只在那一趟有效。也有人叫它「E.G.O 禮物」。' },
+    { t: '狂氣', en: 'Lunacy', kind: '資源', d: '抽卡用的貨幣，分成付費和免費兩種。' },
+    { t: '提取', en: 'Extraction', kind: '資源', d: '就是抽卡，用狂氣抽人格和 E.G.O。' },
+    { t: '腦啡肽', en: 'Enkephalin', kind: '資源', d: '體力。打關卡要消耗，會隨時間慢慢回復。' },
+  ],
+
+  // 上車須知
+  steps: [
+    { h: '免費上車', p: '遊戲在 Steam、Android 和 iOS 上都可以免費下載。介面和劇情只有英文、日文和韓文，沒有官方中文；劇情有完整的韓語配音。' },
+    { h: '從序章看起', p: '主線從序章〈幽暗的森林〉開始，照順序看就好。前三章在 2023 年 2 月開服時就已經上線，之後大約每五到九個月推出新的一章，每一章分三段，在兩週左右陸續放出。' },
+    { h: '先學會拼點', p: '戰鬥的核心是拼點：兩邊的技能對上時各自擲硬幣，比誰的威力大。贏的一方才能把攻擊完整打出去，所以挑技能時要看硬幣和威力。' },
+    { h: '顧好理智值', p: '理智值越高，越容易擲出正面；太低會陷入恐慌。贏下拼點、打倒敵人會讓理智值上升，輸了則會下降。' },
+    { h: '排技能時看顏色', p: '同一回合用了兩個以上同一種罪的技能，就會產生共鳴；三個以上連在一起是完全共鳴，整串一起變強。罪孽資源也靠這些顏色累積，用來發動 E.G.O。' },
+    { h: '素材去鏡像地牢', p: '每天的素材主要靠鏡像地牢。每一趟的路線和獎勵都不一樣，玩熟了也是練隊伍的好地方。' },
+  ],
+
+  // 幾段介紹文字（會直接放進頁面，所以寫成 HTML）
+  text: {
+    lede: '一輛叫梅菲斯托費勒斯的巴士，載著頭是時鐘的管理人但丁和十二位罪人，穿過「都市」去收集金枝。這本手冊替剛上車的人整理了座位表、路線圖和車上常聽到的詞。',
+    sinIntro: '遊戲裡的每一個技能都屬於七宗罪之一，顏色就是它的標記。每一種罪也有常搭配的異常狀態，下面寫的是最常見的組合，實際還是要看各個人格的技能。',
+    chainIntro: '<p>同一回合用了兩個以上同一種罪的技能，就會產生共鳴；三個以上連在一起，叫作完全共鳴，整串技能一起變強。點下面的顏色，把技能排進五個格子裡看看。</p>',
+    routeIntro: '主線的一章叫一個 Canto，間章叫 Intervallo，兩個詞都和《神曲》有關。每一章以一位罪人為主角，他的過去就藏在名字出處的那本書裡。',
+    aboutText: '這是一個非官方、非營利的同好網站，和 Project Moon 沒有任何關係。《邊獄巴士》（Limbus Company）的名稱、角色和世界觀都屬於 <a href="https://projectmoon.studio/" rel="noopener">Project Moon</a>。網站沒有使用遊戲的圖片、音樂或檔案，圖示和版面都是自己畫的。<br>遊戲沒有官方中文，角色與章節的中文名稱參考玩家自發的翻譯計畫：都市零協會漢化組（LLC）和 LTM；文學作品的書名用台灣常見的譯名。想玩的人可以到 <a href="https://store.steampowered.com/app/1973530/Limbus_Company/" rel="noopener">Steam</a> 免費下載。',
+    footSmall: '資料整理到 2026 年 11 月，最新的主線是第十章。若有錯誤或過時的地方，歡迎指正。',
+  },
+};

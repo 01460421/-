@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>邊獄巴士乘客手冊｜Limbus Company 非官方同好站</title>
+<meta name="description" content="給剛上車的人的《邊獄巴士》（Limbus Company）非官方中文手冊：十二位罪人的座位表與文學出處、七宗罪共鳴、主線路線圖、車上常聽到的詞，以及上車須知。">
+<meta name="theme-color" content="#0f0d0c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="邊獄巴士乘客手冊">
+<meta property="og:description" content="《邊獄巴士》（Limbus Company）非官方中文同好站：座位表、七宗罪、路線圖與車上用語。">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到內容</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="邊獄巴士乘客手冊，回到頂端">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#e8a93c"/><g fill="none" stroke="#1a1208" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="7.5" width="14" height="14" rx="3"/><path d="M9 15h14M11.5 24v-2.5M20.5 24v-2.5M12 10.5h8"/></g><circle cx="12.5" cy="18.3" r="1.1" fill="#1a1208"/><circle cx="19.5" cy="18.3" r="1.1" fill="#1a1208"/></svg>
+      邊獄巴士乘客手冊 <small>非官方</small>
+    </a>
+    <nav class="nav" aria-label="段落">
+      <a href="#roster" style="--c:var(--wrath)">名冊</a>
+      <a href="#sins" style="--c:var(--lust)">七宗罪</a>
+      <a href="#route" style="--c:var(--sloth)">路線</a>
+      <a href="#names" style="--c:var(--gluttony)">名字</a>
+      <a href="#glossary" style="--c:var(--gloom)">辭典</a>
+      <a href="#boarding" style="--c:var(--pride)">上車</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">Limbus Company · 非官方同好站</p>
+          <h1>邊獄巴士<span>乘客手冊</span></h1>
+          <p class="lede" id="lede"></p>
+          <div class="cta">
+            <a class="btn" href="#roster">看座位表</a>
+            <button class="btn ghost" type="button" id="randomSeat">隨便抽一位乘客</button>
+          </div>
+        </div>
+        <div class="board" role="region" aria-label="最近的章節">
+          <div class="board-head"><span>DEPARTURES · 主線</span><b>更新 <span id="boardStamp"></span></b></div>
+          <table>
+            <thead><tr><th scope="col">班次</th><th scope="col">目的地</th><th scope="col">發車</th><th scope="col" class="st"><span class="sr">狀態</span></th></tr></thead>
+            <tbody id="boardRows"></tbody>
+          </table>
+        </div>
+      </div>
+      <svg class="route-line" id="routeLine" viewBox="0 0 1000 64" preserveAspectRatio="none" role="img" aria-label="七宗罪的顏色接成的路線"></svg>
+    </div>
+  </section>
+
+  <section class="block" id="roster" aria-labelledby="h-roster">
+    <div class="wrap">
+      <div class="sec-head" style="--c:var(--wrath)">
+        <div class="sec-no">01</div>
+        <h2 id="h-roster">乘客名冊</h2>
+        <p>車上坐著十二位罪人，每一位的名字都取自一部文學作品。點一個座位，就會看到這位乘客是誰、名字從哪本書來。管理人、嚮導和司機的位子在車頭。</p>
+      </div>
+      <div class="roster">
+        <div class="bus">
+          <div class="seats" id="seats"></div>
+          <div class="cab" id="cab"></div>
+        </div>
+        <article class="detail" id="detail" tabindex="-1" aria-live="polite"></article>
+      </div>
+      <p class="note">座位的排法是這個網站自己畫的，不是遊戲裡的設定。小圖示照各人名字出處的作品畫成，不是官方圖。</p>
+    </div>
+  </section>
+
+  <section class="block" id="sins" aria-labelledby="h-sins">
+    <div class="wrap">
+      <div class="sec-head" style="--c:var(--lust)">
+        <div class="sec-no">02</div>
+        <h2 id="h-sins">七宗罪</h2>
+        <p id="sinIntro"></p>
+      </div>
+      <div class="sins" id="sinGrid"></div>
+      <div class="chain">
+        <strong>排排看：共鳴</strong>
+        <div class="prose" id="chainIntro"></div>
+        <div class="chain-row" id="chainBtns"></div>
+        <div class="slots" id="slots" aria-live="polite"></div>
+        <div class="chain-out" id="chainOut"></div>
+        <div class="chain-tools"><button type="button" class="chip" id="chainClear">清空重排</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="route" aria-labelledby="h-route">
+    <div class="wrap">
+      <div class="sec-head" style="--c:var(--sloth)">
+        <div class="sec-no">03</div>
+        <h2 id="h-route">路線圖</h2>
+        <p id="routeIntro"></p>
+      </div>
+      <div class="filter-row" id="routeChips" role="group" aria-label="篩選">
+        <button type="button" class="chip" data-mode="main" aria-pressed="true">主線</button>
+        <button type="button" class="chip" data-mode="side" aria-pressed="false">間章</button>
+        <button type="button" class="chip" data-mode="all" aria-pressed="false">全部</button>
+      </div>
+      <ol class="line-map" id="lineMap"></ol>
+    </div>
+  </section>
+
+  <section class="block" id="names" aria-labelledby="h-names">
+    <div class="wrap">
+      <div class="sec-head" style="--c:var(--gluttony)">
+        <div class="sec-no">04</div>
+        <h2 id="h-names">名字的來歷</h2>
+        <p>這輛車上的名字幾乎都有出處。除了十二位罪人，車本身、司機、嚮導和管理人，也都是從古典文學裡借來的。</p>
+      </div>
+      <div class="names" id="nameGrid"></div>
+    </div>
+  </section>
+
+  <section class="block" id="glossary" aria-labelledby="h-glossary">
+    <div class="wrap">
+      <div class="sec-head" style="--c:var(--gloom)">
+        <div class="sec-no">05</div>
+        <h2 id="h-glossary">車上用語</h2>
+        <p>遊戲裡和玩家之間常聽到的詞。中文名稱照台灣玩家常用的說法，括號裡是英文，方便對照攻略。</p>
+      </div>
+      <label class="search"><span class="sr">搜尋用語</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="q" type="search" placeholder="例如：拼點、金枝、Rupture" autocomplete="off"><span class="count" id="qCount"></span>
+      </label>
+      <div class="gloss" id="gloss"></div>
+    </div>
+  </section>
+
+  <section class="block" id="boarding" aria-labelledby="h-boarding">
+    <div class="wrap">
+      <div class="sec-head" style="--c:var(--pride)">
+        <div class="sec-no">06</div>
+        <h2 id="h-boarding">上車須知</h2>
+        <p>第一次玩的人，照這幾步走就不會迷路。</p>
+      </div>
+      <ol class="steps" id="steps"></ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="ticket">
+      <div class="main">
+        <h2>關於這本手冊</h2>
+        <p id="aboutText"></p>
+      </div>
+      <div class="stub" aria-hidden="true">
+        <span>ADMIT ONE</span>
+        <b>No.13</b>
+        <span>同好乘客</span>
+        <svg viewBox="0 0 132 34"><g fill="#2a2119">
+          <rect x="0" y="0" width="2" height="34"/><rect x="5" y="0" width="1" height="34"/><rect x="9" y="0" width="3" height="34"/><rect x="15" y="0" width="1" height="34"/><rect x="19" y="0" width="2" height="34"/><rect x="24" y="0" width="4" height="34"/><rect x="31" y="0" width="1" height="34"/><rect x="35" y="0" width="2" height="34"/><rect x="40" y="0" width="1" height="34"/><rect x="44" y="0" width="3" height="34"/><rect x="50" y="0" width="1" height="34"/><rect x="54" y="0" width="2" height="34"/><rect x="59" y="0" width="4" height="34"/><rect x="66" y="0" width="1" height="34"/><rect x="70" y="0" width="2" height="34"/><rect x="75" y="0" width="1" height="34"/><rect x="79" y="0" width="3" height="34"/><rect x="85" y="0" width="2" height="34"/><rect x="90" y="0" width="1" height="34"/><rect x="94" y="0" width="4" height="34"/><rect x="101" y="0" width="1" height="34"/><rect x="105" y="0" width="2" height="34"/><rect x="110" y="0" width="1" height="34"/><rect x="114" y="0" width="3" height="34"/><rect x="120" y="0" width="1" height="34"/><rect x="124" y="0" width="2" height="34"/><rect x="129" y="0" width="3" height="34"/>
+        </g></svg>
+      </div>
+    </div>
+    <p class="foot-small" id="footSmall"></p>
+  </div>
+</footer>
+<a class="to-top" href="#top" aria-label="回到頂端"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
+
+<script src="assets/emblems.js"></script>
+<script src="assets/data.js"></script>
+<script>
+  // 幾段介紹文字也寫在 data.js 裡，和資料放在一起改
+  (function () {
+    var T = window.LB.text;
+    for (var k in T) { var el = document.getElementById(k); if (el) el.innerHTML = T[k]; }
+  })();
+</script>
+<script src="assets/app.js"></script>
+</body>
+</html>
