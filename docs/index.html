@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>穹理書房互動學習</title>
+<meta name="description" content="穹理書房的互動式學習網站：學測自然與學測數學矩陣，邊讀邊動手。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single centered column, brand header, two large course cards. Light only. */
+:root { --bg: #f2f7f6; --card: #ffffff; --ink: #17313a; --ink-2: #48606a; --mute: #7f949b; --line: #d9e5e3; --teal: #0e8478; --teal-soft: #e0f2ef; --sun: #ffd96a; --blue: #2456a6;
+  --f-head: 'LXGW WenKai TC', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif; --f-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif; --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace; color-scheme: light; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); line-height: 1.8; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1000px; margin: 0 auto; padding-block: 48px 64px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand svg { width: 56px; height: 56px; flex: none; }
+.brand b { font-family: var(--f-head); font-size: 1.5rem; display: block; letter-spacing: .08em; line-height: 1.2; }
+.brand small { color: var(--mute); letter-spacing: .2em; font-size: .78rem; }
+h1 { font-family: var(--f-head); font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.25; margin: 34px 0 10px; text-wrap: balance; }
+.lead { color: var(--ink-2); max-width: 58ch; margin: 0 0 30px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
+.card { display: grid; gap: 10px; text-decoration: none; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px 22px 18px; border-top: 6px solid var(--c); transition: transform .15s, box-shadow .15s; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(23, 49, 58, .08); }
+.card .tag { font-size: .75rem; letter-spacing: .16em; color: var(--c); font-weight: 700; }
+.card h2 { font-family: var(--f-head); font-size: 1.7rem; margin: 0; line-height: 1.3; }
+.card p { margin: 0; color: var(--ink-2); font-size: .95rem; }
+.nums { display: flex; gap: 18px; flex-wrap: wrap; font-size: .82rem; color: var(--mute); }
+.nums b { display: block; font-family: var(--f-mono); font-size: 1.3rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.go { justify-self: start; background: var(--c); color: #fff; border-radius: 999px; padding: 6px 18px; font-weight: 500; font-size: .92rem; }
+.how { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.how div { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.how b { font-family: var(--f-head); font-size: 1.1rem; display: block; color: var(--teal); }
+.how span { font-size: .9rem; color: var(--ink-2); }
+footer { margin-top: 44px; font-size: .8rem; color: var(--mute); }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+<div class="wrap">
+  <div class="brand"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#17313a"/><path d="M17 62 A33 33 0 0 1 83 62" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/><line x1="12" y1="70" x2="88" y2="70" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".55"/><ellipse cx="50" cy="54" rx="27" ry="10.5" transform="rotate(-24 50 54)" fill="none" stroke="#f08a3c" stroke-width="4"/><circle cx="50" cy="54" r="6.5" fill="#f5c542"/><circle cx="74.5" cy="43" r="3.6" fill="#7fd1c7"/><path d="M68 22 L70 28 L76 30 L70 32 L68 38 L66 32 L60 30 L66 28 Z" fill="#f5c542"/></svg>
+    <div><b>穹理書房</b><small>QIONGLI STUDIO</small></div></div>
+  <h1>讀到哪裡，就在哪裡動手</h1>
+  <p class="lead">講義的每一個觀念旁邊，都放了可以操作的模擬、一步步展開的例題、判斷對錯的迷思題，以及讀完馬上做的隨堂練習。</p>
+  <div class="cards">
+    <a class="card" href="science/" style="--c: var(--teal)"><span class="tag">學測自然</span><h2>學測自然知識庫</h2><p>物理、化學、生物、地球科學、探究與實作，以及各校科學班入學考試題詳解。</p>
+      <div class="nums"><span><b>100</b>單元</span><span><b>54</b>互動模擬</span><span><b>4,918</b>題目</span></div><span class="go">開始學習</span></a>
+    <a class="card" href="matrix/" style="--c: var(--blue)"><span class="tag">學測數學・第四冊A</span><h2>矩陣互動學習</h2><p>矩陣的運算與反方陣、平面上的線性變換、轉移矩陣，搭配歷屆學測與綜合題庫。</p>
+      <div class="nums"><span><b>5</b>單元</span><span><b>11</b>互動模擬</span><span><b>175</b>題目</span></div><span class="go">開始學習</span></a>
+  </div>
+  <div class="how">
+    <div><b>動手模擬</b><span>拖動滑桿改變條件，看公式算出的結果怎麼跟著變。</span></div>
+    <div><b>逐步例題</b><span>先自己想，再一步一步打開解法對照。</span></div>
+    <div><b>迷思辨正</b><span>判斷一句話對不對，馬上看到正確觀念。</span></div>
+    <div><b>隨堂練習</b><span>讀完一節就作答，卡住時看提示，答錯收進錯題本。</span></div>
+  </div>
+  <footer>穹理書房 QIONGLI STUDIO・作答紀錄只存在你自己的瀏覽器。</footer>
+</div>
