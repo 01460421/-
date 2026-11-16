@@ -1,0 +1,15 @@
+{
+  "name": "liangyu-film-remotion",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "still": "remotion still src/index.ts",
+    "render": "remotion render src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
+  }
+}

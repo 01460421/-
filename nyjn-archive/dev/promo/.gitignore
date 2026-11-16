@@ -1,0 +1,6 @@
+src/
+frames/
+preview/
+out/
+*.log
+audio.m4a

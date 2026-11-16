@@ -1,0 +1,11 @@
+remotion/node_modules/
+remotion/public/
+remotion/out/
+hyperframes/node_modules/
+hyperframes/assets/
+hyperframes/compositions/
+hyperframes/index.html
+hyperframes/.hyperframes/
+hyperframes/renders/
+.tmp/
+*.mp4

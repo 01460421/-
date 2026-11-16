@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>邊獄巴士乘客手冊｜Limbus Company 非官方同好站</title>
+<meta name="description" content="《邊獄巴士》（Limbus Company）非官方中文手冊：十三位乘客的個人頁與文學出處、每一章的路線與劇情、都市的地圖、拼點教室、書房、年表、測驗與小遊戲。劇透照你的進度遮起來。">
+<meta name="theme-color" content="#0f0d0c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="邊獄巴士乘客手冊">
+<meta property="og:description" content="《邊獄巴士》（Limbus Company）非官方中文同好站：乘客、路線、都市、拼點教室、書房、測驗與小遊戲。">
+<meta property="og:url" content="https://limbus-handbook.vercel.app/">
+<meta property="og:image" content="https://limbus-handbook.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://limbus-handbook.vercel.app/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#view">跳到內容</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#/" aria-label="邊獄巴士乘客手冊，回到總站">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#e8a93c"/><g fill="none" stroke="#1a1208" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="7.5" width="14" height="14" rx="3"/><path d="M9 15h14M11.5 24v-2.5M20.5 24v-2.5M12 10.5h8"/></g><circle cx="12.5" cy="18.3" r="1.1" fill="#1a1208"/><circle cx="19.5" cy="18.3" r="1.1" fill="#1a1208"/></svg>
+      <span>邊獄巴士乘客手冊</span> <small>非官方</small>
+    </a>
+    <nav class="nav" aria-label="主要的房間" id="quickNav"></nav>
+    <div class="tools">
+      <button type="button" class="icon-btn" id="searchBtn" aria-label="搜尋（快捷鍵 /）" title="搜尋（/ 或 Ctrl+K）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+      <button type="button" class="icon-btn" id="settingsBtn" aria-label="設定與劇透進度" title="設定與劇透進度"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+      <button type="button" class="icon-btn" id="menuBtn" aria-label="所有房間" aria-expanded="false" aria-controls="menu" title="所有房間"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<nav class="menu" id="menu" hidden aria-label="所有房間">
+  <div class="wrap">
+    <div class="menu-head"><b>全線路線圖</b><span>每一站是一個房間。</span><button type="button" class="icon-btn" id="menuClose" aria-label="關閉"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <ol class="menu-line" id="menuLine"></ol>
+  </div>
+</nav>
+
+<main id="view" tabindex="-1"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>這是一個非官方、非營利的同好網站，和 Project Moon 沒有任何關係。《邊獄巴士》（Limbus Company）的名稱、角色和世界觀都屬於 Project Moon；網站沒有使用遊戲的圖片、音樂或檔案。中文譯名參考玩家翻譯計畫 LLC 與 LTM。<a href="#/about">關於這本手冊</a></p>
+  </div>
+</footer>
+
+<dialog id="searchDlg" class="dlg search-dlg" aria-label="搜尋">
+  <form method="dialog" class="search" id="searchForm" role="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <input id="searchQ" type="search" placeholder="搜尋乘客、章節、名詞、書、房間……" autocomplete="off" aria-label="搜尋" aria-controls="searchList">
+    <button type="submit" class="chip" value="close">關閉</button>
+  </form>
+  <ul class="search-list" id="searchList" role="listbox" aria-label="搜尋結果"></ul>
+  <p class="search-hint" id="searchHint">可以打中文或英文，例如「浮士德」「Rupture」「第四章」「白鯨記」。上下鍵選擇，Enter 前往。</p>
+</dialog>
+
+<dialog id="settingsDlg" class="dlg" aria-labelledby="settingsTitle">
+  <form method="dialog">
+    <h2 id="settingsTitle">設定</h2>
+    <fieldset class="field">
+      <legend>劇透進度</legend>
+      <p>你看到哪裡了？之後章節的劇情會先遮起來，想看的時候再按「仍要顯示」。</p>
+      <select id="progressSel"></select>
+    </fieldset>
+    <label class="switch"><input type="checkbox" id="calmChk"> <span>減少動態（關掉翻牌、路線描線這類動畫）</span></label>
+    <label class="switch"><input type="checkbox" id="bigChk"> <span>放大字級</span></label>
+    <fieldset class="field">
+      <legend>這台裝置上的紀錄</legend>
+      <p>車票簿的印章、測驗成績、書房的書單都只存在這台裝置的瀏覽器裡，不會上傳。</p>
+      <button type="button" class="btn ghost small" id="resetBtn">全部清掉</button>
+    </fieldset>
+    <div class="dlg-foot"><button class="btn" value="ok">好了</button></div>
+  </form>
+</dialog>
+
+<dialog id="welcomeDlg" class="dlg welcome" aria-labelledby="welcomeTitle">
+  <form method="dialog">
+    <div class="ticket-mini" aria-hidden="true"><span>ADMIT ONE</span><b>No.14</b></div>
+    <h2 id="welcomeTitle">歡迎上車</h2>
+    <p>這是一本給《邊獄巴士》玩家看的非官方手冊。每一個房間是一站：乘客的個人頁、每一章的路線、都市的地圖、拼點教室、書房、測驗和小遊戲。</p>
+    <p><b>你看到第幾章了？</b>之後章節的劇情會先遮起來，隨時可以在右上角的設定裡改。</p>
+    <div class="choose-progress" id="welcomeProgress"></div>
+    <div class="dlg-foot"><button class="btn ghost" value="skip">先不設定</button></div>
+  </form>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<a class="to-top" href="#view" aria-label="回到頂端" id="toTop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
+
+<script src="assets/emblems.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/data/rooms.js"></script>
+<script src="assets/data/people.js"></script>
+<script src="assets/data/story.js"></script>
+<script src="assets/data/works.js"></script>
+<script src="assets/data/city.js"></script>
+<script src="assets/data/timeline.js"></script>
+<script src="assets/data/combat.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/shell.js"></script>
+<script src="assets/rooms/hall.js"></script>
+<script src="assets/rooms/roster.js"></script>
+<script src="assets/rooms/route.js"></script>
+<script src="assets/rooms/city.js"></script>
+<script src="assets/rooms/terms.js"></script>
+<script src="assets/rooms/library.js"></script>
+<script src="assets/rooms/timeline.js"></script>
+<script src="assets/rooms/clash.js"></script>
+<script src="assets/rooms/quiz.js"></script>
+<script src="assets/rooms/arcade.js"></script>
+<script src="assets/rooms/tickets.js"></script>
+<script src="assets/rooms/about.js"></script>
+<script>window.LB.start();</script>
+</body>
+</html>

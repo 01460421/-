@@ -1,0 +1,75 @@
+/* ---------- 導覽：入館、導覽條、導覽頁 ---------- */
+
+/* 入館：蓋住整個畫面的三張卡，和親歷同一個暗房 */
+.gd-intro-on{overflow:hidden}
+.gd-intro{position:fixed;inset:0;z-index:70;background:var(--plate);color:var(--on);display:grid;align-items:end;justify-items:center;padding:clamp(18px,5vw,60px)}
+.gd-intro canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gd-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(4,6,8,.35) 0%,rgba(4,6,8,.2) 35%,rgba(4,6,8,.9) 100%)}
+.gd-card{position:relative;width:min(640px,100%);display:grid;gap:14px;justify-items:start;animation:gdIn .7s cubic-bezier(.2,.7,.2,1)}
+@keyframes gdIn{from{opacity:0;transform:translateY(10px)}}
+.gd-card .lab{color:var(--on);opacity:.75}
+.gd-card h2{font-family:var(--f-display);font-weight:900;font-size:clamp(30px,6vw,56px);letter-spacing:.1em;line-height:1.25;text-wrap:balance}
+.gd-card p{font-size:clamp(16px,2vw,19px);line-height:1.9;max-width:30em;opacity:.92}
+.gd-card .inp{width:min(360px,100%);background:transparent;color:var(--on);border-color:color-mix(in srgb,var(--on) 50%,transparent);font-size:18px}
+.gd-card .inp::placeholder{color:color-mix(in srgb,var(--on) 55%,transparent)}
+.gd-card .btn{color:var(--on);border-color:var(--on)}
+.gd-card .btn:hover{background:var(--on);color:var(--plate)}
+.gd-card .btn.pri{background:var(--on);color:var(--plate)}
+.gd-card .btn.pri:hover{background:transparent;color:var(--on)}
+.gd-card .tiny{color:var(--on);opacity:.7}
+.gd-card :focus-visible{outline:2px solid var(--on);outline-offset:3px}
+
+/* 導覽條：畫面底下一條 */
+.gd-bar{position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;width:min(860px,calc(100% - 24px));display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:11px 14px;background:var(--ink);color:var(--paper);box-shadow:0 10px 30px color-mix(in srgb,var(--plate) 35%,transparent);animation:gdIn .4s ease}
+.gd-n{font-family:var(--f-ui);font-size:11.5px;letter-spacing:.22em;white-space:nowrap;opacity:.8}
+.gd-tx{flex:1 1 260px;min-width:0;display:grid;gap:1px}
+.gd-tx b{font-family:var(--f-display);font-weight:900;font-size:17px;letter-spacing:.12em}
+.gd-tx span{font-size:14px;line-height:1.6;opacity:.88}
+.gd-bar .btn{color:var(--paper);border-color:var(--paper)}
+.gd-bar .btn.pri{background:var(--paper);color:var(--ink)}
+.gd-bar .btn:hover{background:transparent;color:var(--paper)}
+.gd-bar .tiny,.gd-x{color:var(--paper);opacity:.75}
+.gd-x{background:none;border:0;font-family:var(--f-ui);font-size:12px;letter-spacing:.2em;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:4px}
+.gd-bar :focus-visible,.gd-fab:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.gd-fab{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;min-height:36px;padding:5px 13px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);font-family:var(--f-ui);font-size:12px;letter-spacing:.2em;cursor:pointer;font-variant-numeric:tabular-nums}
+.gd-fab:hover{background:var(--paper);color:var(--ink)}
+/* 導覽條開著的時候，頁尾和提示往上讓 */
+.gd-open body{padding-bottom:96px}
+.gd-open .toast{bottom:104px}
+@media (max-width:560px){.gd-open body{padding-bottom:150px}.gd-open .toast{bottom:160px}}
+
+/* 大廳的「下一站」 */
+.gd-hall{display:grid;gap:14px;align-items:center;margin:0 0 30px;padding:18px 20px;border:1px solid var(--ink)}
+@media (min-width:760px){.gd-hall{grid-template-columns:minmax(0,1fr) auto}}
+.gd-hall b{display:block;font-family:var(--f-display);font-weight:900;font-size:clamp(22px,3vw,30px);letter-spacing:.12em;margin-top:4px}
+.gd-hall p{font-size:15.5px;color:var(--slate);margin-top:2px}
+
+/* 導覽頁 */
+.gdp{display:grid;gap:34px}
+.gd-top{display:grid;gap:14px;padding-bottom:18px;border-bottom:1px solid var(--ink)}
+.gd-top p{font-size:17px;line-height:1.9;max-width:40em}
+.gd-sec{display:grid;gap:0}
+.gd-route{list-style:none;margin:0;padding:0}
+.gd-route li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 8px;border-bottom:1px solid var(--hair)}
+.gd-route .n{font-family:var(--f-latin);font-style:italic;font-size:24px;color:var(--slate)}
+.gd-route b{font-family:var(--f-display);font-weight:900;font-size:19px;letter-spacing:.1em}
+.gd-route p{font-size:15px;color:var(--slate);line-height:1.7}
+.gd-route li.cur{background:color-mix(in srgb,var(--mark) 7%,transparent)}
+.gd-route li.cur .n{color:var(--mark)}
+.gd-route li.is-got b,.gd-route li.is-got p{color:var(--slate)}
+.gd-st{font-family:var(--f-ui);font-size:12px;letter-spacing:.2em;color:var(--mark);white-space:nowrap}
+.gd-map{display:grid;gap:26px 40px;padding-top:18px}
+@media (min-width:760px){.gd-map{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1100px){.gd-map{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.gd-zone{display:grid;gap:6px;align-content:start;min-width:0}
+.gd-zh{display:flex;align-items:baseline;gap:12px;padding-bottom:6px;border-bottom:1px solid var(--ink)}
+.gd-zh b{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.14em}
+.gd-zone ul{list-style:none;margin:0;padding:0}
+.gd-zone li{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--hair)}
+.gd-zone a{flex:1;min-width:0;display:grid;gap:1px;padding:9px 0;text-decoration:none}
+.gd-zone a b{font-weight:600;font-size:16.5px;letter-spacing:.06em}
+.gd-zone a span{font-size:13.5px;color:var(--slate)}
+.gd-zone a:hover b{color:var(--mark)}
+.gd-zone i{font-style:normal;font-family:var(--f-ui);font-size:11px;letter-spacing:.2em;color:var(--mark);white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){.gd-card,.gd-bar{animation:none}}

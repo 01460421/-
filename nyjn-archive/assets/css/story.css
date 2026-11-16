@@ -1,0 +1,110 @@
+/* ---------- 劇情互動：親歷、抉擇之後、我的紀年 ----------
+   親歷的畫面永遠是暗房的顏色（底片鋪滿，字用 --on），不跟著白晝／暗房切換。
+   其餘兩塊照全館的規矩走。 */
+
+/* 親歷 */
+.sty-on{overflow:hidden}
+.sty-room{position:fixed;inset:0;z-index:55;padding:0;background:var(--plate);color:var(--on)}
+.sty{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.sty-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sty-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(4,6,8,.6) 0%,rgba(4,6,8,.1) 24%,rgba(4,6,8,.45) 55%,rgba(4,6,8,.94) 100%)}
+.sty-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:max(12px,env(safe-area-inset-top,0px)) clamp(14px,3vw,34px) 10px}
+.sty-top>div:first-child{display:flex;align-items:baseline;gap:14px;min-width:0}
+.sty-top b{font-family:var(--f-display);font-weight:900;font-size:17px;letter-spacing:.14em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sty-top .lab{color:var(--on);opacity:.75;white-space:nowrap}
+.sty-tools{display:flex;gap:6px;flex-wrap:wrap}
+.sty-b{min-height:34px;padding:4px 11px;border:1px solid color-mix(in srgb,var(--on) 40%,transparent);background:rgba(4,6,8,.35);color:var(--on);font-family:var(--f-ui);font-size:12px;letter-spacing:.2em;cursor:pointer}
+.sty-b:hover,.sty-b[aria-pressed="true"]{background:var(--on);color:var(--plate)}
+.sty-b:focus-visible,.sty-stage:focus-visible{outline:2px solid var(--on);outline-offset:2px}
+.sty-stage{position:relative;z-index:1;display:grid;align-items:end;overflow-y:auto;cursor:pointer;outline:none;padding:0 clamp(14px,3vw,34px)}
+.sty-text{position:relative;width:min(780px,100%);margin:0 auto;display:grid;gap:12px;padding:20px 0 12px}
+/* 字底下墊一團暗：底片很亮的時候，舊的幾句旁白才讀得到 */
+.sty-text::before{content:"";position:absolute;inset:-30px -40px -20px;background:rgba(4,6,8,.66);filter:blur(26px);pointer-events:none}
+.sty-text>*{position:relative}
+.sty-where{font-family:var(--f-ui);font-size:12px;letter-spacing:.28em;opacity:.8;min-height:1.4em}
+.sty-lines{display:grid;gap:10px}
+.sty-lines p{font-family:var(--f-body);font-size:clamp(18px,2.3vw,23px);line-height:1.9;text-shadow:0 1px 14px rgba(4,6,8,.85)}
+.sty-lines p.old{opacity:.72;font-size:clamp(15.5px,1.8vw,18px);line-height:1.8}
+.sty-room .gl{color:inherit;border-bottom-color:currentColor}
+.sty-act{display:grid;gap:12px;cursor:default;padding:16px 18px;border:1px solid color-mix(in srgb,var(--on) 30%,transparent);background:rgba(4,6,8,.78)}
+.sty-act .lab{color:var(--on);opacity:.75}
+.sty-act h3{font-family:var(--f-display);font-weight:900;font-size:clamp(22px,3.4vw,32px);letter-spacing:.12em;line-height:1.3}
+.sty-setup{font-size:16.5px;line-height:1.85}
+.sty-opts{display:grid;gap:10px}
+@media (min-width:700px){.sty-opts{grid-template-columns:1fr 1fr}}
+.sty-opt{position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;text-align:left;min-height:58px;padding:12px 14px;border:1px solid var(--on);background:transparent;color:var(--on);font:inherit;font-size:16.5px;line-height:1.5;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.sty-opt i{font-style:normal;font-family:var(--f-display);font-weight:900;font-size:18px}
+.sty-opt i,.sty-opt span{position:relative;z-index:1}
+.sty-fill{position:absolute;inset:0;background:var(--on);transform-origin:left;transform:scaleX(var(--p,0));mix-blend-mode:difference}
+.sty-opt.armed,.sty-opt:focus-visible{outline:2px solid var(--on);outline-offset:3px}
+.sty-opt.armed{background:color-mix(in srgb,var(--on) 16%,transparent)}
+.sty-opt.was{box-shadow:inset 0 0 0 2px var(--on)}
+.sty-note{font-size:13.5px;opacity:.75}
+.sty-reveal{font-size:17px;line-height:1.9}
+.sty-same{font-family:var(--f-display);font-weight:900;letter-spacing:.08em}
+.sty-act .inp,.sty-act .field{background:transparent;color:var(--on);border-color:color-mix(in srgb,var(--on) 45%,transparent)}
+.sty-act .inp::placeholder,.sty-act .field::placeholder{color:color-mix(in srgb,var(--on) 55%,transparent)}
+.sty-act .btn{color:var(--on);border-color:var(--on)}
+.sty-act .btn:hover{background:var(--on);color:var(--plate)}
+.sty-act .btn.pri{background:var(--on);color:var(--plate)}
+.sty-act .btn.pri:hover{background:transparent;color:var(--on)}
+.sty-sum>div{display:grid;grid-template-columns:5em minmax(0,1fr);gap:12px;padding:6px 0;border-bottom:1px solid color-mix(in srgb,var(--on) 22%,transparent)}
+.sty-sum dt{opacity:.7;font-size:14px}
+.sty-sum dd{margin:0;font-size:15px}
+.sty-stamp{display:inline-block;border:2px solid var(--on);padding:4px 12px;font-family:var(--f-ui);letter-spacing:.2em;font-size:13px;transform:rotate(-2deg);justify-self:start}
+.sty-rec{display:grid;justify-items:start}
+.sty-foot{position:relative;z-index:2;display:grid;gap:8px;padding:0 clamp(14px,3vw,34px) max(12px,env(safe-area-inset-bottom,0px))}
+.sty-hint{font-family:var(--f-ui);font-size:11.5px;letter-spacing:.24em;opacity:.7;min-height:1.5em;text-align:center}
+.sty-prog{height:2px;background:color-mix(in srgb,var(--on) 22%,transparent)}
+.sty-prog i{display:block;height:100%;background:var(--on);transform-origin:left;transform:scaleX(0);transition:transform .4s ease}
+.sty-log{display:grid;gap:10px}
+.sty-log p{font-size:16px;line-height:1.85}
+.sty-log .lab{margin-top:10px}
+
+/* 展間裡的入口，和落著抉擇的那一張底片 */
+.sty-enter{display:grid;gap:12px;align-items:center;border:1px solid var(--ink);padding:14px 16px;margin:18px 0 26px}
+@media (min-width:760px){.sty-enter{grid-template-columns:minmax(0,1fr) auto}}
+.sty-enter p{font-size:15px;color:var(--slate);margin-top:4px}
+.sty-moment{display:grid;gap:6px;justify-items:start;margin-top:18px;padding:10px 14px;border-left:3px solid var(--mark)}
+.sty-moment p{font-size:15.5px;margin:0}
+
+/* 抉擇之後 */
+.fa-why{display:grid;gap:6px;margin-top:14px}
+.fa-res{display:grid;gap:14px;margin:18px 0;padding:18px 0;border-block:1px solid var(--hair)}
+.fa-kind{display:grid;gap:4px}
+.fa-kind b{font-family:var(--f-display);font-weight:900;font-size:clamp(24px,3.6vw,34px);letter-spacing:.12em}
+.fa-kind p{font-size:16px;line-height:1.85;max-width:38em}
+.fa-path{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));position:relative;max-width:640px}
+.fa-path::before{content:"";position:absolute;left:0;right:0;top:9px;height:1px;background:var(--ink)}
+.fa-path li{display:grid;justify-items:center;position:relative;min-width:0}
+.fa-path li::before{content:"";width:11px;height:11px;margin-top:4px;background:var(--ink);transform:rotate(45deg);position:relative;z-index:1}
+.fa-path li.same::before{background:var(--mark)}
+.fa-path li.open::before{background:var(--paper);border:1px solid var(--ink)}
+.fa-path .drop{width:1px;height:24px;background:var(--mark);margin-top:3px;visibility:hidden}
+.fa-path .me{width:11px;height:11px;border:2px solid var(--mark);transform:rotate(45deg);margin-top:3px;visibility:hidden}
+.fa-path li.diff .drop,.fa-path li.diff .me{visibility:visible}
+.fa-path .n{font-family:var(--f-latin);font-style:italic;font-size:15px;margin-top:10px}
+.fa-path .d{font-family:var(--f-ui);font-size:10.5px;letter-spacing:.1em;color:var(--slate);white-space:nowrap}
+.fa-path li.diff .d{color:var(--mark)}
+.fa-legend{font-size:13.5px;color:var(--slate);max-width:44em}
+
+/* 我的紀年 */
+.jr{display:grid;gap:24px}
+.jr-top{display:grid;gap:16px;padding-bottom:20px;border-bottom:1px solid var(--ink)}
+.jr-top p{font-size:17px;line-height:1.95;max-width:42em}
+.jr-ch{display:grid;gap:8px 34px;padding:20px 0;border-bottom:1px solid var(--hair)}
+@media (min-width:820px){.jr-ch{grid-template-columns:240px minmax(0,1fr)}}
+.jr-ch.blank>.jr-h,.jr-ch.blank .jr-none{opacity:.55}
+.jr-h{display:grid;gap:2px;align-content:start}
+.jr-h b{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.1em;line-height:1.35}
+.jr-m{font-size:13px;color:var(--slate)}
+.jr-body{display:grid;gap:10px;min-width:0;justify-items:start}
+.jr-body p{font-size:16px;line-height:1.9}
+.jr-st{display:flex;flex-wrap:wrap;gap:4px 18px;font-family:var(--f-ui);font-size:12px;letter-spacing:.14em;color:var(--slate)}
+.jr-pick{display:grid;gap:4px;justify-items:start;border-left:3px solid var(--mark);padding-left:14px}
+.jr-pick.none{border-left-color:var(--hair)}
+.jr-why{color:var(--slate)}
+.jr-note{white-space:pre-wrap;border-left:3px solid var(--hair);padding-left:14px}
+.jr-none{color:var(--slate)}
+
+@media (prefers-reduced-motion:reduce){.sty-prog i{transition:none}}
