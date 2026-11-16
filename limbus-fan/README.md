@@ -1,5 +1,7 @@
 # 邊獄巴士乘客手冊
 
+網址：https://limbus-handbook.vercel.app （Vercel 專案 `limbus-handbook`，根目錄是這個資料夾）
+
 《邊獄巴士》（Limbus Company，Project Moon）的非官方、非營利中文同好站。給剛上車的人看的一頁手冊：
 
 - **乘客名冊**：十二位罪人的座位表，點座位看名字的文學出處；車頭是管理人但丁、嚮導維吉里烏斯和司機卡戎。
