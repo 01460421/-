@@ -16,4 +16,6 @@ npx remotion still src/index.ts Weave out/f.png --frame=1450
 npx remotion render src/index.ts Weave out/weave.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p
 ```
 
+`remotion.config.ts` 用 ANGLE 繪圖：在沒有顯示卡的環境裡，比 `swangle` 快十倍左右（2,843 格約十幾分鐘）。要找哪一層慢，可以用 `--props='{"off":"backdrop,shadow"}'` 關掉幾層再量（可關：backdrop、ribbons、mask、shadow、shine、vignette、grain、arches）。
+
 `public/`、`out/` 不進 repo：裡面是取自官方立繪的畫面和配樂。錄影怎麼來，見上一層的 README。
