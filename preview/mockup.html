@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>學生聯絡名冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAFAFA;--panel:#FFF;--ink:#111;--muted:#6E6E6E;--line:#DCDCDC;--soft:#F3F3F3;--r:6px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans TC","WenQuanYi Zen Hei",system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--ink);display:flex;align-items:center;gap:16px;padding:14px 24px}
+.top h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.08em}
+.pill{font-size:13px;color:var(--muted)}
+.pill b{color:var(--ink)}
+.top .sp{flex:1}
+.btn{border:1px solid var(--ink);background:#fff;border-radius:var(--r);padding:7px 16px;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.pri{background:var(--ink);color:#fff}
+.btn.ghost{background:#fff}
+.wrap{display:grid;grid-template-columns:272px 1fr;gap:24px;padding:24px;max-width:1440px;margin:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+aside.card{padding:20px;align-self:start;position:sticky;top:80px}
+aside h3{font-size:12px;color:var(--muted);margin:20px 0 8px;font-weight:500;letter-spacing:.1em}
+aside h3:first-child{margin-top:0}
+.search{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r);background:#fff}
+.search:focus,select.sel:focus,.txt:focus{outline:none;border-color:var(--ink)}
+.seg{display:flex;border:1px solid var(--ink);border-radius:var(--r);overflow:hidden}
+.seg button{flex:1;border:0;border-left:1px solid var(--ink);background:#fff;padding:6px 0;cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button.on{background:var(--ink);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:var(--r);padding:3px 10px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin:5px 0}
+.chk input{accent-color:#111;width:15px;height:15px}
+select.sel{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);background:#fff}
+main{min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);background:#fff;margin-bottom:16px}
+.stat{padding:14px 18px;border:0;border-left:1px solid var(--line);border-radius:0}
+.stat:first-child{border-left:0}
+.stat .k{font-size:12px;color:var(--muted);letter-spacing:.08em}
+.stat .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:13px;color:var(--muted);font-weight:400;margin-left:2px}
+.bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tag{border:1px solid var(--ink);border-radius:var(--r);padding:1px 8px;font-size:13px}
+.tag i{font-style:normal;margin-left:6px;cursor:pointer;color:var(--muted)}
+.bar .sp{flex:1}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 16px;border-bottom:1px solid #EBEBEB;vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.08em;background:#fff;border-bottom:1px solid var(--ink);position:sticky;top:0;cursor:pointer;white-space:nowrap}
+th:after{content:" ↕";opacity:.3}
+tbody tr:hover{background:var(--soft)}
+.school{font-size:12px;color:var(--muted)}
+.name{font-weight:700}
+.ph{display:inline-flex;align-items:center;gap:6px;margin:1px 14px 1px 0;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ph em{font-style:normal;font-size:11px;border:1px solid var(--ink);border-radius:3px;padding:0 3px;line-height:1.4}
+.none{color:#AAA;font-size:13px}
+.foot{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;color:var(--muted);font-size:13px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
+.ov.show{display:flex}
+.modal{width:min(1180px,100%);max-height:92vh;display:grid;grid-template-columns:360px 1fr;overflow:hidden}
+.opts{padding:22px;overflow:auto;border-right:1px solid var(--line)}
+.opts h2{margin:0 0 4px;font-size:18px}
+.opts .sub{color:var(--muted);font-size:13px;margin-bottom:6px}
+.opts h3{font-size:12px;color:var(--muted);margin:18px 0 8px;font-weight:500;letter-spacing:.1em}
+.cols label{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:4px}
+.cols label input{accent-color:#111}
+.cols label span.h{margin-left:auto;color:#BBB;cursor:grab}
+.txt{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r)}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.go{display:flex;gap:8px;margin-top:20px}
+.prevwrap{background:#EDEDED;overflow:auto;padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.prevwrap .cap{font-size:12px;color:var(--muted)}
+.paper{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);width:520px;aspect-ratio:210/297;padding:32px 34px;display:flex;flex-direction:column}
+.paper.land{width:700px;aspect-ratio:297/210}
+.paper .ph1{border-bottom:2px solid #000;padding-bottom:8px;display:flex;align-items:flex-end;justify-content:space-between}
+.paper .ttl{font-size:19px;font-weight:700;letter-spacing:.06em}
+.paper .meta{font-size:10px;color:#555}
+.paper .grid{display:grid;gap:16px;margin-top:12px;flex:1;align-content:start}
+.paper table{font-size:11px}
+.paper th{position:static;color:#000;font-weight:700;padding:5px 8px;font-size:10.5px;border-bottom:1px solid #000;letter-spacing:0}
+.paper th:after{content:""}
+.paper td{padding:4px 8px;border-bottom:1px solid #E2E2E2}
+.paper.st-grid th,.paper.st-grid td{border:1px solid #000}
+.paper.st-zebra tr:nth-child(even) td{background:#F0F0F0}
+.paper.st-clean td{border-bottom:0}
+.paper.fs-s table{font-size:9.5px}.paper.fs-l table{font-size:13px}
+.paper .pf{display:flex;justify-content:space-between;font-size:9px;color:#777;border-top:1px solid #000;padding-top:6px}
+.paper .mono{font-variant-numeric:tabular-nums}
+@media (max-width:900px){.wrap{grid-template-columns:1fr;padding:16px}aside.card{position:static}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(3){border-left:0}.stat:nth-child(n+3){border-top:1px solid var(--line)}.modal{grid-template-columns:1fr}.hidem{display:none}.top{flex-wrap:wrap;padding:12px 16px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>學生聯絡名冊</h1>
+  <span class="pill">範例資料　已載入 <b id="tot">0</b> 筆　資料只存在本機瀏覽器，不會上傳</span>
+  <span class="sp"></span>
+  <button class="btn ghost">匯入 Excel</button>
+  <button class="btn pri" onclick="openEx()">匯出名冊</button>
+</header>
+
+<div class="wrap">
+  <aside class="card">
+    <h3>快速搜尋</h3>
+    <input class="search" id="q" placeholder="姓名、家長、電話末四碼…" oninput="render()">
+    <h3>學段</h3>
+    <div class="seg" id="lvl"><button class="on" data-v="">全部</button><button data-v="國小">國小</button><button data-v="國中">國中</button></div>
+    <h3>學校 <span class="hint">（可複選）</span></h3>
+    <div class="chips" id="schools"></div>
+    <h3>年級</h3>
+    <div class="chips" id="grades"></div>
+    <h3>班級</h3>
+    <select class="sel" id="cls" onchange="render()"><option value="">全部班級</option></select>
+    <h3>電話狀態</h3>
+    <label class="chk"><input type="checkbox" id="hasPh" onchange="render()"> 只看有電話</label>
+    <label class="chk"><input type="checkbox" id="noPh" onchange="render()"> 只看「沒有電話」（待補資料）</label>
+    <label class="chk"><input type="checkbox" id="mob" onchange="render()"> 只顯示手機號碼</label>
+    <h3>排序</h3>
+    <select class="sel"><option>學校 → 班級 → 座號</option><option>姓名筆畫</option><option>生日</option></select>
+    <div style="margin-top:16px"><button class="btn" style="width:100%" onclick="resetF()">清除所有篩選</button></div>
+  </aside>
+
+  <main>
+    <div class="stats">
+      <div class="stat"><div class="k">符合條件</div><div class="v" id="sN">0 <small>人</small></div></div>
+      <div class="stat"><div class="k">學校</div><div class="v" id="sS">0 <small>所</small></div></div>
+      <div class="stat"><div class="k">班級</div><div class="v" id="sC">0 <small>班</small></div></div>
+      <div class="stat"><div class="k">有電話比例</div><div class="v" id="sP">0<small>%</small></div></div>
+    </div>
+    <div class="card">
+      <div class="bar" id="tags"></div>
+      <div style="overflow:auto">
+      <table>
+        <thead><tr><th>學校／班級</th><th>座號</th><th>姓名</th><th class="hidem">監護人</th><th>電話（含監護人、緊急聯絡人）</th><th class="hidem">生日</th></tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+      </div>
+      <div class="foot"><span>每頁 50 筆 · 點欄位標題可排序 · 點一列可展開地址等完整資料</span><span>‹ 1 2 3 … ›</span></div>
+    </div>
+  </main>
+</div>
+
+<!-- Export modal -->
+<div class="ov" id="ov" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="card modal">
+    <div class="opts">
+      <h2>匯出名冊</h2>
+      <div class="sub">依目前篩選結果 <b id="exN">0</b> 人，右側即時預覽</div>
+
+      <h3>① 分檔方式</h3>
+      <div class="seg" id="split"><button data-v="all">全部一份</button><button data-v="school">每校一份</button><button class="on" data-v="class">每班一份</button></div>
+      <div class="hint">多份時會打包成一個 ZIP 下載</div>
+
+      <h3>② 欄位（可拖曳調整順序）</h3>
+      <div class="cols" id="cols">
+        <label><input type="checkbox" checked data-c="school">學校<span class="h">⋮⋮</span></label>
+        <label><input type="checkbox" checked data-c="cls">班級<span class="h">⋮⋮</span></label>
+        <label><input type="checkbox" data-c="seat">座號<span class="h">⋮⋮</span></label>
+        <label><input type="checkbox" checked data-c="name">姓名<span class="h">⋮⋮</span></label>
+        <label><input type="checkbox" checked data-c="phone">電話<span class="h">⋮⋮</span></label>
+        <label><input type="checkbox" data-c="guard">監護人<span class="h">⋮⋮</span></label>
+      </div>
+
+      <h3>③ 電話顯示</h3>
+      <select class="sel" id="phm"><option value="all">全部號碼（附 父/母 標籤）</option><option value="first">只顯示第一支</option><option value="mask">遮蔽中間（0912-***-678）</option></select>
+
+      <h3>④ 版面</h3>
+      <div class="seg" id="ori"><button class="on" data-v="p">A4 直式</button><button data-v="l">A4 橫式</button></div>
+      <div class="seg" id="ncol" style="margin-top:6px"><button class="on" data-v="1">單欄</button><button data-v="2">雙欄並排</button></div>
+      <div class="seg" id="fs" style="margin-top:6px"><button data-v="s">字小</button><button class="on" data-v="m">字中</button><button data-v="l">字大</button></div>
+
+      <h3>⑤ 表格線條</h3>
+      <div class="seg" id="sty"><button class="on" data-v="line">橫線</button><button data-v="grid">全格線</button><button data-v="zebra">灰白相間</button></div>
+
+      <h3>⑥ 標題</h3>
+      <input class="txt" id="ttl" value="{學校}　{班級}　聯絡名冊" oninput="prev()">
+      <div class="hint">可用變數：{學校} {班級} {人數} {日期}</div>
+      <label class="chk" style="margin-top:8px"><input type="checkbox" checked id="pf" onchange="prev()"> 頁尾顯示列印日期與頁碼</label>
+      <label class="chk"><input type="checkbox" id="wm" onchange="prev()"> 加「機密・僅供聯絡使用」浮水印</label>
+
+      <h3>⑦ 檔案格式</h3>
+      <div class="seg" id="fmt"><button class="on">PDF</button><button>PNG</button><button>Excel</button><button>列印</button></div>
+      <div class="go"><button class="btn pri" style="flex:1">下載</button><button class="btn" onclick="document.getElementById('ov').classList.remove('show')">取消</button></div>
+      <div class="hint">設定會記住，下次打開沿用；也可存成多組「範本」</div>
+    </div>
+    <div class="prevwrap"><div class="cap" id="cap"></div><div id="paper"></div></div>
+  </div>
+</div>
+
+<script>
+// ===== FAKE SAMPLE DATA (not real people) =====
+const SN="陳林黃張李王吳劉蔡楊許鄭謝洪郭邱曾廖賴徐".split(""), GN="宇恩妤晴承翰芯睿涵廷彥安柏瑄昕哲宥語璇凱".split("");
+const E={國小:{s:["縣立雲林國小","縣立鎮南國小","縣立鎮西國小","縣立鎮東國小"],g:["一年","二年","三年","四年","五年","六年"],c:["甲班","乙班","丙班"]},
+         國中:{s:["縣立斗六國中","私立正心高中附設國中","縣立雲林國中"],g:["七年","八年","九年"],c:["1班","2班","3班"]}};
+let seed=7;const rnd=n=>{seed=(seed*9301+49297)%233280;return Math.floor(seed/233280*n)};
+const nm=()=>SN[rnd(SN.length)]+GN[rnd(GN.length)]+GN[rnd(GN.length)];
+const fph=()=>"0900-"+String(rnd(900)+100)+"-"+String(rnd(900)+100);
+const D=[];
+for(const L in E){for(const s of E[L].s)for(const g of E[L].g)for(const c of E[L].c){const n=4+rnd(3);for(let i=1;i<=n;i++){
+  const r=rnd(10),ph=[];
+  if(r<5){ph.push(["父",fph()]);ph.push(["母",fph()])}else if(r<8)ph.push(["",fph()]);else if(r<9)ph.push(["市",`05-5${rnd(900000)+100000}`]);
+  D.push({L,s,g,cls:g+c,seat:i,name:nm(),guard:nm(),ph,bd:`${2008+rnd(10)}/${1+rnd(12)}/${1+rnd(28)}`})}}}
+document.getElementById('tot').textContent=D.length.toLocaleString();
+
+// ===== FILTER UI =====
+const st={L:"",S:new Set(),G:new Set()};
+function segs(id,cb){document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cb(b.dataset.v)})}
+segs('lvl',v=>{st.L=v;st.S.clear();st.G.clear();build();render()});
+function build(){
+  const ss=st.L?E[st.L].s:[...E.國小.s,...E.國中.s], gg=st.L?E[st.L].g:[...E.國小.g,...E.國中.g];
+  document.getElementById('schools').innerHTML=ss.map(s=>`<span class="chip ${st.S.has(s)?'on':''}" data-s="${s}">${s.replace('縣立','').replace('私立','').replace('高中附設','')}</span>`).join('');
+  document.getElementById('grades').innerHTML=gg.map(g=>`<span class="chip ${st.G.has(g)?'on':''}" data-g="${g}">${g}</span>`).join('');
+  document.querySelectorAll('[data-s]').forEach(c=>c.onclick=()=>{st.S.has(c.dataset.s)?st.S.delete(c.dataset.s):st.S.add(c.dataset.s);build();render()});
+  document.querySelectorAll('[data-g]').forEach(c=>c.onclick=()=>{st.G.has(c.dataset.g)?st.G.delete(c.dataset.g):st.G.add(c.dataset.g);build();render()});
+}
+function rows(){
+  const q=document.getElementById('q').value.trim(),cl=document.getElementById('cls').value;
+  return D.filter(d=>(!st.L||d.L===st.L)&&(!st.S.size||st.S.has(d.s))&&(!st.G.size||st.G.has(d.g))&&(!cl||d.cls===cl)
+   &&(!document.getElementById('hasPh').checked||d.ph.length)&&(!document.getElementById('noPh').checked||!d.ph.length)
+   &&(!q||d.name.includes(q)||d.guard.includes(q)||d.ph.some(p=>p[1].replace(/-/g,'').includes(q))));
+}
+const phHTML=(d)=>{let p=d.ph;if(document.getElementById('mob').checked)p=p.filter(x=>x[1].startsWith('09'));
+  return p.length?p.map(([l,n])=>`<span class="ph">${l?`<em>${l}</em>`:''}${n}</span>`).join(''):'<span class="none">未填寫</span>'};
+function render(){
+  const R=rows();
+  const cs=[...new Set(R.map(d=>d.cls))],sel=document.getElementById('cls'),cur=sel.value;
+  sel.innerHTML='<option value="">全部班級</option>'+[...new Set(D.filter(d=>(!st.L||d.L===st.L)&&(!st.S.size||st.S.has(d.s))&&(!st.G.size||st.G.has(d.g))).map(d=>d.cls))].map(c=>`<option ${c===cur?'selected':''}>${c}</option>`).join('');
+  document.getElementById('sN').innerHTML=R.length.toLocaleString()+' <small>人</small>';
+  document.getElementById('sS').innerHTML=new Set(R.map(d=>d.s)).size+' <small>所</small>';
+  document.getElementById('sC').innerHTML=new Set(R.map(d=>d.s+d.cls)).size+' <small>班</small>';
+  document.getElementById('sP').innerHTML=(R.length?Math.round(R.filter(d=>d.ph.length).length/R.length*100):0)+'<small>%</small>';
+  const t=[];if(st.L)t.push(st.L);st.S.forEach(s=>t.push(s));st.G.forEach(g=>t.push(g));if(sel.value)t.push(sel.value);
+  document.getElementById('tags').innerHTML=(t.length?t.map(x=>`<span class="tag">${x}<i>✕</i></span>`).join(''):'<span class="hint">目前顯示全部資料</span>')+'<span class="sp"></span><button class="btn">顯示欄位</button><button class="btn">匯出這些 '+R.length+' 人</button>';
+  document.getElementById('tb').innerHTML=R.slice(0,50).map(d=>`<tr><td><div class="school">${d.s}</div>${d.cls}</td><td>${d.seat}</td><td class="name">${d.name}</td><td class="hidem">${d.guard}</td><td>${phHTML(d)}</td><td class="hidem">${d.bd}</td></tr>`).join('');
+}
+function resetF(){st.L="";st.S.clear();st.G.clear();document.querySelectorAll('#lvl button').forEach((b,i)=>b.classList.toggle('on',i===0));['q','cls'].forEach(i=>document.getElementById(i).value='');['hasPh','noPh','mob'].forEach(i=>document.getElementById(i).checked=false);build();render()}
+build();render();
+
+// ===== EXPORT PREVIEW =====
+const ex={split:"class",ori:"p",ncol:"1",fs:"m",sty:"line"};
+segs('split',v=>{ex.split=v;prev()});segs('ori',v=>{ex.ori=v;prev()});segs('ncol',v=>{ex.ncol=v;prev()});segs('fs',v=>{ex.fs=v;prev()});segs('fmt',()=>{});
+segs('sty',v=>{ex.sty=v;prev()});
+document.querySelectorAll('#cols input,#phm').forEach(i=>i.onchange=prev);
+function openEx(){document.getElementById('ov').classList.add('show');prev()}
+const LBL={school:"學校",cls:"班級",seat:"座號",name:"姓名",phone:"電話",guard:"監護人"};
+function prev(){
+  const R=rows();document.getElementById('exN').textContent=R.length;
+  const groups={};R.forEach(d=>{const k=ex.split==='all'?'全部':ex.split==='school'?d.s:d.s+'|'+d.cls;(groups[k]=groups[k]||[]).push(d)});
+  const keys=Object.keys(groups),g=groups[keys[0]]||[],f=g[0]||{};
+  document.getElementById('cap').textContent=`預覽第 1 份，共 ${keys.length} 份${keys.length>1?'（將打包為 ZIP）':''}`;
+  const cols=[...document.querySelectorAll('#cols input:checked')].map(i=>i.dataset.c);
+  const pm=document.getElementById('phm').value;
+  const fmtPh=d=>{let p=d.ph;if(!p.length)return'';if(pm==='first')p=[p[0]];return p.map(([l,n])=>(l&&l!=='市'?l+' ':'')+(pm==='mask'?n.replace(/^(\d{4}-)\d{3}/,'$1***'):n)).join('<br>')};
+  const cell=(d,c)=>c==='phone'?`<span class="mono">${fmtPh(d)}</span>`:c==='school'?d.s.replace('縣立',''):d[c];
+  const title=document.getElementById('ttl').value.replace('{學校}',ex.split==='all'?'':f.s||'').replace('{班級}',ex.split==='class'?f.cls||'':'').replace('{人數}',g.length).replace('{日期}','2026/11/26');
+  const tbl=list=>`<table><thead><tr>${cols.map(c=>`<th>${LBL[c]}</th>`).join('')}</tr></thead><tbody>${list.map(d=>`<tr>${cols.map(c=>`<td>${cell(d,c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const list=g.slice(0,ex.ncol==='2'?30:16), half=Math.ceil(list.length/2);
+  const body=ex.ncol==='2'?`<div class="grid" style="grid-template-columns:1fr 1fr">${tbl(list.slice(0,half))}${tbl(list.slice(half))}</div>`:`<div class="grid">${tbl(list)}</div>`;
+  const wm=document.getElementById('wm').checked?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:34px;color:rgba(0,0,0,.06);transform:rotate(-25deg);font-weight:700">機密・僅供聯絡使用</div>`:'';
+  document.getElementById('paper').innerHTML=`<div class="paper ${ex.ori==='l'?'land':''} fs-${ex.fs} st-${ex.sty}" style="position:relative">${wm}
+   <div class="ph1"><div class="ttl">${title.trim()}</div><div class="meta">共 ${g.length} 人</div></div>${body}
+   ${document.getElementById('pf').checked?'<div class="pf"><span>列印日期 2026/11/26</span><span>第 1 頁 / 共 1 頁</span></div>':''}</div>`;
+}
+</script>
+</body>
+</html>
