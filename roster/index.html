@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>學生聯絡名冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== 解鎖畫面 ========== -->
+<section id="lock" class="lock">
+  <form class="lockbox" id="lockForm" autocomplete="off">
+    <h1>學生聯絡名冊</h1>
+    <p class="muted">資料已加密，請輸入密碼</p>
+    <input type="password" id="pw" class="input" placeholder="密碼" autofocus>
+    <label class="chk"><input type="checkbox" id="keep" checked> 關閉分頁前保持解鎖</label>
+    <button class="btn pri wide" id="unlockBtn">解鎖</button>
+    <p class="err" id="lockErr"></p>
+  </form>
+</section>
+
+<!-- ========== 主畫面 ========== -->
+<div id="app" hidden>
+<header class="top">
+  <h1>學生聯絡名冊</h1>
+  <span class="info" id="info"></span>
+  <span class="sp"></span>
+  <button class="btn only-m" id="filterToggle">篩選</button>
+  <button class="btn" id="lockBtn">鎖定</button>
+  <button class="btn pri" id="exportBtn">匯出名冊</button>
+</header>
+
+<div class="wrap">
+  <aside class="card side" id="side">
+    <h3>快速搜尋</h3>
+    <input class="input" id="q" placeholder="姓名、家長、電話、地址…" type="search">
+    <h3>學段</h3>
+    <div class="seg" id="fLevel"><button data-v="" class="on">全部</button><button data-v="國小">國小</button><button data-v="國中">國中</button></div>
+    <h3>學校 <span class="muted">可複選</span></h3>
+    <div class="chips" id="fSchool"></div>
+    <h3>年級 <span class="muted">可複選</span></h3>
+    <div class="chips" id="fGrade"></div>
+    <h3>班級</h3>
+    <select class="input" id="fClass"></select>
+    <h3>性別 <span class="muted">僅國中有資料</span></h3>
+    <div class="seg" id="fSex"><button data-v="" class="on">全部</button><button data-v="男">男</button><button data-v="女">女</button></div>
+    <h3>電話</h3>
+    <div class="seg" id="fPhone"><button data-v="" class="on">全部</button><button data-v="has">有電話</button><button data-v="none">沒電話</button></div>
+    <label class="chk"><input type="checkbox" id="fMobile"> 只顯示手機號碼</label>
+    <button class="btn wide" id="resetBtn" style="margin-top:18px">清除所有篩選</button>
+  </aside>
+
+  <main>
+    <div class="stats">
+      <div class="stat"><div class="k">符合條件</div><div class="v" id="sN"></div></div>
+      <div class="stat"><div class="k">學校</div><div class="v" id="sS"></div></div>
+      <div class="stat"><div class="k">班級</div><div class="v" id="sC"></div></div>
+      <div class="stat"><div class="k">有電話</div><div class="v" id="sP"></div></div>
+    </div>
+    <div class="card">
+      <div class="bar">
+        <div id="tags" class="tags"></div>
+        <span class="sp"></span>
+        <div class="pop">
+          <button class="btn" id="colBtn">顯示欄位</button>
+          <div class="popbox" id="colBox"></div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table class="grid">
+          <thead><tr id="thead"></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="foot">
+        <span id="pageInfo"></span>
+        <span class="pager">
+          <select class="input sm" id="pageSize"><option>50</option><option>100</option><option>200</option><option value="0">全部</option></select>
+          <button class="btn sm" id="prevPg">‹</button>
+          <span id="pgNo"></span>
+          <button class="btn sm" id="nextPg">›</button>
+        </span>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+<!-- ========== 匯出 ========== -->
+<div class="ov" id="ov" hidden>
+  <div class="card modal">
+    <div class="opts">
+      <div class="mhead"><h2>匯出名冊</h2><button class="btn sm" id="closeEx">關閉</button></div>
+      <div class="muted">依目前篩選結果 <b id="exN"></b> 人，預覽會即時更新</div>
+
+      <h3>1　分檔方式</h3>
+      <div class="seg" id="xSplit"><button data-v="all">全部一份</button><button data-v="school">每校一份</button><button data-v="class">每班一份</button></div>
+      <div class="seg mt" id="xPack"><button data-v="merge">合併成一個檔（每份換頁）</button><button data-v="zip">各自成檔（ZIP）</button></div>
+
+      <h3>2　欄位與順序</h3>
+      <div class="cols" id="xCols"></div>
+
+      <h3>3　電話顯示</h3>
+      <select class="input" id="xPhone">
+        <option value="all">全部號碼（附稱謂）</option>
+        <option value="first">只顯示第一支</option>
+        <option value="mobile">只顯示手機</option>
+        <option value="mask">全部號碼，中間遮蔽</option>
+      </select>
+      <div class="seg mt" id="xPhoneLine"><button data-v="br">一支一行</button><button data-v="inline">同一行</button></div>
+
+      <h3>4　版面</h3>
+      <div class="seg" id="xOri"><button data-v="p">A4 直式</button><button data-v="l">A4 橫式</button></div>
+      <div class="seg mt" id="xNcol"><button data-v="1">單欄</button><button data-v="2">雙欄並排</button></div>
+      <div class="seg mt" id="xFs"><button data-v="s">字小</button><button data-v="m">字中</button><button data-v="l">字大</button></div>
+
+      <h3>5　表格線條</h3>
+      <div class="seg" id="xSty"><button data-v="line">橫線</button><button data-v="grid">全格線</button><button data-v="zebra">灰白相間</button></div>
+
+      <h3>6　標題與頁尾</h3>
+      <input class="input" id="xTitle">
+      <div class="muted small">可用：{學校} {班級} {人數} {日期}</div>
+      <label class="chk"><input type="checkbox" id="xFoot"> 頁尾顯示列印日期與頁碼</label>
+      <label class="chk"><input type="checkbox" id="xWm"> 加「機密・僅供聯絡使用」浮水印</label>
+
+      <h3>7　範本</h3>
+      <div class="row"><select class="input" id="xPreset"><option value="">— 套用已存的範本 —</option></select><button class="btn" id="xSave">存成範本</button><button class="btn" id="xDel" title="刪除範本">刪除</button></div>
+
+      <h3>8　格式</h3>
+      <div class="seg" id="xFmt"><button data-v="pdf">PDF</button><button data-v="png">PNG</button><button data-v="xlsx">Excel</button><button data-v="print">列印</button></div>
+      <div class="muted small" id="fmtHint"></div>
+      <button class="btn pri wide mt2" id="xGo">下載</button>
+      <div class="progress" id="prog" hidden><div id="progBar"></div><span id="progTxt"></span></div>
+    </div>
+    <div class="prevwrap">
+      <div class="muted small" id="prevCap"></div>
+      <div class="prevscale" id="prevScale"><div id="prevPage"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 實際輸出用（畫面外） -->
+<div id="render" class="render"></div>
+<div id="prevRender" class="render"></div>
+<div id="printArea" class="printArea"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
