@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>sim harness</title>
+<style>
+:root { --bg: #f2f7f6; --card: #ffffff; --ink: #17313a; --ink-2: #48606a; --mute: #7f949b; --line: #d9e5e3;
+  --teal: #0e8478; --teal-2: #0a6a60; --teal-soft: #e0f2ef; --sun: #ffd96a; --red: #cf4540; --green: #22875a;
+  --c-P: #2f6fd6; --c-C: #db7419; --c-B: #2c9554; --c-E: #8a5a2b; --c-X: #7a4fc4;
+  --f-head: 'Noto Sans TC', sans-serif; --f-body: 'Noto Sans TC', sans-serif; --f-mono: ui-monospace, Menlo, monospace; }
+* { box-sizing: border-box; } body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font-family: var(--f-body); line-height: 1.7; }
+.wrap { max-width: 900px; margin: 0 auto; background: var(--card); padding: 16px; border-radius: 12px; }
+</style>
+<link rel="stylesheet" href="sim.css">
+<div class="wrap" id="w"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const names = (q.get('sims') || '').split(',').filter(Boolean);
+const opt = JSON.parse(q.get('opt') || '{}');
+window.__errs = [];
+window.addEventListener('error', (e) => window.__errs.push(String(e.message)));
+(async () => {
+  for (const n of names) {
+    await new Promise((res) => { const s = document.createElement('script'); s.src = n + '.js?' + Date.now(); s.onload = res; s.onerror = () => { window.__errs.push('load ' + n); res(); }; document.head.appendChild(s); });
+    const h = document.createElement('h3'); h.textContent = n; document.getElementById('w').appendChild(h);
+    const el = document.createElement('div'); el.className = 'sim'; el.dataset.sim = n; document.getElementById('w').appendChild(el);
+    try { window.SIMS[n](el, opt[n] || {}); } catch (e) { window.__errs.push(n + ': ' + e.message); }
+  }
+  window.__ready = true;
+})();
+</script>

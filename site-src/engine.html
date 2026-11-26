@@ -1,0 +1,679 @@
+<title>/*SITE_TITLE*/</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+/*KATEX_CSS*/
+<style>/*SIM_CSS*/</style>
+<style>
+/* Layout: airy study notebook — white top bar, unit index rail on wide screens, one column on phones. Single light theme by design (figures use fixed ink colors). */
+:root {
+  --bg: #f2f7f6; --card: #ffffff; --ink: #17313a; --ink-2: #48606a; --mute: #7f949b; --line: #d9e5e3;
+  --teal: #0e8478; --teal-2: #0a6a60; --teal-soft: #e0f2ef; --sun: #ffd96a; --red: #cf4540; --red-soft: #fdeceb; --green: #22875a; --green-soft: #e3f4eb;
+  --c-P: #2f6fd6; --c-C: #db7419; --c-B: #2c9554; --c-E: #8a5a2b; --c-X: #7a4fc4; --c-K: #c23d5c; --c-M: #2456a6;
+  --f-head: 'LXGW WenKai TC', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --f-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 16px; line-height: 1.8; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--card); }
+a { color: var(--teal); }
+button { font: inherit; cursor: pointer; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.in { max-width: 1200px; margin: 0 auto; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; background: var(--card); border-bottom: 1px solid var(--line); }
+.top .in { display: flex; align-items: center; gap: 14px; padding-block: 10px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand svg { width: 36px; height: 36px; flex: none; }
+.brand b { font-family: var(--f-head); font-size: 1.3rem; letter-spacing: .06em; display: block; line-height: 1.2; }
+.brand small { display: block; font-size: .72rem; color: var(--mute); letter-spacing: .14em; line-height: 1.3; }
+.nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.nav a { color: var(--ink-2); text-decoration: none; padding: 6px 14px; border-radius: 999px; font-size: .95rem; }
+.nav a:hover { background: var(--teal-soft); color: var(--teal-2); }
+.nav a[aria-current="page"] { background: var(--teal); color: #fff; }
+main { padding-block: 22px 70px; }
+.view[hidden] { display: none !important; }
+
+/* home */
+.hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: end; margin-bottom: 22px; }
+.hero h1 { font-family: var(--f-head); font-weight: 700; font-size: clamp(1.9rem, 4.4vw, 2.8rem); line-height: 1.25; margin: 0 0 8px; text-wrap: balance; }
+.hero p { margin: 0; color: var(--ink-2); max-width: 60ch; }
+.nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.num { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.num b { display: block; font-family: var(--f-mono); font-size: 1.45rem; font-variant-numeric: tabular-nums; color: var(--teal-2); line-height: 1.3; }
+.num span { font-size: .8rem; color: var(--mute); }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 4px 0 18px; }
+.filters input { flex: 1 1 220px; min-width: 0; font: inherit; padding: 9px 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); }
+.chipbtn { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 14px; font-size: .92rem; color: var(--ink-2); }
+.chipbtn[aria-pressed="true"] { border-color: var(--teal); background: var(--teal); color: #fff; }
+.subj-h { font-family: var(--f-head); font-size: 1.5rem; margin: 26px 0 10px; display: flex; align-items: center; gap: 10px; }
+.subj-h i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.books { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+.book { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 10px; min-width: 0; border-top: 4px solid var(--bc, var(--teal)); }
+.book h3 { font-family: var(--f-head); font-size: 1.15rem; margin: 0 0 2px; line-height: 1.4; }
+.book .bno { font-size: .75rem; color: var(--mute); letter-spacing: .12em; }
+.book .part { font-size: .78rem; color: var(--mute); margin: 8px 0 2px; letter-spacing: .04em; }
+.urow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 8px; margin: 0 -8px; border-radius: 8px; text-decoration: none; color: var(--ink); }
+.urow:hover { background: var(--teal-soft); }
+.ucode { font-family: var(--f-mono); font-size: .78rem; color: #fff; background: var(--bc, var(--teal)); border-radius: 5px; padding: 1px 7px; min-width: 40px; text-align: center; }
+.utitle { line-height: 1.4; font-size: .95rem; }
+.umeta { display: flex; align-items: center; gap: 8px; font-size: .74rem; color: var(--mute); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar { width: 54px; height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; display: inline-block; }
+.bar span { display: block; height: 100%; background: var(--teal); }
+.empty { text-align: center; color: var(--mute); padding: 40px 10px; }
+
+/* unit header */
+.uhead { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: flex-end; margin-bottom: 14px; }
+.crumb { font-size: .85rem; color: var(--mute); width: 100%; }
+.crumb a { color: var(--mute); }
+.uhead h1 { font-family: var(--f-head); font-size: clamp(1.6rem, 3.6vw, 2.3rem); margin: 0; line-height: 1.3; text-wrap: balance; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.uhead h1 .ucode { font-size: 1rem; padding: 3px 10px; }
+.tabs { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.tabs button { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 18px; color: var(--ink-2); font-weight: 500; }
+.tabs button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.tabs button small { font-family: var(--f-mono); font-size: .72rem; opacity: .75; margin-left: 4px; }
+
+/* lesson */
+.lesson { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 22px; align-items: start; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); max-height: calc(100vh - 100px); overflow: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.toc { list-style: none; margin: 0; padding: 0; font-size: .9rem; }
+.toc a { display: block; padding: 5px 9px; border-radius: 7px; text-decoration: none; color: var(--ink-2); line-height: 1.45; }
+.toc a:hover { background: var(--teal-soft); color: var(--teal-2); }
+.toc a.read span::after { content: " ✓"; color: var(--green); }
+.sheet { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 26px clamp(16px, 4vw, 46px); min-width: 0; }
+.sec { scroll-margin-top: 90px; }
+.sec > h2 { font-family: var(--f-head); font-weight: 700; font-size: 1.5rem; margin: 30px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--teal-soft); text-wrap: balance; }
+.sec:first-child > h2 { margin-top: 0; }
+.unit-src { font-size: .85rem; color: var(--mute); margin: 0 0 6px; }
+
+/* content */
+.content { overflow-wrap: anywhere; }
+.content p { margin: .5em 0; }
+.content h4 { font-size: 1.05rem; margin: 18px 0 6px; color: var(--teal-2); }
+.content ul, .content ol { padding-left: 1.4em; margin: .4em 0; }
+.content table { border-collapse: collapse; width: 100%; font-size: .93rem; margin: 10px 0; }
+.content table.t th { background: var(--teal-2); color: #fff; font-weight: 500; text-align: left; }
+.content table.t th, .content table.t td { border: 1px solid var(--line); padding: 6px 9px; vertical-align: top; }
+.content table.t tbody tr:nth-child(even) td { background: #f6faf9; }
+.tablebox { overflow-x: auto; position: relative; }
+.katex { position: relative; }
+.content span.m-wide { display: block; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+.content strong { font-weight: 700; background: linear-gradient(transparent 58%, var(--sun) 58%, var(--sun) 92%, transparent 92%); }
+.content em { font-style: normal; text-decoration: underline wavy var(--red); text-underline-offset: 4px; }
+.content .mb { overflow-x: auto; overflow-y: hidden; margin: 8px 0; }
+.content figure { margin: 14px auto; text-align: center; max-width: 100%; overflow-x: auto; }
+.content figure svg { max-width: 100%; height: auto; }
+.content figcaption { font-size: .85rem; color: var(--mute); margin-top: 4px; }
+.content img.scan { display: block; max-width: min(100%, 640px); height: auto; margin: 10px 0; border-radius: 4px; }
+.key, .tip, .warn, .exam, .mnem, .formula, .example, .note { border-radius: 12px; padding: 12px 16px; margin: 14px 0; }
+.key::before, .tip::before, .warn::before, .exam::before { display: inline-block; font-size: .74rem; letter-spacing: .14em; font-weight: 700; color: #fff; border-radius: 999px; padding: 1px 10px; margin-bottom: 6px; }
+.key { background: var(--teal-soft); border: 1px solid #bfe3dd; } .key::before { content: "重點整理"; background: var(--teal); }
+.tip { background: #f0f7ea; border: 1px solid #cfe5c4; } .tip::before { content: "補充"; background: var(--green); }
+.warn { background: var(--red-soft); border: 1px solid #f3c7c5; } .warn::before { content: "易錯提醒"; background: var(--red); }
+.exam { background: var(--card); border: 2px dashed var(--red); } .exam::before { content: "考點"; background: var(--card); color: var(--red); padding-left: 0; }
+.formula { background: var(--card); border: 2px solid var(--teal); }
+.formula::before { content: attr(data-t); display: inline-block; font-size: .78rem; letter-spacing: .1em; color: #fff; background: var(--teal); border-radius: 4px; padding: 1px 10px; margin-bottom: 4px; }
+.formula:not([data-t])::before { content: "公式"; }
+.mnem { background: #fdeef3; border: 1px solid #f4c7d6; }
+.note { background: #fffbe3; border-left: 4px solid var(--teal); font-family: var(--f-head); color: var(--teal-2); border-radius: 4px 12px 12px 4px; }
+.example { background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--sun); }
+.sol { margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li { counter-increment: st; position: relative; padding-left: 32px; margin: 6px 0; }
+ol.steps > li::before { content: counter(st); position: absolute; left: 0; top: 4px; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--teal); color: var(--teal); font-size: .75rem; display: grid; place-items: center; font-family: var(--f-mono); }
+.hand { font-family: var(--f-head); color: var(--red); margin-left: .3em; }
+.hand.blue { color: var(--teal-2); }
+.hand:not(.no)::before { content: "← "; }
+.circle { border: 1.6px solid var(--red); border-radius: 50% / 60%; padding: 0 .3em; }
+.box { border: 1.6px solid var(--red); border-radius: 3px; padding: 0 .3em; }
+.ul { border-bottom: 2px solid var(--teal); }
+.mark { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: .75rem; margin-right: 8px; vertical-align: 1px; }
+.bad .mark { background: var(--red); } .good .mark { background: var(--green); }
+ul.check { list-style: none; padding-left: 0; } ul.check li::before { content: "☐ "; color: var(--teal); }
+.exid { font-family: var(--f-mono); font-size: .76rem; background: var(--ink); color: #fff; border-radius: 4px; padding: 1px 7px; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2px 18px; margin: 6px 0; }
+.lines, .paper { display: none; }
+.src { color: var(--mute); font-size: .9rem; }
+.zh { color: var(--ink-2); }
+.passage { background: #f6faf9; border-radius: 8px; padding: 10px 14px; }
+.blank { display: inline-block; min-width: 3em; border-bottom: 1.5px solid var(--ink); text-align: center; }
+.qlink { background: var(--teal-soft); border-radius: 8px; padding: 8px 12px; cursor: pointer; color: var(--teal-2); font-weight: 500; }
+
+/* practice */
+.practice { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 22px; align-items: start; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); }
+.panel h3 { font-family: var(--f-head); font-size: 1.15rem; margin: 0 0 8px; }
+.field { display: grid; gap: 4px; margin-bottom: 10px; font-size: .86rem; color: var(--ink-2); }
+.field select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); width: 100%; }
+.grid-q { display: grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 5px; margin-top: 6px; max-height: 260px; overflow: auto; padding: 2px; }
+.grid-q button { font-family: var(--f-mono); font-size: .72rem; border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 5px 0; color: var(--ink-2); }
+.grid-q button.right { background: var(--green-soft); border-color: #9fd2b3; color: var(--green); }
+.grid-q button.wrong { background: var(--red-soft); border-color: #eab0b0; color: var(--red); }
+.grid-q button.cur { outline: 2px solid var(--teal); }
+.stat { display: flex; gap: 10px; font-size: .82rem; color: var(--ink-2); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+.stat b { color: var(--ink); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px clamp(16px, 3.5vw, 36px); min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.chip { font-size: .75rem; border-radius: 999px; padding: 2px 10px; background: var(--bg); border: 1px solid var(--line); color: var(--ink-2); }
+.chip.t { background: var(--teal-soft); border-color: #bfe3dd; color: var(--teal-2); }
+.chip.s { background: #fff6dd; border-color: #f2dc9c; color: #8a6510; }
+.ctx { background: #f6faf9; border-left: 4px solid var(--sun); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: .95rem; }
+.pre { font-size: .88rem; color: var(--mute); margin-bottom: 8px; }
+.choices { display: grid; gap: 8px; margin: 14px 0; }
+.choice { display: flex; gap: 12px; align-items: flex-start; text-align: left; border: 1.5px solid var(--line); border-radius: 10px; background: var(--card); padding: 10px 14px; min-width: 0; }
+.choice .k { font-family: var(--f-mono); flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line); color: var(--ink-2); font-size: .85rem; }
+.choice .h { min-width: 0; overflow-x: auto; padding-top: 1px; }
+.choice[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.choice[aria-pressed="true"] .k { background: var(--teal); border-color: var(--teal); color: #fff; }
+.choice.is-right { border-color: var(--green); background: var(--green-soft); }
+.choice.is-right .k { background: var(--green); border-color: var(--green); color: #fff; }
+.choice.is-wrong { border-color: var(--red); background: var(--red-soft); }
+.choice.is-wrong .k { background: var(--red); border-color: var(--red); color: #fff; }
+.choice:disabled { cursor: default; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.sp { flex: 1; }
+.btn { border: 1.5px solid var(--ink); background: var(--ink); color: #fff; border-radius: 999px; padding: 7px 18px; font-weight: 500; text-decoration: none; display: inline-block; }
+.btn.ghost { background: var(--card); color: var(--ink); }
+.btn.teal { background: var(--teal); border-color: var(--teal); }
+.btn.green { background: var(--green); border-color: var(--green); }
+.btn.red { background: var(--red); border-color: var(--red); }
+.btn.sun { background: var(--sun); border-color: #e9c14d; color: var(--ink); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.verdict { font-family: var(--f-head); font-size: 1.2rem; }
+.verdict.ok { color: var(--green); } .verdict.no { color: var(--red); }
+.answer { margin-top: 16px; border: 1.5px solid var(--teal); border-radius: 12px; padding: 14px 16px 10px; background: #fbfefd; position: relative; }
+.answer::before { content: "詳解"; position: absolute; top: -11px; left: 14px; background: var(--teal); color: #fff; font-size: .74rem; letter-spacing: .16em; padding: 0 10px; border-radius: 4px; }
+.answer .key-line { color: var(--teal-2); font-weight: 700; margin-top: 0; }
+.hints { display: grid; gap: 8px; margin-top: 12px; }
+.hint { background: #fffaf0; border: 1px solid #f2dc9c; border-radius: 10px; padding: 8px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; animation: rise .25s ease; }
+.hint b { font-family: var(--f-head); color: #8a6510; white-space: nowrap; }
+@keyframes rise { from { opacity: .3; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* guided */
+.guided { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 22px; align-items: start; }
+.stages { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); display: grid; gap: 8px; }
+.stage { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 4px 10px; text-align: left; background: var(--card); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; align-items: center; }
+.stage .n { grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-mono); background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--line); }
+.stage b { font-family: var(--f-head); font-size: 1.05rem; line-height: 1.3; }
+.stage small { color: var(--mute); font-size: .76rem; font-variant-numeric: tabular-nums; }
+.stage[aria-pressed="true"] { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+.stage[aria-pressed="true"] .n { background: var(--teal); border-color: var(--teal); color: #fff; }
+.stage.done .n { background: var(--green); border-color: var(--green); color: #fff; }
+.gprog { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: .85rem; color: var(--mute); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+.gprog .bar { width: 140px; height: 7px; }
+.dots { display: flex; gap: 5px; flex-wrap: wrap; }
+.dots button { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); font-size: .62rem; font-family: var(--f-mono); color: var(--mute); padding: 0; }
+.dots button.ok { background: var(--green); border-color: var(--green); color: #fff; }
+.dots button.no { background: var(--red); border-color: var(--red); color: #fff; }
+.dots button.cur { outline: 2px solid var(--teal); outline-offset: 1px; }
+.gtitle { font-family: var(--f-head); font-size: 1.35rem; margin: 0 0 8px; text-wrap: balance; }
+.coach { display: flex; gap: 10px; align-items: flex-start; background: var(--teal-soft); border-radius: 12px; padding: 10px 14px; color: var(--teal-2); font-size: .93rem; margin-bottom: 14px; }
+.coach svg { flex: none; width: 22px; height: 22px; margin-top: 2px; }
+.statement { font-size: 1.12rem; background: #f6faf9; border-radius: 12px; padding: 16px 18px; border: 1px dashed var(--line); }
+.tf { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.tf .btn { min-width: 120px; }
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checklist label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; background: #f6faf9; border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+.checklist input { width: 18px; height: 18px; margin-top: 5px; accent-color: var(--teal); }
+.finish { text-align: center; padding: 20px; }
+.finish b { font-family: var(--f-head); font-size: 1.4rem; display: block; }
+
+/* review */
+.rv-unit { font-family: var(--f-head); font-size: 1.1rem; margin: 18px 0 6px; }
+
+@media (max-width: 900px) {
+  .lesson, .practice, .guided, .hero { grid-template-columns: minmax(0, 1fr); }
+  .rail, .panel, .stages { position: static; max-height: none; }
+  .stages { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
+  .stage { flex: none; grid-template-columns: 26px auto; padding: 6px 12px 6px 8px; }
+  .stage .n { width: 26px; height: 26px; font-size: .8rem; }
+  .stage b { font-size: .95rem; }
+  .practice .card { order: -1; }
+  .grid-q { max-height: 150px; }
+  .toc { columns: 2; column-gap: 8px; }
+  .tabs { margin-left: 0; }
+  .nav { margin-left: 0; width: 100%; }
+}
+@media (max-width: 480px) { .toc { columns: 1; } .books { grid-template-columns: minmax(0, 1fr); } .nums { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* interactive lesson */
+.rail-prog { display: grid; gap: 4px; padding: 4px 6px 10px; margin-bottom: 6px; border-bottom: 1px solid var(--line); font-size: .8rem; }
+.rail-prog div { display: flex; justify-content: space-between; gap: 8px; color: var(--mute); }
+.rail-prog b { font-family: var(--f-mono); color: var(--teal-2); font-variant-numeric: tabular-nums; }
+.toc a { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; }
+.toc a span { flex: 1 1 100%; }
+.tg { font-style: normal; font-size: .66rem; border-radius: 999px; padding: 0 7px; line-height: 1.6; }
+.sim-tg { background: var(--teal); color: #fff; } .q-tg { background: #fff3cf; color: #8a6510; }
+.sq { margin: 18px 0; border: 1.5px dashed var(--sun); border-radius: 14px; background: #fffdf5; padding: 0 0 4px; }
+.sq-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding: 10px 16px; border-bottom: 1px dashed #f2dc9c; }
+.sq-head b { font-family: var(--f-head); font-size: 1.1rem; color: #8a6510; }
+.sq-head > span { font-size: .86rem; color: var(--ink-2); }
+.sq-tabs { display: flex; gap: 5px; margin-left: auto; }
+.sq-tabs button { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); font-family: var(--f-mono); font-size: .78rem; padding: 0; }
+.sq-tabs button[aria-pressed="true"] { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-soft); }
+.sq-tabs button.right { background: var(--green); border-color: var(--green); color: #fff; } .sq-tabs button.wrong { background: var(--red); border-color: var(--red); color: #fff; }
+.sq-card { padding: 12px 16px; }
+.ex-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.ex-tip { font-size: .88rem; color: var(--ink-2); margin-right: auto; }
+.example .sol ol.steps > li:not([hidden]) { animation: rise .25s ease; }
+.mis { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin: 10px 0; background: var(--card); }
+.mis-q { display: flex; gap: 10px; align-items: baseline; }
+.mis-tag { flex: none; font-size: .72rem; letter-spacing: .1em; background: var(--ink); color: #fff; border-radius: 999px; padding: 1px 9px; }
+.mis-a { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.mis-a .btn { padding: 4px 16px; }
+.mis.open .mis-q { display: none; }
+.mis p.bad, .mis p.good { margin: 6px 0 0; }
+ul.checklist { list-style: none; padding: 0; display: grid; gap: 8px; }
+/*EXTRA_CSS*/
+</style>
+
+<header class="top gut"><div class="in">
+  <a class="brand" href="#home">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#17313a"/><path d="M17 62 A33 33 0 0 1 83 62" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/><line x1="12" y1="70" x2="88" y2="70" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".55"/><ellipse cx="50" cy="54" rx="27" ry="10.5" transform="rotate(-24 50 54)" fill="none" stroke="#f08a3c" stroke-width="4"/><circle cx="50" cy="54" r="6.5" fill="#f5c542"/><circle cx="74.5" cy="43" r="3.6" fill="#7fd1c7"/><path d="M68 22 L70 28 L76 30 L70 32 L68 38 L66 32 L60 30 L66 28 Z" fill="#f5c542"/></svg>
+    <span><b id="siteName"></b><small id="siteSub"></small></span>
+  </a>
+  <nav class="nav" aria-label="主選單" id="mainNav"></nav>
+</div></header>
+
+<main class="gut"><div class="in">
+  <section class="view" id="v-home" aria-label="首頁"></section>
+  <section class="view" id="v-unit" aria-label="單元" hidden></section>
+  <section class="view" id="v-review" aria-label="錯題本" hidden></section>
+  <!--EXTRA_VIEWS-->
+</div></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/mhchem.min.js"></script>
+/*SIMS_JS*/
+<script id="site-index" type="application/json">/*INDEX_JSON*/</script>
+<script id="site-units" type="application/json">/*INLINE_UNITS*/</script>
+<script>
+const APP = (function () {
+  const IDX = JSON.parse(document.getElementById('site-index').textContent);
+  const INLINE = JSON.parse(document.getElementById('site-units').textContent || '{}');
+  const SITE = IDX.site;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const NS = SITE.key || 'site';
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(NS + ':' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(NS + ':' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  let P = store.get('p', {});      // question id -> 'right' | 'wrong'
+  let G = store.get('g', {});      // unit id -> guided state
+  const saveP = () => store.set('p', P);
+  const saveG = () => store.set('g', G);
+  const gs = (u) => (G[u] = G[u] || { read: {}, ex: {}, mis: {}, chk: {}, pos: {} });
+
+  document.title = SITE.title;
+  $('#siteName').textContent = SITE.title; $('#siteSub').textContent = SITE.sub;
+  const NAV = [['home', '單元總覽'], ['review', '錯題本']].concat(SITE.nav || []);
+  $('#mainNav').innerHTML = NAV.map(([h, t]) => `<a href="#${h}" data-v="${h}">${t}</a>`).join('');
+
+  function renderMath(root) {
+    if (!window.katex) return;
+    $$('span.m:not([data-k]), div.mb:not([data-k])', root).forEach((el) => {
+      const tex = el.textContent; el.dataset.k = '1';
+      try { katex.render(tex, el, { displayMode: el.tagName === 'DIV', throwOnError: false, strict: 'ignore', trust: false }); } catch (e) {}
+    });
+  }
+  function tidy(root) {
+    $$('table', root).forEach((t) => { if (!t.parentElement.classList.contains('tablebox')) { const w = document.createElement('div'); w.className = 'tablebox'; t.before(w); w.appendChild(t); } });
+    renderMath(root);
+    requestAnimationFrame(() => fitMath(root));
+  }
+  // an inline formula wider than its line gets its own scroll box instead of widening the page
+  function fitMath(root) {
+    if (!root) return;
+    $$('span.m', root).forEach((m) => {
+      if (m.classList.contains('m-wide') || !m.offsetWidth) return;
+      const box = m.closest('p, li, td, div, span.h, figcaption') || m.parentElement;
+      if (m.offsetWidth > box.clientWidth + 1) m.classList.add('m-wide');
+    });
+  }
+  let fitT; window.addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(() => fitMath(document.body), 200); });
+  document.addEventListener('click', () => requestAnimationFrame(() => fitMath(document.querySelector('main'))));
+  const unitColor = (id) => `var(--c-${id.match(/^[A-Z]/)[0]})`;
+  const bookOf = (id) => IDX.books.find((b) => b.ids.includes(id));
+
+  // ---------- data
+  const cache = {};
+  async function loadUnit(id) {
+    if (cache[id]) return cache[id];
+    if (INLINE[id]) return (cache[id] = INLINE[id]);
+    const r = await fetch(`data/${id}.json`);
+    if (!r.ok) throw new Error('load ' + id);
+    return (cache[id] = await r.json());
+  }
+  const unitDone = (id) => { const u = IDX.units[id]; if (!u || !u.qids) return 0; return u.qids.filter((q) => P[q]).length; };
+
+  // ---------- home
+  let homeSubj = store.get('subj', 'all'), homeQ = '';
+  function drawHome() {
+    const v = $('#v-home');
+    const units = Object.keys(IDX.units);
+    const nq = units.reduce((s, k) => s + IDX.units[k].nq, 0);
+    const done = Object.keys(P).length;
+    const tags = [...new Set(IDX.books.map((b) => b.tag))];
+    v.innerHTML = `
+      <div class="hero"><div><h1>${esc(SITE.hero)}</h1><p>${esc(SITE.lead)}</p></div>
+        <div class="nums"><div class="num"><b>${units.length}</b><span>單元</span></div><div class="num"><b>${nq.toLocaleString()}</b><span>題目</span></div><div class="num"><b id="doneNum">${done}</b><span>已作答</span></div></div></div>
+      <div class="filters"><input id="homeSearch" type="search" placeholder="搜尋單元，例如：摩擦力、酸鹼、建國中學" aria-label="搜尋單元" value="${esc(homeQ)}">
+        ${tags.length > 1 ? ['all'].concat(tags).map((t) => `<button type="button" class="chipbtn" data-t="${t}" aria-pressed="${t === homeSubj}">${t === 'all' ? '全部' : t}</button>`).join('') : ''}</div>
+      <div id="bookList"></div>`;
+    $('#homeSearch').addEventListener('input', (e) => { homeQ = e.target.value.trim(); drawBooks(); });
+    $$('.chipbtn', v).forEach((b) => b.addEventListener('click', () => { homeSubj = b.dataset.t; store.set('subj', homeSubj); $$('.chipbtn', v).forEach((x) => x.setAttribute('aria-pressed', x === b)); drawBooks(); }));
+    drawBooks();
+  }
+  function drawBooks() {
+    const q = homeQ.toLowerCase();
+    const match = (id) => !q || id.toLowerCase().includes(q) || IDX.units[id].title.toLowerCase().includes(q);
+    let html = '', lastTag = '';
+    IDX.books.forEach((b) => {
+      if (homeSubj !== 'all' && b.tag !== homeSubj) return;
+      const bookHit = q && b.title.toLowerCase().includes(q);
+      const ids = b.ids.filter((id) => bookHit || match(id));
+      if (!ids.length) return;
+      if (b.tag !== lastTag) { if (lastTag) html += '</div>'; html += `<h2 class="subj-h"><i style="background:${unitColor(b.ids[0])}"></i>${esc(b.tag)}</h2><div class="books">`; lastTag = b.tag; }
+      html += `<article class="book" style="--bc:${unitColor(b.ids[0])}"><span class="bno">${esc(b.noLabel || '')}</span><h3>${esc(b.title)}</h3>` +
+        b.parts.map((p) => {
+          const pids = p.ids.filter((id) => ids.includes(id)); if (!pids.length) return '';
+          return (b.parts.length > 1 ? `<div class="part">${esc(p.title)}${p.sub ? '・' + esc(p.sub) : ''}</div>` : '') + pids.map((id) => {
+            const u = IDX.units[id], d = unitDone(id), pct = u.nq ? Math.round(100 * d / u.nq) : 0;
+            return `<a class="urow" href="#u-${id}"><span class="ucode">${id}</span><span class="utitle">${esc(u.title)}</span><span class="umeta">${u.nq} 題<span class="bar"><span style="width:${pct}%"></span></span></span></a>`;
+          }).join('');
+        }).join('') + '</article>';
+    });
+    if (lastTag) html += '</div>';
+    $('#bookList').innerHTML = html || '<p class="empty">找不到符合的單元，換個關鍵字試試。</p>';
+  }
+
+  // ---------- question card
+  const typeName = { single: '單選', multi: '多選', fill: '填充', open: '非選' };
+  const coachIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1.1.9-1.1 1.6v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/></svg>';
+  // opts: { guided, nav: {prev, next, label}, onDone(result) }
+  function drawCard(card, q, o = {}) {
+    const st = P[q.id];
+    const choiceUI = (q.type === 'single' || q.type === 'multi') && q.opts.length > 1;
+    const steps = q.steps || [];
+    const guided = !!o.guided;
+    card.innerHTML = `
+      <div class="card-head"><span class="exid">${esc(q.id)}</span><span class="chip t">${typeName[q.type]}</span><span class="chip s">${esc(q.set)}${q.level ? '・' + esc(q.level) : ''}</span>${q.src ? `<span class="chip">${esc(q.src)}</span>` : ''}${st ? `<span class="chip">${st === 'right' ? '上次答對' : '上次答錯'}</span>` : ''}</div>
+      ${guided && !o.compact ? `<div class="coach">${coachIcon}<span>${steps.length ? (q.hk === 'hint' ? `先自己想想看。卡住時按「給我提示」，一次給一個提示（共 ${steps.length} 個）。` : `先自己算算看。卡住時按「給我提示」，一次只看一步（共 ${steps.length} 步）。`) : '這題沒有分步提示，先作答，再看詳解。'}${choiceUI ? '答錯可以看提示再試一次。' : ''}</span></div>` : ''}
+      ${q.pre ? `<div class="pre content">${q.pre}</div>` : ''}
+      ${q.ctx ? `<div class="ctx content">${q.ctx}</div>` : ''}
+      <div class="stem content">${q.stem}</div>
+      ${choiceUI ? `<div class="choices">${q.opts.map((x) => `<button type="button" class="choice" data-k="${x.k}" aria-pressed="false"><span class="k">${x.k}</span><span class="h content">${x.h}</span></button>`).join('')}</div>` : (q.opts.length ? `<div class="opts content">${q.opts.map((x) => `<span>(${x.k}) ${x.h}</span>`).join('')}</div>` : '')}
+      <div class="hints" id="hints"></div>
+      <div class="actions">
+        ${guided && steps.length ? `<button type="button" class="btn sun" id="hintBtn">給我提示（1/${steps.length}）</button>` : ''}
+        ${choiceUI ? `<button type="button" class="btn teal" id="submitBtn" disabled>送出答案</button>` : `<button type="button" class="btn teal" id="showBtn">看答案與詳解</button>`}
+        <span class="verdict" id="verdict" aria-live="polite"></span>
+        <span class="sp"></span>
+        ${o.nav ? `<button type="button" class="btn ghost" id="prevBtn" ${o.nav.prev ? '' : 'disabled'}>上一題</button><button type="button" class="btn ghost" id="nextBtn" ${o.nav.next ? '' : 'disabled'}>下一題</button>` : ''}
+      </div>
+      <div id="ansBox"></div>`;
+    let shown = 0, tries = 0, finished = false;
+    const hintBtn = $('#hintBtn', card);
+    const showHint = () => {
+      if (shown >= steps.length) return;
+      const d = document.createElement('div'); d.className = 'hint';
+      d.innerHTML = `<b>${q.hk === 'hint' ? '提示 ' + (shown + 1) : '第 ' + (shown + 1) + ' 步'}</b><div class="content">${steps[shown]}</div>`;
+      $('#hints', card).appendChild(d); tidy(d); shown++;
+      if (hintBtn) { if (shown >= steps.length) hintBtn.remove(); else hintBtn.textContent = `下一個提示（${shown + 1}/${steps.length}）`; }
+    };
+    if (hintBtn) hintBtn.addEventListener('click', showHint);
+    const sel = new Set();
+    $$('.choice', card).forEach((b) => b.addEventListener('click', () => {
+      if (finished) return;
+      const k = b.dataset.k;
+      $$('.choice.is-wrong', card).forEach((x) => x.classList.remove('is-wrong'));
+      if (q.type === 'single') { sel.clear(); $$('.choice', card).forEach((x) => x.setAttribute('aria-pressed', 'false')); }
+      if (sel.has(k)) { sel.delete(k); b.setAttribute('aria-pressed', 'false'); } else { sel.add(k); b.setAttribute('aria-pressed', 'true'); }
+      $('#submitBtn', card).disabled = sel.size === 0;
+    }));
+    const reveal = () => {
+      finished = true;
+      const box = $('#ansBox', card);
+      box.innerHTML = `<div class="answer content"><p class="key-line">答案：${q.key || '見詳解'}</p>${q.sol || ''}</div>`;
+      tidy(box); if (hintBtn) hintBtn.remove();
+    };
+    const record = (ok) => { if (!(q.id in P) || !o.keepFirst || tries <= 1) { P[q.id] = ok ? 'right' : 'wrong'; saveP(); } if (o.onDone) o.onDone(ok); };
+    const sb = $('#submitBtn', card);
+    if (sb) sb.addEventListener('click', () => {
+      tries++;
+      const ans = new Set(q.ans);
+      const ok = sel.size === ans.size && [...sel].every((k) => ans.has(k));
+      const v = $('#verdict', card);
+      if (!ok && guided && tries === 1 && (shown < steps.length || q.type === 'multi')) {
+        v.textContent = shown < steps.length ? '還不對，看一個提示再試一次' : '還不對，再檢查一次選項';
+        v.className = 'verdict no';
+        $$('.choice', card).forEach((b) => { if (sel.has(b.dataset.k)) b.classList.add('is-wrong'); });
+        if (shown < steps.length) showHint();
+        P[q.id] = 'wrong'; saveP();
+        return;
+      }
+      $$('.choice', card).forEach((b) => { b.disabled = true; const k = b.dataset.k; b.classList.remove('is-wrong'); if (ans.has(k)) b.classList.add('is-right'); else if (sel.has(k)) b.classList.add('is-wrong'); });
+      v.textContent = ok ? (tries > 1 ? '答對了！下次試著一次就答對' : '答對了！') : `正確答案是 ${q.ans.map((a) => '(' + a + ')').join('')}`;
+      v.className = 'verdict ' + (ok ? 'ok' : 'no');
+      sb.disabled = true;
+      if (tries === 1 || !guided) { P[q.id] = ok ? 'right' : 'wrong'; saveP(); }
+      if (o.onDone) o.onDone(ok && tries === 1);
+      reveal();
+    });
+    const shb = $('#showBtn', card);
+    if (shb) shb.addEventListener('click', () => {
+      reveal(); shb.remove();
+      const bx = document.createElement('div'); bx.className = 'actions';
+      bx.innerHTML = '<span class="pre" style="margin:0">對照詳解後自己批改：</span><button type="button" class="btn green" id="selfOk">我答對了</button><button type="button" class="btn red" id="selfNo">我答錯了</button>';
+      $('#ansBox', card).prepend(bx);
+      $('#selfOk', card).addEventListener('click', () => { P[q.id] = 'right'; saveP(); $('#verdict', card).textContent = '已記為答對'; $('#verdict', card).className = 'verdict ok'; bx.remove(); if (o.onDone) o.onDone(true); });
+      $('#selfNo', card).addEventListener('click', () => { P[q.id] = 'wrong'; saveP(); $('#verdict', card).textContent = '已收進錯題本'; $('#verdict', card).className = 'verdict no'; bx.remove(); if (o.onDone) o.onDone(false); });
+    });
+    if (o.nav) {
+      $('#prevBtn', card).addEventListener('click', () => { o.nav.prev(); card.scrollIntoView({ block: 'start', behavior: 'smooth' }); });
+      $('#nextBtn', card).addEventListener('click', () => { o.nav.next(); card.scrollIntoView({ block: 'start', behavior: 'smooth' }); });
+    }
+    tidy(card);
+  }
+
+  // ---------- unit view
+  let U = null, utab = 'lesson';
+  async function openUnit(id) {
+    const v = $('#v-unit');
+    if (!IDX.units[id]) { v.innerHTML = '<p class="empty">找不到這個單元。<a href="#home">回單元總覽</a></p>'; return; }
+    if (!U || U.id !== id) {
+      v.innerHTML = '<p class="empty">載入中…</p>';
+      try { U = await loadUnit(id); } catch (e) { v.innerHTML = '<p class="empty">單元資料載入失敗，請重新整理頁面。</p>'; return; }
+      pr = { set: 'all', type: 'all', status: 'all', idx: 0 };
+      utab = U.secs.length ? 'lesson' : 'practice';
+    }
+    const b = bookOf(id);
+    const isExam = !U.examples.length && !U.mis.length && !U.secs.some((s) => s.sims || s.qs);
+    const hasLesson = U.secs.length > 0;
+    v.innerHTML = `<div class="uhead"><div class="crumb"><a href="#home">單元總覽</a>${b ? ` ／ ${esc(b.noLabel || '')} ${esc(b.title)}` : ''}</div>
+      <h1><span class="ucode" style="--bc:${unitColor(id)}">${id}</span>${esc(U.title)}</h1>
+      <div class="tabs" role="group" aria-label="學習模式">
+        ${hasLesson ? `<button type="button" data-tab="lesson" aria-pressed="${utab === 'lesson'}">${isExam ? '試卷分析' : '互動講義'}</button>` : ''}
+        <button type="button" data-tab="practice" aria-pressed="${utab === 'practice'}">${isExam ? '逐題作答' : '題庫練習'}<small>${U.questions.length} 題</small></button>
+      </div></div><div id="ubody"></div>`;
+    $$('.tabs button', v).forEach((bt) => bt.addEventListener('click', () => switchTab(bt.dataset.tab)));
+    drawTab();
+  }
+  function drawTab() { const box = $('#ubody'); if (utab === 'lesson') drawLesson(box); else drawPractice(box); }
+  function switchTab(t) { utab = t; $$('#v-unit .tabs button').forEach((x) => x.setAttribute('aria-pressed', x.dataset.tab === t)); drawTab(); window.scrollTo({ top: 0 }); }
+
+  const qById = (id) => U.questions.find((q) => q.id === id);
+  const SKIPSEC = /^(導言|課綱對照與考點)$/;
+  function drawLesson(box) {
+    const g = gs(U.id);
+    const nSim = U.secs.reduce((n, s) => n + (s.sims ? s.sims.length : 0), 0);
+    const quizIds = U.secs.flatMap((s) => s.qs || []);
+    box.innerHTML = `<div class="lesson"><aside class="rail"><div class="rail-prog" id="railProg"></div><ul class="toc">${U.secs.map((s, i) => `<li><a href="#u-${U.id}" data-i="${i}" class="${g.read[i] ? 'read' : ''}"><span>${esc(s.t)}</span>${s.sims ? `<i class="tg sim-tg" title="互動模擬">${s.sims.length > 1 ? s.sims.length + ' ' : ''}模擬</i>` : ''}${s.qs ? `<i class="tg q-tg" title="隨堂練習">${s.qs.length} 題</i>` : ''}</a></li>`).join('')}</ul></aside>
+      <article class="sheet content">${U.src ? `<p class="unit-src">${esc(U.src)}</p>` : ''}${U.secs.map((s, i) => `<section class="sec" id="s-${i}" data-i="${i}"><h2>${esc(s.t)}</h2>${s.h}${(s.sims || []).map(([n, o]) => `<div class="sim" data-sim="${n}" data-opt='${esc(JSON.stringify(o))}'></div>`).join('')}${s.qs ? `<div class="sq" data-qs="${s.qs.join(',')}"></div>` : ''}</section>`).join('')}
+      <div class="actions"><button type="button" class="btn teal" data-go="practice">到題庫練習全部 ${U.questions.length} 題</button></div></article></div>`;
+    const prog = () => {
+      const r = Object.keys(g.read).length, a = quizIds.filter((q) => P[q]).length;
+      $('#railProg', box).innerHTML = `<div><span>已讀小節</span><b>${r} / ${U.secs.length}</b></div>${quizIds.length ? `<div><span>隨堂練習</span><b>${a} / ${quizIds.length}</b></div>` : ''}${nSim ? `<div><span>互動模擬</span><b>${nSim} 個</b></div>` : ''}`;
+    };
+    prog();
+    $$('.toc a', box).forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const t = document.getElementById('s-' + a.dataset.i); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+    $$('[data-go]', box).forEach((bt) => bt.addEventListener('click', () => switchTab(bt.dataset.go)));
+    $$('.qlink', box).forEach((p) => p.addEventListener('click', () => { pr.set = 'all'; pr.type = 'all'; pr.status = 'all'; pr.jump = p.dataset.q; switchTab('practice'); }));
+    enhanceExamples(box); enhanceMis(box); enhanceCheck(box);
+    tidy(box);
+    // lazy: simulations and section quizzes start when near the viewport; sections count as read once their end is seen
+    const io = new IntersectionObserver((ents) => ents.forEach((en) => {
+      if (!en.isIntersecting) return;
+      const el = en.target; io.unobserve(el);
+      if (el.classList.contains('sim')) mountSim(el);
+      else if (el.classList.contains('sq')) mountQuiz(el, prog);
+      else if (el.classList.contains('sec-end')) { const i = el.dataset.i; if (!g.read[i]) { g.read[i] = 1; saveG(); const a = $(`.toc a[data-i="${i}"]`, box); if (a) a.classList.add('read'); prog(); } }
+    }), { rootMargin: '300px 0px' });
+    $$('.sim, .sq', box).forEach((el) => io.observe(el));
+    $$('.sec', box).forEach((sec) => { const m = document.createElement('div'); m.className = 'sec-end'; m.dataset.i = sec.dataset.i; sec.appendChild(m); io.observe(m); });
+  }
+  function mountSim(el) {
+    const f = window.SIMS && window.SIMS[el.dataset.sim];
+    if (!f) { el.remove(); return; }
+    try { f(el, JSON.parse(el.dataset.opt || '{}')); } catch (e) { el.remove(); }
+  }
+  function mountQuiz(el, prog) {
+    const ids = el.dataset.qs.split(',').filter((x) => qById(x));
+    if (!ids.length) { el.remove(); return; }
+    let k = 0;
+    const draw = () => {
+      el.innerHTML = `<div class="sq-head"><b>隨堂練習</b><span>讀完本節，馬上試試看。</span><div class="sq-tabs">${ids.map((id, i) => `<button type="button" data-i="${i}" aria-pressed="${i === k}" class="${P[id] || ''}">${i + 1}</button>`).join('')}</div></div><div class="sq-card"></div>`;
+      $$('.sq-tabs button', el).forEach((b) => b.addEventListener('click', () => { k = +b.dataset.i; draw(); }));
+      drawCard($('.sq-card', el), qById(ids[k]), { guided: true, compact: true, nav: { prev: k > 0 ? () => { k--; draw(); } : null, next: k < ids.length - 1 ? () => { k++; draw(); } : null }, onDone: () => { prog(); const b = $(`.sq-tabs button[data-i="${k}"]`, el); if (b) b.className = P[ids[k]] || ''; } });
+    };
+    draw();
+  }
+  function enhanceExamples(root) {
+    $$('.example', root).forEach((ex) => {
+      const sol = $(':scope > .sol', ex); if (!sol) return;
+      const li = $$(':scope > ol.steps > li', sol);
+      const rest = $$(':scope > :not(ol.steps)', sol);
+      sol.hidden = true; li.forEach((x) => { x.hidden = true; }); rest.forEach((x) => { x.hidden = true; });
+      const bar = document.createElement('div'); bar.className = 'ex-bar';
+      bar.innerHTML = `<span class="ex-tip">先在紙上試著解，再${li.length ? '一步一步' : ''}對照。</span>${li.length ? `<button type="button" class="btn sun" data-a="step">看第 1 步</button>` : ''}<button type="button" class="btn ghost" data-a="all">${li.length ? '看完整解答' : '看解答'}</button>`;
+      ex.appendChild(bar);
+      let n = 0;
+      const done = () => { rest.forEach((x) => { x.hidden = false; }); bar.innerHTML = '<span class="ex-tip">這題你會了嗎？</span><button type="button" class="btn green" data-a="ok">我會了</button><button type="button" class="btn ghost" data-a="again">再練一次</button>'; };
+      bar.addEventListener('click', (e) => {
+        const a = e.target.closest('button')?.dataset.a; if (!a) return;
+        if (a === 'step') { sol.hidden = false; li[n].hidden = false; n++; if (n >= li.length) done(); else e.target.textContent = `看第 ${n + 1} 步`; }
+        else if (a === 'all') { sol.hidden = false; li.forEach((x) => { x.hidden = false; }); n = li.length; done(); }
+        else if (a === 'ok') { bar.innerHTML = '<span class="verdict ok">很好！繼續往下讀。</span>'; }
+        else if (a === 'again') { sol.hidden = true; li.forEach((x) => { x.hidden = true; }); rest.forEach((x) => { x.hidden = true; }); n = 0; bar.innerHTML = `<span class="ex-tip">遮住了解答，再自己做一次。</span>${li.length ? `<button type="button" class="btn sun" data-a="step">看第 1 步</button>` : ''}<button type="button" class="btn ghost" data-a="all">看完整解答</button>`; }
+      });
+    });
+  }
+  function enhanceMis(root) {
+    const g = gs(U.id);
+    $$('p.bad', root).forEach((bad, idx) => {
+      const good = bad.nextElementSibling; if (!good || !good.classList.contains('good')) return;
+      const showBad = ((idx * 7 + U.id.length) % 3) !== 1;
+      const box = document.createElement('div'); box.className = 'mis';
+      const stmt = (showBad ? bad : good).innerHTML.replace(/<span class="mark">[^<]*<\/span>/, '');
+      box.innerHTML = `<div class="mis-q"><span class="mis-tag">對還是錯？</span><span class="content">${stmt}</span></div><div class="mis-a"><button type="button" class="btn green" data-a="1">正確</button><button type="button" class="btn red" data-a="0">錯誤</button></div>`;
+      bad.before(box); box.appendChild(bad); box.appendChild(good); bad.hidden = true; good.hidden = true;
+      box.addEventListener('click', (e) => {
+        const b = e.target.closest('button[data-a]'); if (!b) return;
+        const ok = (b.dataset.a === '1') === !showBad; g.mis[idx] = ok ? 1 : 0; saveG();
+        $('.mis-a', box).innerHTML = `<span class="verdict ${ok ? 'ok' : 'no'}">${ok ? '判斷正確' : '判斷錯誤'}：這句是${showBad ? '常見迷思' : '正確觀念'}</span>`;
+        bad.hidden = false; good.hidden = false; box.classList.add('open');
+      });
+    });
+  }
+  function enhanceCheck(root) {
+    const g = gs(U.id);
+    $$('ul.check', root).forEach((ul) => {
+      ul.classList.add('checklist'); ul.classList.remove('check');
+      $$(':scope > li', ul).forEach((li, i) => {
+        li.innerHTML = `<label><input type="checkbox" data-i="${i}" ${g.chk[i] ? 'checked' : ''}><span>${li.innerHTML}</span></label>`;
+        $('input', li).addEventListener('change', (e) => { g.chk[i] = e.target.checked ? 1 : 0; saveG(); });
+      });
+    });
+  }
+
+  // ---------- practice
+  let pr = { set: 'all', type: 'all', status: 'all', idx: 0 };
+  function prList() {
+    return U.questions.filter((q) => (pr.set === 'all' || q.set === pr.set) && (pr.type === 'all' || q.type === pr.type) && (pr.status === 'all' || (P[q.id] || 'new') === pr.status));
+  }
+  function drawPractice(box) {
+    const sets = [...new Set(U.questions.map((q) => q.set))];
+    const types = [...new Set(U.questions.map((q) => q.type))];
+    box.innerHTML = `<div class="practice"><aside class="panel"><h3>題目篩選</h3>
+      <div class="field"><label for="fSet">題組來源</label><select id="fSet"><option value="all">全部（${U.questions.length} 題）</option>${sets.map((s) => `<option value="${esc(s)}">${esc(s)}（${U.questions.filter((q) => q.set === s).length} 題）</option>`).join('')}</select></div>
+      <div class="field"><label for="fType">題型</label><select id="fType"><option value="all">全部題型</option>${types.map((t) => `<option value="${t}">${typeName[t]}</option>`).join('')}</select></div>
+      <div class="field"><label for="fStatus">作答狀態</label><select id="fStatus"><option value="all">全部</option><option value="new">尚未作答</option><option value="wrong">答錯</option><option value="right">答對</option></select></div>
+      <div class="stat" id="pStat"></div><div class="grid-q" id="qGrid" aria-label="題號"></div></aside>
+      <div class="card" id="qCard"></div></div>`;
+    $('#fSet').value = pr.set; $('#fType').value = pr.type; $('#fStatus').value = pr.status;
+    [['fSet', 'set'], ['fType', 'type'], ['fStatus', 'status']].forEach(([id, k]) => $('#' + id).addEventListener('change', (e) => { pr[k] = e.target.value; pr.idx = 0; prDraw(); }));
+    if (pr.jump) { const L = prList(); const i = L.findIndex((q) => q.id === pr.jump); if (i >= 0) pr.idx = i; pr.jump = null; }
+    prDraw();
+  }
+  function prDraw() {
+    const L = prList(); if (pr.idx >= L.length) pr.idx = Math.max(0, L.length - 1);
+    const r = L.filter((q) => P[q.id] === 'right').length, w = L.filter((q) => P[q.id] === 'wrong').length;
+    $('#pStat').innerHTML = `<span>共 <b>${L.length}</b> 題</span><span>答對 <b>${r}</b></span><span>答錯 <b>${w}</b></span>`;
+    $('#qGrid').innerHTML = L.map((q, i) => `<button type="button" data-i="${i}" class="${P[q.id] || ''}${i === pr.idx ? ' cur' : ''}" title="${esc(q.id)}">${i + 1}</button>`).join('');
+    $$('#qGrid button').forEach((b) => b.addEventListener('click', () => { pr.idx = +b.dataset.i; prDraw(); }));
+    const card = $('#qCard');
+    if (!L.length) { card.innerHTML = '<p class="empty">沒有符合條件的題目，換個篩選條件試試。</p>'; return; }
+    drawCard(card, L[pr.idx], { guided: true, nav: { prev: pr.idx > 0 ? () => { pr.idx--; prDraw(); } : null, next: pr.idx < L.length - 1 ? () => { pr.idx++; prDraw(); } : null }, onDone: () => { const g = $('#qGrid button.cur'); if (g) g.className = (P[L[pr.idx].id] || '') + ' cur'; } });
+  }
+
+  // ---------- review
+  let rv = { list: [], idx: 0 };
+  async function drawReview() {
+    const v = $('#v-review');
+    const wrongIds = Object.keys(P).filter((k) => P[k] === 'wrong');
+    if (!wrongIds.length) { v.innerHTML = '<div class="card"><p class="empty">錯題本是空的。在各單元作答後，答錯的題目會自動收進這裡。</p></div>'; return; }
+    v.innerHTML = '<p class="empty">整理錯題中…</p>';
+    const units = [...new Set(wrongIds.map((q) => Object.keys(IDX.units).find((u) => (IDX.units[u].qids || []).includes(q))).filter(Boolean))];
+    const list = [];
+    for (const u of units) { try { const d = await loadUnit(u); d.questions.forEach((q) => { if (P[q.id] === 'wrong') list.push(q); }); } catch (e) {} }
+    rv.list = list; if (rv.idx >= list.length) rv.idx = 0;
+    v.innerHTML = `<div class="practice"><aside class="panel"><h3>錯題本</h3><p class="pre">答錯的題目會留在這裡，重新答對後就會移出。</p><div class="stat"><span>共 <b>${list.length}</b> 題</span><span>${units.length} 個單元</span></div><div id="rvList"></div></aside><div class="card" id="rvCard"></div></div>`;
+    rvDraw();
+  }
+  function rvDraw() {
+    const L = rv.list;
+    let html = '', last = '';
+    L.forEach((q, i) => { if (q.unit !== last) { if (last) html += '</div>'; html += `<div class="rv-unit">${q.unit} ${esc(IDX.units[q.unit]?.title || '')}</div><div class="grid-q">`; last = q.unit; } html += `<button type="button" data-i="${i}" class="${P[q.id] || ''}${i === rv.idx ? ' cur' : ''}" title="${esc(q.id)}">${i + 1}</button>`; });
+    $('#rvList').innerHTML = html + '</div>';
+    $$('#rvList button').forEach((b) => b.addEventListener('click', () => { rv.idx = +b.dataset.i; rvDraw(); }));
+    drawCard($('#rvCard'), L[rv.idx], { guided: true, nav: { prev: rv.idx > 0 ? () => { rv.idx--; rvDraw(); } : null, next: rv.idx < L.length - 1 ? () => { rv.idx++; rvDraw(); } : null } });
+  }
+
+  // ---------- routing
+  const EXTRA = window.SITE_EXTRA || {};
+  function route() {
+    let h = (location.hash || '#home').slice(1);
+    let view = 'home', uid = null;
+    if (h.startsWith('u-')) { view = 'unit'; uid = h.slice(2); } else if (h === 'review') view = 'review'; else if (EXTRA.views && EXTRA.views[h]) view = h; else h = 'home';
+    $$('#mainNav a').forEach((a) => a.setAttribute('aria-current', a.dataset.v === (view === 'unit' ? '' : view) ? 'page' : 'false'));
+    $$('.view').forEach((s) => { s.hidden = s.id !== 'v-' + view; });
+    if (view === 'home') drawHome();
+    else if (view === 'unit') openUnit(uid);
+    else if (view === 'review') drawReview();
+    else EXTRA.views[view]();
+    window.scrollTo({ top: 0 });
+  }
+  window.addEventListener('hashchange', route);
+  route();
+  return { $, $$, tidy, store };
+})();
+</script>
+<!--EXTRA_SCRIPT-->
